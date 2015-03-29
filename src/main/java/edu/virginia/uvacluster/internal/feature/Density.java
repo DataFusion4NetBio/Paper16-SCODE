@@ -10,11 +10,11 @@ public class Density extends FeatureSet {
 	private Double cutoff = null;
 
 	public Density(List<Statistic> statistics) {
-		super("Density", statistics);
+		super("density", statistics);
 	}
 	
 	public Density(List<Statistic> statistics, double cutoff) {
-		super("Density wrt cutoff " + Double.toString(cutoff), statistics);
+		super("density at cutoff " + Double.toString(cutoff), statistics);
 		this.cutoff = cutoff;
 	}
 	

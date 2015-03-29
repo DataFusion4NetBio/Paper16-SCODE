@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.work.AbstractTask;
@@ -84,7 +85,7 @@ public class InputTask extends AbstractTask{
 	
 	@Tunable(description="Load Positive Training Data", groups={"Train Model"}, dependsOn="trainNewModel=true", params="input=true;fileCategory=unspecified",
 			tooltip="Please refer to the project's gitub page for the proper format of training examples.")
-	public File trainingFile;
+	public File trainingFile = new File("/home/nick/complex detection/test data/training-tap06.txt");
 	
 	@Tunable(description="Ignore Missing Nodes", groups={"Train Model"}, dependsOn="trainNewModel=true", params="input=true",
 			tooltip="If selected, any training examples with nodes that are not in the active network are ignored.  "
@@ -98,7 +99,7 @@ public class InputTask extends AbstractTask{
 	@Override //Adds other tasks to iterator based on user's input
 	public void run(TaskMonitor arg0) throws Exception {
 		System.out.println("Input is being collected...");
-		if (getEdgeColumnNames().size() == 1 ) throw new Exception("You must select a column for edge weights.");
+		//if (getEdgeColumnNames().size() == 1 ) throw new Exception("Your network must contain a column for edge weights.");
 		// let tunables do their thing...
 	}
 	
@@ -124,9 +125,9 @@ public class InputTask extends AbstractTask{
 	
 	private List<String> getEdgeColumnNames() {
 		List<String> names = new ArrayList<String>();
-		names.add("- Select Column -");
+		//names.add("- Select Column -");
 		for (CyNetwork network: CyActivator.networkManager.getNetworkSet()) {
-			for (CyColumn col:  network.getDefaultNodeTable().getColumns()) {
+			for (CyColumn col:  network.getDefaultEdgeTable().getColumns()) {
 				if (!names.contains(col.getName()) &&  (!col.getName().equals("SUID")) &&
 						((col.getType() == Double.class) || (col.getType() == Integer.class) || (col.getType() == Long.class))) 
 					names.add(col.getName());

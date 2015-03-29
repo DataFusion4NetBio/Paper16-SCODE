@@ -19,8 +19,8 @@ public class ClusterUtil {
 		                         "Variance : Degree (4)",
 		                         "Median : Degree (4)",
 		                         "Max : Degree (4)",
-		                         String.format("Mean : weight{%s}",weightFeatureName),
-		                         String.format("Variance : weight{%s}",weightFeatureName),
+		                         String.format("Mean : weight{%s} (4)",weightFeatureName),
+		                         String.format("Variance : weight{%s} (4)",weightFeatureName),
 		                         String.format("Density at cutoff %s (6)",weightCutoffs[0]),
 		                         String.format("Density at cutoff %s (6)",weightCutoffs[1]),
 		                         String.format("Density at cutoff %s (6)",weightCutoffs[2]),
@@ -38,15 +38,15 @@ public class ClusterUtil {
 		                         "Mean : Topological Coefficient (3)",
 		                         "Variance : Topological Coefficient (3)",
 		                         "Max : Topological Coefficient (3)",
-		                         "1st Singular Value (4)",
-		                         "2nd Singular Value (2)",
-		                         "3rd Singular Value (2)"};
+		                         "1st : Singular Value (4)",
+		                         "2nd : Singular Value (2)",
+		                         "3rd : Singular Value (2)"};
 		
 		modelNetwork.getDefaultEdgeTable().createColumn("Probability", Double.class, false);
 		root = modelNetwork.addNode();
 		modelNetwork.getRow(root).set("name", "Root");
 		size = modelNetwork.addNode();
-		modelNetwork.getRow(size).set("name", "Count : Node");
+		modelNetwork.getRow(size).set("name", "Count : Node (5)");
 		modelNetwork.addEdge(root, size, true);
 			
 		for (int i = 0; i < featureNames.length; i++) {

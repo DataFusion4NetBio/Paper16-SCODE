@@ -75,10 +75,10 @@ public class Cluster
 	return values;
   }
   
-  public Map<String, Bin> getFeatureMap() {
+  public Map<String, Bin> getBinMap() {
 	HashMap<String, Bin> result = new HashMap<String, Bin>();
 	for (FeatureSet feature: features) {
-		result.putAll(feature.getFeatureMap(this));
+		result.putAll(feature.getBinMap(this));
 	}
  	return result;
   }

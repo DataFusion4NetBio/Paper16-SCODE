@@ -81,7 +81,7 @@ public class SearchTask extends AbstractNetworkTask{
 			System.out.println("Search Complete.");
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("Searching didn't go so well..." + e.getMessage());
+			throw new Exception("Searching didn't go so well... " + e.getMessage());
 		}
 	}
 	

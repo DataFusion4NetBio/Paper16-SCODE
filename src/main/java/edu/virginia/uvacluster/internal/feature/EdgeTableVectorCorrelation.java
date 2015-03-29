@@ -13,7 +13,7 @@ public class EdgeTableVectorCorrelation extends NodeTableVectorCorrelation{
 	
 	public EdgeTableVectorCorrelation(List<Statistic> statistics, List<String> propertyNames) {
 		super(statistics, propertyNames);
-		description = "Edge{" + join(propertyNames) + "}";
+		description = "edge{" + join(propertyNames) + "}";
 	}
 
 	@Override

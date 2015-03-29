@@ -7,7 +7,7 @@ import java.util.List;
 public class Median extends Statistic {
 
 	public Median(StatisticRange range) {
-		super(range, "Median");
+		super(range, "median");
 	}
 
 	public double transform(List<Double> values) {

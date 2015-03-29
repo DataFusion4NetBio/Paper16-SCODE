@@ -5,7 +5,7 @@ import java.util.List;
 public class Variance extends Statistic {
 	
 	public Variance(StatisticRange range) {
-		super(range, "Variance");
+		super(range, "variance");
 	}
 
 	public double transform(List<Double> values) {

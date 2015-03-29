@@ -5,7 +5,7 @@ import java.util.List;
 public class Mean extends Statistic {
 
 	public Mean(StatisticRange range) {
-		super(range, "Mean");
+		super(range, "mean");
 	}
 
 	public double transform(List<Double> values) {

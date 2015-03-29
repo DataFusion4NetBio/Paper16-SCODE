@@ -89,14 +89,14 @@ public class GraphTest extends TestNetwork {
 		double result, newResult;
 		Graph graph = new Graph("Test");
 		CyNetwork saveTo = nts.getNetwork();
-		List<FeatureSet> features = FeatureUtil.parse(graph.loadModelFrom(getOneToManyModel()));
+		List<FeatureSet> features = FeatureUtil.parse(graph.loadModelFrom(getManyToOneModel()));
 		for(CySubNetwork e: examples) {trainingPoints.add(new Cluster(features, e));}
 		graph.trainOn(trainingPoints);
-		result = graph.score(new Cluster(features, examples.get(0)));
-		graph.saveTrainedModelTo(saveTo);
+		result = graph.score(new Cluster(features, validationExample));
+		graph.saveTrainedModelTo(saveTo,features);
 		graph = new Graph("Test");
-		graph.loadTrainedModelFrom(saveTo);
-		newResult = graph.score(new Cluster(features, examples.get(0)));
+		features = graph.loadTrainedModelFrom(saveTo);
+		newResult = graph.score(new Cluster(features, validationExample));
 		assertEquals("Score is the same before and after saving",result,newResult,0.001);
 	}
 	

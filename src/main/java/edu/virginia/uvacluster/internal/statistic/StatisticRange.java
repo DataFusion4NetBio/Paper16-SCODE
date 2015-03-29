@@ -30,6 +30,13 @@ public class StatisticRange {
 		}
 		return bin;
 	}
+	public void setSpan(double min, double max) {
+		this.min = min;
+		this.max = max;
+		span = max - min;
+	}
 	
+	public double getMax() {return max;}
+	public double getMin() {return min;}
 	public int getNumBins() {return bins;}
 }

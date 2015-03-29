@@ -8,7 +8,7 @@ public class EdgeWeight extends EdgeTableFeature{
 
 	public EdgeWeight(List<Statistic> statistics, String propertyName) {
 			super(statistics, propertyName);
-			this.description = "Weight{" + propertyName + "}";
+			this.description = "weight{" + propertyName + "}";
 	}
 
 }

@@ -11,7 +11,7 @@ import edu.virginia.uvacluster.internal.statistic.Statistic;
 public class DegreeCorrelation extends FeatureSet {
 
 	public DegreeCorrelation(List<Statistic> statistics) {
-		super("DegreeCorrelation", statistics);
+		super("degree correlation", statistics);
 	}
 
 	@Override

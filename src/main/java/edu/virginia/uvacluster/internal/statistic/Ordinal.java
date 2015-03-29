@@ -17,18 +17,18 @@ public class Ordinal extends Statistic {
 
 	@Override
 	public String getDescription(String name) {
-		String result = ordinalNum.toString();
+		String prefix = ordinalNum.toString();
 		switch(ordinalNum % 10) {
-		case 1: result += "st";
+		case 1: prefix += "st";
 				break;
-		case 2: result += "nd";
+		case 2: prefix += "nd";
 				break;
-		case 3: result += "rd";
+		case 3: prefix += "rd";
 				break;
-        default: result += "th";
+        default: prefix += "th";
         		 break;
 		}
-		return result;
+		return prefix + " : " + name;
 	}
 	
 	public int getIndex() {return ordinalNum-1;}

@@ -65,26 +65,29 @@ public class FeatureUtil {
 		StatisticRange range = new StatisticRange(numBins);
 		Matcher m = null;
 		
-		if (name != null) m = Pattern.compile("([0-9]+)").matcher(name);
+		if (name != null) {
+			name = name.toLowerCase();
+			m = Pattern.compile("([0-9]+)").matcher(name);
+		}
 		if (name == null) {
 			return new Unit(range);
 		} else if (m.find()) {
 			stat = new Ordinal(range,Integer.parseInt(m.group(1)));
 		}
 		switch(name) {
-		case "Count": 
+		case "count": 
 			stat = new Count(range);
 			break;
-		case "Max": 
+		case "max": 
 			stat = new Max(range);
 			break;
-		case "Mean": 
+		case "mean": 
 			stat = new Mean(range);
 			break;
-		case "Median": 
+		case "median": 
 			stat = new Median(range);
 			break;
-		case "Variance": 
+		case "variance": 
 			stat = new Variance(range);
 			break;
 		}

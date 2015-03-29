@@ -7,7 +7,7 @@ import java.util.List;
 public class Max extends Statistic {
 
 	public Max(StatisticRange range) {
-		super(range, "Max");
+		super(range, "max");
 	}
 
 	public double transform(List<Double> values) {

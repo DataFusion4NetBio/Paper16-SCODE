@@ -10,7 +10,7 @@ import edu.virginia.uvacluster.internal.statistic.Statistic;
 public class ClusterCoefficient extends FeatureSet {
 
 	public ClusterCoefficient(List<Statistic> statistics) {
-		super("Clustering Coefficient", statistics);
+		super("clustering coefficient", statistics);
 	}
 
 	@Override
@@ -35,7 +35,6 @@ public class ClusterCoefficient extends FeatureSet {
 	  	  links /= 2.0; //each link/edge is found twice in the for loops
 	  	  if (numNeighbors>1) 
 	  		  clusteringCoefficient = (2 * links) / (numNeighbors * (numNeighbors - 1));
-	  	  System.out.println(clusteringCoefficient);
 	      clusteringCoefficients.add(clusteringCoefficient);
 	    }
 	    
