@@ -8,7 +8,7 @@ public abstract class Statistic {
 	
 	public Statistic(StatisticRange range, String prefix) {
 		this.range = range;
-		this.prefix = prefix;
+		this.prefix = prefix; //TODO would also be better handled in featureutil
 	}
 	
 	public abstract double transform(List<Double> values);	

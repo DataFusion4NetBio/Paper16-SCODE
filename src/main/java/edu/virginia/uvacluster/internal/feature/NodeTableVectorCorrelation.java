@@ -16,7 +16,7 @@ public class NodeTableVectorCorrelation extends FeatureSet {
 	public NodeTableVectorCorrelation(List<Statistic> statistics, List<String> propertyNames) {
 		super(null, statistics);
 		this.propertyNames = propertyNames;
-		description = "Node{" + join(propertyNames) + "}";
+		description = "node{" + join(propertyNames) + "}";
 	}
 
 	@Override

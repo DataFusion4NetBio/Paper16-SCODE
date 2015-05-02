@@ -12,7 +12,7 @@ import edu.virginia.uvacluster.internal.statistic.Statistic;
 public class TopologicalCoefficient extends FeatureSet {
 
 	public TopologicalCoefficient(List<Statistic> statistics) {
-		super("Topological Coeffecient", statistics);
+		super("topological coefficient", statistics);
 	}
 
 	@Override

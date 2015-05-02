@@ -95,12 +95,12 @@ public class ClusterTest extends TestNetwork {
 	
 	@Test
 	public void shouldReturnExpectedHash() {
-		Map<String,Bin> featureMap = cluster.getFeatureMap();
+		Map<String,Bin> featureMap = cluster.getBinMap();
 		System.out.println(featureMap);
-		assertEquals("Contains feature key",true,featureMap.containsKey("Max : Weight{weight}"));
-		assertEquals("Contains feature key",true,featureMap.containsKey("Mean : Weight{weight}"));
-		assertEquals("Contains feature key",true,featureMap.containsKey("Median : Degree"));
-		assertEquals("Contains feature key",true,featureMap.containsKey("Degree"));
+		assertEquals("Contains feature key",true,featureMap.containsKey("max : weight{weight}"));
+		assertEquals("Contains feature key",true,featureMap.containsKey("mean : weight{weight}"));
+		assertEquals("Contains feature key",true,featureMap.containsKey("median : degree"));
+		assertEquals("Contains feature key",true,featureMap.containsKey("degree"));
 		assertEquals("Contains four keys",4,featureMap.keySet().size());
 	}
 }

@@ -13,7 +13,7 @@ public class EdgeTableFeature extends FeatureSet {
 	protected String propertyName = null;
 	
 	public EdgeTableFeature(List<Statistic> statistics, String propertyName) {
-		super("Edge{"+propertyName+"}", statistics);
+		super("edge{"+propertyName+"}", statistics);
 		this.propertyName = propertyName;
 	}
 	

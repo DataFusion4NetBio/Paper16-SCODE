@@ -130,13 +130,13 @@
 		<dependency>
       <groupId>org.cytoscape</groupId>
       <artifactId>model-impl</artifactId>
-      <version>3.2.0</version>
+      <version>3.2.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.cytoscape</groupId>
       <artifactId>model-impl</artifactId>
-      <version>3.2.0</version>
+      <version>3.2.1</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -144,7 +144,7 @@
     <dependency>
       <groupId>org.cytoscape</groupId>
       <artifactId>event-api</artifactId>
-      <version>3.2.0</version>
+      <version>3.2.1</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -152,25 +152,25 @@
     <dependency>
       <groupId>org.cytoscape</groupId>
       <artifactId>core-task-api</artifactId>
-      <version>3.2.0</version>
+      <version>3.2.1</version>
     </dependency>
 		
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>service-api</artifactId>
-			<version>3.2.0</version>
+			<version>3.2.1</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>swing-application-api</artifactId>
-			<version>3.2.0</version>
+			<version>3.2.1</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>session-api</artifactId>
-			<version>3.2.0</version>
+			<version>3.2.1</version>
 		</dependency>
     
     	<!-- Logging -->

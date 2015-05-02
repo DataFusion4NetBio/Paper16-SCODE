@@ -45,7 +45,6 @@ public class TrainingTask extends AbstractNetworkTask{
 				
 				taskMonitor.setProgress(0.1);
 				taskMonitor.setStatusMessage("Training...");
-				//TODO add conditional for custom networks
 				clusterModel = new SupervisedModel(rootNetwork, modelNetwork,outputNet, userInput);
 				CyActivator.networkManager.addNetwork(outputNet); 
 				taskMonitor.setStatusMessage("Training is done.");

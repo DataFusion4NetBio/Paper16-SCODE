@@ -11,7 +11,7 @@ import edu.virginia.uvacluster.internal.statistic.Statistic;
 public class Node extends FeatureSet {
 
 	public Node(List<Statistic> statistics) {
-		super("Node", statistics);
+		super("node", statistics);
 	}
 
 	@Override

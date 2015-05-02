@@ -5,7 +5,7 @@ import java.util.List;
 public class Count extends Statistic {
 
 	public Count(StatisticRange range) {
-		super(range,"Count");
+		super(range,"count");
 	}
 
 	@Override

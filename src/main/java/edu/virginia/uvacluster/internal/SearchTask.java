@@ -44,7 +44,6 @@ public class SearchTask extends AbstractNetworkTask{
 			taskMonitor.setTitle("Searching Network");
 			System.out.println("Selecting search algorithm...");
 			//Perform selected search
-			if (userInput.isaSearchSelected()) {
 				taskMonitor.setProgress(0.1);
 				taskMonitor.setStatusMessage("Gathering Seeds...");
 				
@@ -59,7 +58,6 @@ public class SearchTask extends AbstractNetworkTask{
 				taskMonitor.setProgress(0.6);
 				taskMonitor.setStatusMessage("Executing Search...");
 				results = selectedSearch.execute(userInput, taskMonitor);
-			}
 			
 			//TODO Order results with highest score first
 			
@@ -81,7 +79,7 @@ public class SearchTask extends AbstractNetworkTask{
 			System.out.println("Search Complete.");
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("Searching didn't go so well..." + e.getMessage());
+			throw new Exception("Searching didn't go so well... " + e.getMessage());
 		}
 	}
 	

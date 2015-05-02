@@ -24,12 +24,16 @@ public class SupervisedModel implements Model{
 	//data members
 	private CyRootNetwork rootNetwork;
 	private Graph negBayesGraph, posBayesGraph; //used for internal representation of bayes net
-	private static List<String> categories = Arrays.asList("NonCluster", "Cluster");
-	private List<Graph> bayesGraphs = Arrays.asList(negBayesGraph,posBayesGraph);
+	private List<Graph> bayesGraphs;
 	private List<FeatureSet> features;
 	private double complexPrior;
 	private InputTask userInput;
 
+	private void setup() {
+		negBayesGraph = new Graph("NonCluster");
+		posBayesGraph = new Graph("Cluster");
+		bayesGraphs = Arrays.asList(negBayesGraph,posBayesGraph);
+	}
 	/**
 	 * Constructs model from the current network and a file with clusters for training.
 	 * 
@@ -38,13 +42,12 @@ public class SupervisedModel implements Model{
 	 * @throws An exception from loading the training data file
 	 */
 	SupervisedModel(CyRootNetwork trainingNetwork, CyNetwork modelNetwork, CyNetwork outputBayesNet, InputTask userInput) throws Exception {
+		setup();
 		Set<String> featureDescs = null;
 		List<CySubNetwork> positiveExamples = null, negativeExamples = null;
 		rootNetwork = trainingNetwork;
 		this.complexPrior = userInput.clusterPrior;
 		this.userInput = userInput;
-		negBayesGraph = new Graph(categories.get(0));
-		posBayesGraph = new Graph(categories.get(1));
 		for (Graph g: bayesGraphs) {featureDescs = g.loadModelFrom(modelNetwork);}
 		features = FeatureUtil.parse(featureDescs);
 		
@@ -55,7 +58,7 @@ public class SupervisedModel implements Model{
 		System.out.println("Negative examples are generated.");
 		train(positiveExamples, negativeExamples);
 		System.out.println("Model trained...");
-		saveGraphicalBayesianNetwork(outputBayesNet);
+		saveGraphicalBayesianNetwork(outputBayesNet, features);
 		System.out.println("Model saved to network...");
 	}
 	
@@ -65,14 +68,11 @@ public class SupervisedModel implements Model{
 	 * @param bayesianNetwork - reads model from existing Bayesian network stored as CyNetwork
 	 */
 	SupervisedModel(CyRootNetwork searchNetwork, CyNetwork bayesianNetwork, InputTask input) {
-		Set<String> featureDescs = null;
+		setup();
 		rootNetwork = searchNetwork;
 		this.userInput = input;
 		this.complexPrior = input.clusterPrior;
-		negBayesGraph = new Graph(categories.get(0));
-		posBayesGraph = new Graph(categories.get(1));
-		for (Graph g: bayesGraphs) {featureDescs = g.loadTrainedModelFrom(bayesianNetwork);}
-		features = FeatureUtil.parse(featureDescs);
+		for (Graph g: bayesGraphs) {features = g.loadTrainedModelFrom(bayesianNetwork);}
 	}
 
 	public List<FeatureSet> getFeatures() {return features;}
@@ -84,9 +84,9 @@ public class SupervisedModel implements Model{
 	 * 
 	 * @param emptyNetwork - an empty CyNetwork where the Bayesian net will be generated
 	 */
-	public void saveGraphicalBayesianNetwork(CyNetwork emptyNetwork) {
+	public void saveGraphicalBayesianNetwork(CyNetwork emptyNetwork, List<FeatureSet> features) {
 		for(Graph g: bayesGraphs) {
-			g.saveTrainedModelTo(emptyNetwork);
+			g.saveTrainedModelTo(emptyNetwork,features);
 		}
 	}
 	
@@ -98,7 +98,7 @@ public class SupervisedModel implements Model{
 	 */
 	public double score(Cluster complex) throws Exception{
 		double nonComplexPrior = 1 - complexPrior;
-		return (complexPrior*posBayesGraph.score(complex))/(nonComplexPrior*negBayesGraph.score(complex));
+		return Math.log((complexPrior*posBayesGraph.score(complex))/(nonComplexPrior*negBayesGraph.score(complex)));
 	}
 	
 	public double score(CySubNetwork complex) throws Exception {
@@ -305,7 +305,7 @@ public class SupervisedModel implements Model{
 				for (CyNode x: nodeList) {
 					for (CyNode y: nodeList) {
 						if (rootNetwork.containsEdge(x, y))
-							clusterNetwork.addEdge(rootNetwork.getConnectingEdgeList(x, y, CyEdge.Type.UNDIRECTED).get(0));
+							clusterNetwork.addEdge(rootNetwork.getConnectingEdgeList(x, y, CyEdge.Type.ANY).get(0));
 					}
 				} 
 				

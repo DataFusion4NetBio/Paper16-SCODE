@@ -16,6 +16,9 @@ import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 
 import edu.virginia.uvacluster.internal.feature.Bin;
+import edu.virginia.uvacluster.internal.feature.FeatureSet;
+import edu.virginia.uvacluster.internal.feature.FeatureUtil;
+import edu.virginia.uvacluster.internal.statistic.Statistic;
 
 
 public class Graph {
@@ -82,8 +85,10 @@ public class Graph {
 					//create nodes for internal graph if CyNode hasn't been visited yet
 					if (nodeMap.get(destination) == null) {
 						nodeMap.put(destination, new ArrayList<Node>());
-						//TODO more normalization for featureDesc
 						featureDesc = nodeName.replaceAll("\\(.*\\)","").trim();
+						featureDesc = featureDesc.replaceAll(":", " : ");
+						featureDesc = featureDesc.replaceAll("\\(", " \\( ");
+						featureDesc = spacesPattern.matcher(featureDesc).replaceAll(" ").trim();
 						features.add(nodeName);
 						newNodes = toNodeBins;
 						for (Integer numNodes: parentNumNodes) {newNodes *= numNodes;}
@@ -129,8 +134,10 @@ public class Graph {
 	}
 		
 	//returns a set of feature keys in the form "Statistic: Feature (TotalBins)"
-	public Set<String> loadTrainedModelFrom(CyNetwork network) {
-		Set<String> features = new HashSet<String>();
+	public List<FeatureSet> loadTrainedModelFrom(CyNetwork network) {
+		List<FeatureSet> features;
+		HashMap<String,Double> minMap = new HashMap<>(), maxMap = new HashMap<>();
+		Set<String> featureNames = new HashSet<String>();
 		Map<CyNode, Node> nodeMap = new HashMap<CyNode, Node>();
 		List<CyNode> originLevel = new ArrayList<CyNode>(), 
 					 nextOriginLevel = new ArrayList<CyNode>();
@@ -157,8 +164,9 @@ public class Graph {
 			for (CyNode origin: originLevel) {
 				modelNode = nodeMap.get(origin);
 				for (CyNode destination: network.getNeighborList(origin, Type.OUTGOING)) {
-					nextOriginLevel.addAll(network.getNeighborList(destination, Type.OUTGOING));
+					nextOriginLevel.add(destination);
 					newNode = nodeMap.get(destination);
+					edge = network.getConnectingEdgeList(origin, destination, Type.ANY).get(0);
 					if (newNode == null) {
 						nodeName = network.getRow(destination).get("name", String.class);
 						nodeName = spacesPattern.matcher(nodeName).replaceAll(" ").trim();
@@ -167,26 +175,41 @@ public class Graph {
 						binNumber = Integer.parseInt(m.group(1));
 						numBins = Integer.parseInt(m.group(2));
 						featureDesc = nodeName.replaceAll("\\(.*\\)","").trim();
-						features.add(nodeName.replaceAll("\\(.*\\d+.*/","("));
+						featureNames.add(nodeName.replaceAll("\\(.*\\d+.*/","("));
 						newNode = new Node(featureDesc, new Bin(binNumber,numBins));
+						minMap.put(featureDesc, network.getRow(destination).get("min", Double.class));
+						maxMap.put(featureDesc, network.getRow(destination).get("max", Double.class));
 						nodeMap.put(destination, newNode);
 					}
 					child = modelNode.addChild(newNode);
-					edge = network.getConnectingEdgeList(origin, destination, Type.ANY).get(0);
 					probability = network.getRow(edge).get("Probability", Double.class);
+					System.out.println(probability);
 					child.setProbability(probability);
 				}
 			}
 		} while(nextOriginLevel.size() > 0);
+		features = FeatureUtil.parse(featureNames);
+		for (FeatureSet f: features) {
+			for (Statistic s: f.getStatistics()) {
+				s.getRange().setSpan(minMap.get(f.getDescriptor(s)), maxMap.get(f.getDescriptor(s)));
+			}
+		}
 		return features;
 	}
 	
-	public void saveTrainedModelTo(CyNetwork network) {
+	public void saveTrainedModelTo(CyNetwork network, List<FeatureSet> features) {
+		Map<String,Statistic> statsMap = new HashMap<String,Statistic>();
+		for (FeatureSet f: features) {statsMap.putAll(f.getStatisticMap());}
 		List<Node> originLevel = new ArrayList<Node>(), nextOriginLevel = new ArrayList<Node>();
 		Node destination = null;
 		CyEdge edge = null;
+		if (network.getDefaultNodeTable().getColumn("min") == null)
+			network.getDefaultNodeTable().createColumn("min", Double.class, false);
+		if (network.getDefaultNodeTable().getColumn("max") == null)
+			network.getDefaultNodeTable().createColumn("max", Double.class, false);
 		
-		network.getDefaultEdgeTable().createColumn("Probability", Double.class, false);
+		if (network.getDefaultEdgeTable().getColumn("Probability") == null)
+			network.getDefaultEdgeTable().createColumn("Probability", Double.class, false);
 		nextOriginLevel.add(root);
 		do {
 			originLevel.clear(); 
@@ -194,7 +217,9 @@ public class Graph {
 			nextOriginLevel.clear();
 			for (Node origin: originLevel) {
 				for (Child child: origin.getChildren()) {
-					for(Child c: child.getChildren()) {nextOriginLevel.add(c.getNode());}
+					nextOriginLevel.remove(child.getNode());
+					nextOriginLevel.add(child.getNode());
+						
 					destination = child.getNode();
 					if (origin.cyNode == null) {
 						origin.cyNode = network.addNode(); 
@@ -203,6 +228,8 @@ public class Graph {
 					if (destination.cyNode == null) {
 						destination.cyNode = network.addNode(); 
 						network.getRow(destination.cyNode).set("name", destination.getDisplayName());
+						network.getRow(destination.cyNode).set("max", statsMap.get(destination.getName()).getRange().getMax());
+						network.getRow(destination.cyNode).set("min", statsMap.get(destination.getName()).getRange().getMin());
 					}
 					edge = network.addEdge(origin.cyNode, destination.cyNode, true);
 					network.getRow(edge).set("Probability", child.getProbability());
@@ -220,7 +247,7 @@ public class Graph {
 		}
 
 		for (Cluster cluster: clusters) {
-			featureMap = cluster.getFeatureMap();
+			featureMap = cluster.getBinMap();
 			nextLevel.addAll(root.getChildren());
 			scanGraph(featureMap);
 			do {
@@ -228,6 +255,7 @@ public class Graph {
 				currentLevel.addAll(nextLevel);
 				nextLevel.clear();
 				for (Child child: currentLevel) {
+					nextLevel.removeAll(child.getChildren());
 					nextLevel.addAll(child.getChildren());
 					child.addTo(featureMap.get(child.getName()).number);
 				}
@@ -237,8 +265,7 @@ public class Graph {
 	
 	public double score(Cluster cluster) {
 		double score = 1;
-		Map<String, Bin> features = cluster.getFeatureMap();
-		System.out.println(features);
+		Map<String, Bin> features = cluster.getBinMap();
 		
 		scanGraph(features);
 		for (Child child: root.getChildren()) {
@@ -276,7 +303,7 @@ public class Graph {
 
 		public Node(String feature, Bin bin) {
 			children = new ArrayList<Child>();
-			this.feature = feature;
+			this.feature = feature.toLowerCase();
 			this.bin = bin;
 		}
 		
@@ -330,7 +357,6 @@ public class Graph {
 			if (node.parentsActive()) {
 				if (node.getBin() == bin) {
 					count++;
-					System.out.println("training bin " + Integer.toString(node.getBin()) + " count: " + Integer.toString(count));
 				} 
 				totalSamples++;
 				probability = ((double)count + 1.0) / ((double)totalSamples + (double)node.getTotalBins());

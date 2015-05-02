@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.apache.commons.lang.time.StopWatch;
 import org.cytoscape.model.CyNode;
 
 public class SeedSearch implements Runnable {
@@ -15,7 +14,6 @@ public class SeedSearch implements Runnable {
 	List<Cluster> candidates;
 	InputTask input;
 	
-	//TODO wtf are complexes vs candidates?
 	public SeedSearch(Model model, List<Cluster> complexes, Phaser p, InputTask input, List<Cluster> candidates) {
 		clusters = complexes;
 		phaser = p;
@@ -60,34 +58,54 @@ public class SeedSearch implements Runnable {
 	//Update individual cluster for one iteration of ISA, uses but does not modify temp
 	private void updateCluster(Cluster complex) throws Exception {
 		List<CyNode> neighbors = complex.getNeighborList();
-		//neighbors = neighbors.subList(0, 50); //TODO Refine this....
-		CyNode topNode = null;
-		double topScore = -Double.MAX_VALUE, originalScore = model.score(complex);
+		CyNode candidateNode = null, node = null;
+		double newScore, topScore = -Double.MAX_VALUE, originalScore = model.score(complex);
 		double updateProbability = 0;
-		StopWatch timer = new StopWatch();
-		timer.start();
 		
 		
 		System.out.println("Neighbors: " + neighbors.size());
 		if (neighbors.size() > 0) {	
-			for (CyNode node: neighbors) {
-				complex.add(node);
-				
-				//System.out.println(complex.getScore() - topScore);
-				if (model.score(complex) > topScore) {
-					topScore = model.score(complex);
-					topNode = node;
-				}
+			if (input.getSelectedSearch().equals("Greedy ISA")) {
+				for (CyNode n: neighbors) {
+					complex.add(n);
 					
-				complex.remove(node);
+					//System.out.println(complex.getScore() - topScore);
+					if (model.score(complex) > topScore) {
+						topScore = model.score(complex);
+						candidateNode = n;
+					}
+						
+					complex.remove(n);
+				}
+			} else if (input.getSelectedSearch().equals("ISA")) {
+			    candidateNode = neighbors.get((int) Math.round(ThreadLocalRandom.current().nextDouble() * neighbors.size()));
+			} else if (input.getSelectedSearch().equals("M ISA")) {
+				neighbors = ClusterUtil.sortByDegree(complex.getRootNetwork(), neighbors);
+				for (int i = 0; i < input.checkNumNeighbors; i++) {
+					node = neighbors.get(i);
+					complex.add(node);
+					
+					//System.out.println(complex.getScore() - topScore);
+					if (model.score(complex) > topScore) {
+						topScore = model.score(complex);
+						candidateNode = node;
+					}
+						
+					complex.remove(node);
+				}
 			}
-			System.out.println("Neighbors scored at time: " + timer.getTime());
 			
-			updateProbability = Math.exp((originalScore - topScore)/temp);
-			
-			if (topNode != null) {
-				if ((topScore > originalScore) || (ThreadLocalRandom.current().nextDouble() < updateProbability)) //then accept the new complex
-					complex.add(topNode);
+			complex.add(candidateNode);
+            newScore = model.score(complex);
+				
+			//System.out.println("Original score: " + originalScore);
+			//System.out.println("New score: " + newScore);
+			updateProbability = Math.exp((newScore - originalScore)/temp); //TODO note this in writeup
+			System.out.print("Update probability: " + updateProbability);
+			if ((newScore > originalScore) || (ThreadLocalRandom.current().nextDouble() < updateProbability)){ 
+				//then accept the new complex
+			} else {
+				complex.remove(candidateNode);
 			}
 		}
 	}

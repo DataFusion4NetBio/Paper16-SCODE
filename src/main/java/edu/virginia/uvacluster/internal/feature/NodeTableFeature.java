@@ -13,7 +13,7 @@ public class NodeTableFeature extends FeatureSet {
 	protected String propertyName = null;
 	
 	public NodeTableFeature(List<Statistic> statistics, String propertyName) {
-		super("Node{"+propertyName+"}", statistics);
+		super("node{"+propertyName+"}", statistics);
 		this.propertyName = propertyName;
 	}
 

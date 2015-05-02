@@ -13,7 +13,7 @@ import edu.virginia.uvacluster.internal.statistic.Statistic;
 public class SingularValue extends FeatureSet {
 
 	public SingularValue(List<Statistic> statistics) {
-		super("Singular Value", statistics);
+		super("singular value", statistics);
 	}
 
 	@Override
