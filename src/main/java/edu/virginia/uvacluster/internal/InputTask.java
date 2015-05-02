@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.work.AbstractTask;
@@ -13,45 +12,46 @@ import org.cytoscape.work.Tunable;
 import org.cytoscape.work.util.ListSingleSelection;
 
 public class InputTask extends AbstractTask{
-	//Data members
-	private boolean useISASearch = true;
-	
 	//User input collected below. 
 	//Instances of this class also act as parameter containers.  
-	@Tunable(description="Search Algorithm", groups={"Search"}, xorChildren=true,
+	@Tunable(description="Choose a variant", groups={"Search", "ISA", "Variant"},
 			tooltip="")
-	public ListSingleSelection<String> chooser = new ListSingleSelection<String>("ISA");
+	public ListSingleSelection<String> chooser = new ListSingleSelection<String>("Greedy ISA", "M ISA", "ISA");
 	
-	@Tunable(description="Use Selected Nodes as Seeds", groups={"Search", "ISA"}, xorKey="ISA",
+	@Tunable(description="Neighbors to Consider", groups={"Search", "ISA", "Variant"}, dependsOn="chooser=M ISA", 
+			tooltip="When using M ISA, this is the number of nodes that are scanned in the neighborhoods of candidates at each search step.")
+	public int checkNumNeighbors = 20;
+	
+	@Tunable(description="Use Selected Nodes as Seeds", groups={"Search", "ISA"},
 			tooltip="")
 	public boolean useSelectedForSeeds = false;
 	
-	@Tunable(description="Number of Seeds", groups={"Search", "ISA"}, xorKey="ISA", dependsOn="useSelectedForSeeds=false",
+	@Tunable(description="Number of Seeds", groups={"Search", "ISA"}, dependsOn="useSelectedForSeeds=false",
 			tooltip="The number of seed nodes on which the search is performed.  Seed nodes are selected by greatest degree.")
 	public int numSeeds = 10;
 	
-	@Tunable(description="Search Limit", groups={"Search", "ISA"}, xorKey="ISA",
+	@Tunable(description="Search Limit", groups={"Search", "ISA"},
 			tooltip="The maximum number of iterations that the iterative simualted annealing search will take.")
 	public int searchLimit = 20;
 	
-	@Tunable(description="Initial Temperature", groups={"Search", "ISA"}, xorKey="ISA",
+	@Tunable(description="Initial Temperature", groups={"Search", "ISA"},
 			tooltip="The initial temperature of the search. A higher temperature means the search will continue for longer.")
 	public double initTemp = 1.80;
 	
-	@Tunable(description="Temperature Scaling Factor", groups={"Search", "ISA"}, xorKey="ISA",
+	@Tunable(description="Temperature Scaling Factor", groups={"Search", "ISA"},
 			tooltip="The rate at which the temperature changes each iteration of the search.  "
 					+ "A higher temperature means the search is more likely to continue.")
 	public double tempScalingFactor = 0.88;
 	
-	@Tunable(description="Overlap Limit", groups={"Search", "ISA"}, xorKey="ISA",
+	@Tunable(description="Overlap Limit", groups={"Search", "ISA"},
 			tooltip="The search will stop for candidates that overlap another candidate by this ratio.")
 	public double overlapLimit = 0.75;
 	
-	@Tunable(description="Minimum Complex Score", groups={"Search", "ISA"}, xorKey="ISA",
+	@Tunable(description="Minimum Complex Score", groups={"Search", "ISA"},
 			tooltip="Candidates below this threshold are discarded at the end of the search.")
 	public double minScoreThreshold = -400;
 	
-	@Tunable(description="Minimum Complex Size", groups={"Search", "ISA"}, xorKey="ISA",
+	@Tunable(description="Minimum Complex Size", groups={"Search", "ISA"},
 			tooltip="Candidates below this threshold are discarded at the end of the search.")
 	public int minSize = 3;
 	
@@ -85,7 +85,7 @@ public class InputTask extends AbstractTask{
 	
 	@Tunable(description="Load Positive Training Data", groups={"Train Model"}, dependsOn="trainNewModel=true", params="input=true;fileCategory=unspecified",
 			tooltip="Please refer to the project's gitub page for the proper format of training examples.")
-	public File trainingFile = new File("/home/nick/complex detection/test data/training-tap06.txt");
+	public File trainingFile;
 	
 	@Tunable(description="Ignore Missing Nodes", groups={"Train Model"}, dependsOn="trainNewModel=true", params="input=true",
 			tooltip="If selected, any training examples with nodes that are not in the active network are ignored.  "
@@ -99,7 +99,7 @@ public class InputTask extends AbstractTask{
 	@Override //Adds other tasks to iterator based on user's input
 	public void run(TaskMonitor arg0) throws Exception {
 		System.out.println("Input is being collected...");
-		//if (getEdgeColumnNames().size() == 1 ) throw new Exception("Your network must contain a column for edge weights.");
+		if (getEdgeColumnNames().size() == 1 ) throw new Exception("Your network must contain a column for edge weights.");
 		// let tunables do their thing...
 	}
 	
@@ -108,11 +108,8 @@ public class InputTask extends AbstractTask{
 	 * 
 	 * @return true when the ISA Search is selected by user, false otherwise.
 	 */
-	public boolean isaSearchSelected() {
-		String selectedSearch = chooser.getSelectedValue();
-		useISASearch = selectedSearch.equals("ISA");
-		
-		return useISASearch;
+	public String getSelectedSearch() {
+		return chooser.getSelectedValue();
 	} 
 	
 	private List<String> getNetworkNames() {
@@ -125,7 +122,7 @@ public class InputTask extends AbstractTask{
 	
 	private List<String> getEdgeColumnNames() {
 		List<String> names = new ArrayList<String>();
-		//names.add("- Select Column -");
+		names.add("- Select Column -");
 		for (CyNetwork network: CyActivator.networkManager.getNetworkSet()) {
 			for (CyColumn col:  network.getDefaultEdgeTable().getColumns()) {
 				if (!names.contains(col.getName()) &&  (!col.getName().equals("SUID")) &&

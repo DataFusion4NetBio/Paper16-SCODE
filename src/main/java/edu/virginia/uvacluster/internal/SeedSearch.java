@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.apache.commons.lang.time.StopWatch;
 import org.cytoscape.model.CyNode;
 
 public class SeedSearch implements Runnable {
@@ -59,14 +58,43 @@ public class SeedSearch implements Runnable {
 	//Update individual cluster for one iteration of ISA, uses but does not modify temp
 	private void updateCluster(Cluster complex) throws Exception {
 		List<CyNode> neighbors = complex.getNeighborList();
-		CyNode candidateNode;
-		double newScore, originalScore = model.score(complex);
+		CyNode candidateNode = null, node = null;
+		double newScore, topScore = -Double.MAX_VALUE, originalScore = model.score(complex);
 		double updateProbability = 0;
 		
 		
 		System.out.println("Neighbors: " + neighbors.size());
 		if (neighbors.size() > 0) {	
-			candidateNode = neighbors.get((int) Math.round(ThreadLocalRandom.current().nextDouble() * neighbors.size()));
+			if (input.getSelectedSearch().equals("Greedy ISA")) {
+				for (CyNode n: neighbors) {
+					complex.add(n);
+					
+					//System.out.println(complex.getScore() - topScore);
+					if (model.score(complex) > topScore) {
+						topScore = model.score(complex);
+						candidateNode = n;
+					}
+						
+					complex.remove(n);
+				}
+			} else if (input.getSelectedSearch().equals("ISA")) {
+			    candidateNode = neighbors.get((int) Math.round(ThreadLocalRandom.current().nextDouble() * neighbors.size()));
+			} else if (input.getSelectedSearch().equals("M ISA")) {
+				neighbors = ClusterUtil.sortByDegree(complex.getRootNetwork(), neighbors);
+				for (int i = 0; i < input.checkNumNeighbors; i++) {
+					node = neighbors.get(i);
+					complex.add(node);
+					
+					//System.out.println(complex.getScore() - topScore);
+					if (model.score(complex) > topScore) {
+						topScore = model.score(complex);
+						candidateNode = node;
+					}
+						
+					complex.remove(node);
+				}
+			}
+			
 			complex.add(candidateNode);
             newScore = model.score(complex);
 				
@@ -74,15 +102,9 @@ public class SeedSearch implements Runnable {
 			//System.out.println("New score: " + newScore);
 			updateProbability = Math.exp((newScore - originalScore)/temp); //TODO note this in writeup
 			System.out.print("Update probability: " + updateProbability);
-			if ((newScore > originalScore) || (ThreadLocalRandom.current().nextDouble() < updateProbability)){ //then accept the new complex
-				if ((newScore > originalScore)) 
-					newScore = 1+1;
-				  //System.out.println("Updated by score"); 
-				else { 
-				  System.out.println("Updated by probability");
-				}
+			if ((newScore > originalScore) || (ThreadLocalRandom.current().nextDouble() < updateProbability)){ 
+				//then accept the new complex
 			} else {
-				//System.out.println("Not Updated");
 				complex.remove(candidateNode);
 			}
 		}

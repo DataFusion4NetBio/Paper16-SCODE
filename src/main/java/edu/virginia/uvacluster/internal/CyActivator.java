@@ -27,18 +27,25 @@ public class CyActivator extends AbstractCyActivator {
 		networkViewManager = getService(context, CyNetworkViewManager.class);
 		
 		SupervisedComplexTaskFactory clusterFactory= new SupervisedComplexTaskFactory();
-		GenModelTaskFactory modelFactory = new GenModelTaskFactory();
+		
+		//TODO re-enable
+		//GenModelTaskFactory modelFactory = new GenModelTaskFactory();
 		
 		//Set service properties
 		Properties clusterFactoryProperties = new Properties();
 		clusterFactoryProperties.setProperty("preferredMenu", "Apps.Supervised Complex");
 		clusterFactoryProperties.setProperty("title","Analyze Network");
+		
+		/* TODO This option is disabled because a network only appears once the session file is reloaded.  
 		Properties genNetworkProperties = new Properties();
 		genNetworkProperties.setProperty("preferredMenu", "Apps.Supervised Complex");
 		genNetworkProperties.setProperty("title", "Generate Default Model");
+		*/
 		
 		//register services
 		registerService(context, clusterFactory, NetworkTaskFactory.class, clusterFactoryProperties);
-		registerService(context, modelFactory, NetworkTaskFactory.class,genNetworkProperties);
+		
+		//TODO re-enable when cytoscape bug is fixed
+		//registerService(context, modelFactory, NetworkTaskFactory.class,genNetworkProperties);
 	}
 }
