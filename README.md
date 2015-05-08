@@ -3,6 +3,16 @@
 [![Build Status](https://magnum.travis-ci.com/UVA-MachineLearningBioinformatics/Supervised-Complex-Detection.svg?token=tpiCcg1A2miHNa45C9Hq)](https://magnum.travis-ci.com/UVA-MachineLearningBioinformatics/Tool-bioGraphTools-Cytoscape)
 This [Cytoscape](http://cytoscape.org/) [app](http://apps.cytoscape.org/) allows users to search for complexes in weighted graphs using a supervised model. [Paper](http://www.cs.cmu.edu/~qyj/SuperComplex/)
 
+
+###Reference
+Y. Qi, F. Balem, C. Faloutsos, J. Klein-Seetharaman, Z. Bar-Joseph, (2008)
+
+Protein Complex Identification by Supervised Graph Clustering , Bioinformatics 2008, 24(13), i250-i268 (The 16th Annual International Conference Intelligent Systems for Molecular Biology (ISMB), July 2008, 
+(Impact Factor 4.328) 
+(acceptance rate of ISMB08: 17% = 49/292) 
+Note: Supervised Information integraion + Structured Prediction + Network biology
+
+
 ###Usage
 ####Installation
 Supervised Complex Detection (SCODE) is available through the Cytoscape App Store [here](somewhere).  To install, either use the automatic install button on the site (while Cytoscape is running) or download and move the '.jar' file to ~/Cytoscape/3/apps/installed/.
