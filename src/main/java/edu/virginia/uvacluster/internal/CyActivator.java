@@ -33,7 +33,7 @@ public class CyActivator extends AbstractCyActivator {
 		
 		//Set service properties
 		Properties clusterFactoryProperties = new Properties();
-		clusterFactoryProperties.setProperty("preferredMenu", "Apps.Supervised Complex");
+		clusterFactoryProperties.setProperty("preferredMenu", "Apps.SCODE");
 		clusterFactoryProperties.setProperty("title","Analyze Network");
 		
 		/* TODO This option is disabled because a network only appears once the session file is reloaded.  
