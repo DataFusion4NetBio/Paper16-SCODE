@@ -2,6 +2,9 @@ package edu.virginia.uvacluster.internal;
 
 import java.util.Properties;
 
+import org.cytoscape.application.swing.CyAction;
+import org.cytoscape.application.swing.CySwingApplication;
+import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
@@ -41,6 +44,15 @@ public class CyActivator extends AbstractCyActivator {
 		genNetworkProperties.setProperty("preferredMenu", "Apps.Supervised Complex");
 		genNetworkProperties.setProperty("title", "Generate Default Model");
 		*/
+		
+		//Set up tabbed panel in Control Panel
+		CySwingApplication cytoscapeDesktopService = getService(context,CySwingApplication.class);
+		
+		MyControlPanel myControlPanel = new MyControlPanel();
+		ControlPanelAction controlPanelAction = new ControlPanelAction(cytoscapeDesktopService,myControlPanel);
+		
+		registerService(context,myControlPanel,CytoPanelComponent.class, new Properties());
+		registerService(context,controlPanelAction,CyAction.class, new Properties());
 		
 		//register services
 		registerService(context, clusterFactory, NetworkTaskFactory.class, clusterFactoryProperties);
