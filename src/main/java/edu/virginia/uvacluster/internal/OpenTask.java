@@ -63,9 +63,9 @@ public class OpenTask implements Task {
 		}
 		
 		if (c!=null) {
-			return false;
-		} else {
 			return true;
+		} else {
+			return false;
 		}
 	}
 	

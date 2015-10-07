@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,10 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JTextField clusterPrior;
 	private JTextField negativeExamples;
 	private JCheckBox ignoreMissing;
+	private File trainingFile;
+	private File resultFile;
+	private JLabel trainingFileLabel;
+	private JLabel resultFileLabel;
 	
 	public MyControlPanel() {
 		//JPanel scopePnl = new JPanel();
@@ -227,14 +232,37 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			negativeExamples = new JTextField("2000");
 			JLabel negativeExamplesLabel = new JLabel("Generate # of Negative Examples");
 			
-			//JFileChooser trainingFile = new JFileChooser();
-			//JLabel trainingFileLabel = new JLabel("Load Positive Training Data");
+			JButton trainingFileButton = new JButton("Select Training File");
+			trainingFileLabel = new JLabel("Load Positive Training Data");
+	        trainingFileButton.addActionListener(new ActionListener() {	 
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                JFileChooser trainingChooser = new JFileChooser();
+	                int result = trainingChooser.showOpenDialog(MyControlPanel.this);
+	                if (result == JFileChooser.APPROVE_OPTION) {
+	                    trainingFile = trainingChooser.getSelectedFile();
+	                    trainingFileLabel.setText(trainingFile.getName());
+	                }
+	            }
+	        }); 
 			
 			ignoreMissing = new JCheckBox();
 			JLabel ignoreMissingLabel = new JLabel("Ignore Missing Nodes");
 			
-			//JFileChooser resultFile = new JFileChooser();
-			//JLabel resultFileLabel = new JLabel("Save Results to File (Optional)");
+			resultFileLabel = new JLabel("Save Results to File (Optional)");
+			JButton resultFileButton = new JButton("Select Results File");
+	        resultFileButton.addActionListener(new ActionListener() {
+	        	 
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                JFileChooser resultChooser = new JFileChooser();
+	                int result = resultChooser.showOpenDialog(MyControlPanel.this);
+	                if (result == JFileChooser.APPROVE_OPTION) {
+	                    resultFile = resultChooser.getSelectedFile();
+	                    resultFileLabel.setText(resultFile.getName());
+	                }
+	            }
+	        }); 
 			
 			layout.setHorizontalGroup(
 					layout.createSequentialGroup()
@@ -246,9 +274,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 								.addComponent(weightNameLabel)
 								.addComponent(clusterPriorLabel)
 								.addComponent(negativeExamplesLabel)
-//								.addComponent(trainingFileLabel)
-								.addComponent(ignoreMissingLabel))
-//								.addComponent(resultFileLabel))
+								.addComponent(trainingFileLabel)
+								.addComponent(ignoreMissingLabel)
+								.addComponent(resultFileLabel))
 						
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(trainNewModel)
@@ -258,9 +286,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 								.addComponent(weightName)
 								.addComponent(clusterPrior)
 								.addComponent(negativeExamples)
-//								.addComponent(trainingFile)
-								.addComponent(ignoreMissing))
-//								.addComponent(resultFile))
+								.addComponent(trainingFileButton)
+								.addComponent(ignoreMissing)
+								.addComponent(resultFileButton))
 			);
 			layout.setVerticalGroup(
 					layout.createSequentialGroup()
@@ -285,15 +313,15 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(negativeExamplesLabel)
 							.addComponent(negativeExamples))
-//					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//							.addComponent(trainingFileLabel)
-//							.addComponent(trainingFile.showOpenDialog()))
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(trainingFileLabel)
+							.addComponent(trainingFileButton))
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(ignoreMissingLabel)
 							.addComponent(ignoreMissing))
-//					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//							.addComponent(resultFileLabel)
-//							.addComponent(resultFile))
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(resultFileLabel)
+							.addComponent(resultFileButton))
 			);
 		}
 		return trainPanel;

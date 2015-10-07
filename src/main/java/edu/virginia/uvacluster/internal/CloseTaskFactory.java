@@ -1,36 +1,40 @@
 package edu.virginia.uvacluster.internal;
 
 import java.awt.Component;
+import java.util.Set;
 
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.application.swing.CytoPanel;
 import org.cytoscape.application.swing.CytoPanelName;
+import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.events.NetworkAboutToBeDestroyedEvent;
+import org.cytoscape.model.events.NetworkAboutToBeDestroyedListener;
 import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.work.TaskFactory;
 import org.cytoscape.work.TaskIterator;
 
-public class OpenTaskFactory implements TaskFactory{
-	
+public class CloseTaskFactory implements TaskFactory {
+
 	private final CySwingApplication swingApplication;
 	private final CyServiceRegistrar registrar;
 	
-	public OpenTaskFactory(final CySwingApplication swingApplication, final CyServiceRegistrar registrar) {
+	public CloseTaskFactory(final CySwingApplication swingApplication, final CyServiceRegistrar registrar) {
 		this.swingApplication = swingApplication;
 		this.registrar = registrar;
 	}
 	
 	@Override
 	public TaskIterator createTaskIterator() {
-		// TODO Auto-generated method stub
-		return new TaskIterator(new OpenTask(swingApplication, registrar));
+		return new TaskIterator(new CloseTask(swingApplication, registrar));
 	}
 
 	@Override
 	public boolean isReady() {
+		// TODO Auto-generated method stub
 		if (!isOpen()) {
-			return true;
-		} else {
 			return false;
+		} else {
+			return true;
 		}
 	}
 	
