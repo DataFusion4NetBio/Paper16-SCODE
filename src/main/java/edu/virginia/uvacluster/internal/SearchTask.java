@@ -76,6 +76,7 @@ public class SearchTask extends AbstractNetworkTask{
 			if (userInput.resultFile != null)
 				outputResultsToFile(results, userInput.resultFile);
 			
+			
 			System.out.println("Search Complete.");
 		} catch (Exception e) {
 			e.printStackTrace();

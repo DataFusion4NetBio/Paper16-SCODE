@@ -2,6 +2,7 @@ package edu.virginia.uvacluster.internal;
 
 import java.util.Properties;
 
+import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CyAction;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.application.swing.CytoPanelComponent;
@@ -34,6 +35,7 @@ public class CyActivator extends AbstractCyActivator {
 		networkViewManager = getService(context, CyNetworkViewManager.class);
 		serviceRegistrar = getService(context, CyServiceRegistrar.class);
 		
+		
 		/* ******SupervisedComplexTaskFactory clusterFactory= new SupervisedComplexTaskFactory();
 		
 		//TODO re-enable
@@ -63,7 +65,9 @@ public class CyActivator extends AbstractCyActivator {
 		//register services
 		//registerService(context, clusterFactory, NetworkTaskFactory.class, clusterFactoryProperties);
 		
-		OpenTaskFactory openTaskFactory = new OpenTaskFactory(cytoscapeDesktopService, serviceRegistrar);
+		CyApplicationManager appManager = getService(context, CyApplicationManager.class);
+		
+		OpenTaskFactory openTaskFactory = new OpenTaskFactory(cytoscapeDesktopService, serviceRegistrar, appManager);
 		Properties openTaskFactoryProps = new Properties();
 		openTaskFactoryProps.setProperty("preferredMenu", "Apps.SCODE");
 		openTaskFactoryProps.setProperty("title", "Open SCODE");

@@ -9,6 +9,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -18,19 +19,30 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
+import org.cytoscape.application.CyApplicationManager;
+import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.service.util.CyServiceRegistrar;
+import org.cytoscape.task.NetworkTaskFactory;
 import org.cytoscape.work.AbstractTask;
+import org.cytoscape.work.TaskFactory;
+import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.Tunable;
+import org.cytoscape.work.swing.DialogTaskManager;
 import org.cytoscape.work.util.ListSingleSelection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.JLabel;
 
@@ -40,6 +52,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	
 	private JPanel searchPanel;
 	private JPanel trainPanel;
+	private JButton analyzeButton;
 	private JComboBox chooser;
 	private JTextField checkNumNeighbors;
 	private JCheckBox useSelectedForSeeds;
@@ -51,6 +64,17 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JTextField minScoreThreshold;
 	private JTextField minSize;
 	
+	private JLabel chooserLabel;
+	private JLabel checkNumNeighborsLabel;
+	private JLabel useSelectedForSeedsLabel;
+	private JLabel numSeedsLabel;
+	private JLabel searchLimitLabel;
+	private JLabel initTempLabel;
+	private JLabel tempScalingFactorLabel;
+	private JLabel overlapLimitLabel;
+	private JLabel minScoreThresholdLabel;
+	private JLabel minSizeLabel;
+	
 	private JCheckBox trainNewModel;
 	private JComboBox existingModel;
 	private JCheckBox customModel;
@@ -60,12 +84,33 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JTextField negativeExamples;
 	private JCheckBox ignoreMissing;
 	private File trainingFile;
+	private JButton trainingFileButton;
 	private File resultFile;
 	private JLabel trainingFileLabel;
 	private JLabel resultFileLabel;
 	
-	public MyControlPanel() {
+	private JLabel trainNewModelLabel;
+	private JLabel existingModelLabel;
+	private JLabel customModelLabel;
+	private JLabel bayesModelLabel;
+	private JLabel weightNameLabel;
+	private JLabel clusterPriorLabel;
+	private JLabel negativeExamplesLabel;
+	private JLabel ignoreMissingLabel;
+	
+	private final CySwingApplication swingApplication;
+	private final CyServiceRegistrar registrar;
+	private final CyApplicationManager appManager;
+	private final Logger logger;
+	public MyControlPanel(final CySwingApplication swingApplication, final CyServiceRegistrar registrar, final CyApplicationManager appManager) {
 		//JPanel scopePnl = new JPanel();
+		
+		logger = LoggerFactory.getLogger(getClass());
+		
+		this.swingApplication = swingApplication;
+		this.registrar = registrar;
+		this.appManager = appManager;
+		
 		final GroupLayout layout = new GroupLayout(this);
 		setLayout(layout);
 		layout.setAutoCreateContainerGaps(false);
@@ -73,7 +118,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		
 		//this.add(createSearchPanel());
 		
-		JButton analyzeButton = new JButton("Analyze Network");
+		analyzeButton = new JButton("Analyze Network");
 		analyzeButton.addActionListener(new ActionListener() { 
 			  public void actionPerformed(ActionEvent e) { 
 			    analyzeButtonPressed();
@@ -95,7 +140,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	}
 	
 	public JPanel createSearchPanel() {
-		if (searchPanel == null) {
+		if (searchPanel == null) {		
 			searchPanel = new JPanel();
 			final GroupLayout layout = new GroupLayout(searchPanel);
 			searchPanel.setLayout(layout);
@@ -106,34 +151,65 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			searchPanel.setBorder(search);
 			String[] variants = { "Greedy ISA", "ISA", "M ISA" };
 			chooser = new JComboBox(variants);
-			JLabel chooserLabel = new JLabel("Choose a variant: ");
+
+			chooser.addActionListener(
+			  new ActionListener() {
+			    public void actionPerformed(ActionEvent e) {
+			      String searchVariant = (String) chooser.getSelectedItem();
+			      if (searchVariant == "M ISA") {
+			    	  checkNumNeighbors.setEnabled(true);
+			    	  checkNumNeighborsLabel.setEnabled(true);
+			      } else {
+			    	  checkNumNeighbors.setEnabled(false);
+			    	  checkNumNeighborsLabel.setEnabled(false);
+			      }
+			    }
+			  }
+			);
+				
+			chooserLabel = new JLabel("Choose a variant: ");
 			
 			checkNumNeighbors = new JTextField("20");
-			JLabel checkNumNeighborsLabel = new JLabel("Neighbors to consider: ");
+			checkNumNeighborsLabel = new JLabel("Neighbors to consider: ");
+			checkNumNeighbors.setEnabled(false);
+			checkNumNeighborsLabel.setEnabled(false);
 			
 			useSelectedForSeeds = new JCheckBox();
-			JLabel useSelectedForSeedsLabel = new JLabel("Use Selected Nodes as Seeds");
+			useSelectedForSeedsLabel = new JLabel("Use Selected Nodes as Seeds");
+			useSelectedForSeeds.addActionListener(
+				new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						if(useSelectedForSeeds.isEnabled() && useSelectedForSeeds.isSelected()) {
+							numSeeds.setEnabled(false);
+							numSeedsLabel.setEnabled(false);
+						} else {
+							numSeeds.setEnabled(true);
+							numSeedsLabel.setEnabled(true);
+						}
+					}
+				}
+				);
 			
 			numSeeds = new JTextField("10");
-			JLabel numSeedsLabel = new JLabel("Number of Seeds");
+			numSeedsLabel = new JLabel("Number of Seeds");
 			
 			searchLimit = new JTextField("20");
-			JLabel searchLimitLabel = new JLabel("Search Limit");
+			searchLimitLabel = new JLabel("Search Limit");
 			
 			initTemp = new JTextField("1.8");
-			JLabel initTempLabel = new JLabel("Initial Temperature");
+			initTempLabel = new JLabel("Initial Temperature");
 			
 			tempScalingFactor = new JTextField("0.88");
-			JLabel tempScalingFactorLabel = new JLabel("Temperature Scaling Factor");
+			tempScalingFactorLabel = new JLabel("Temperature Scaling Factor");
 			
 			overlapLimit = new JTextField("0.75");
-			JLabel overlapLimitLabel = new JLabel("Overlap Limit");
+			overlapLimitLabel = new JLabel("Overlap Limit");
 			
 			minScoreThreshold = new JTextField("-4E2");
-			JLabel minScoreThresholdLabel = new JLabel("Minimum Complex Score");
+			minScoreThresholdLabel = new JLabel("Minimum Complex Score");
 			
 			minSize = new JTextField("3");
-			JLabel minSizeLabel = new JLabel("Minimum Complex Size");
+			minSizeLabel = new JLabel("Minimum Complex Size");
 			
 			
 			layout.setHorizontalGroup(
@@ -212,27 +288,91 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			trainPanel.setBorder(train);
 			
 			trainNewModel = new JCheckBox();
-			JLabel trainNewModelLabel = new JLabel("Train New Model");
+			trainNewModelLabel = new JLabel("Train New Model");
+			trainNewModel.setSelected(true);
+			trainNewModel.addActionListener(
+					new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							if(trainNewModel.isEnabled() && trainNewModel.isSelected()) {
+								existingModel.setEnabled(false);
+								existingModelLabel.setEnabled(false);		
+								customModel.setEnabled(true);
+								customModelLabel.setEnabled(true);
+								if (customModel.isSelected()) {
+									bayesModel.setEnabled(true);
+									bayesModelLabel.setEnabled(true);
+								}
+								
+								weightName.setEnabled(true);
+								weightNameLabel.setEnabled(true);
+								clusterPrior.setEnabled(true);
+								clusterPriorLabel.setEnabled(true);
+								negativeExamples.setEnabled(true);
+								negativeExamplesLabel.setEnabled(true);
+								trainingFileButton.setEnabled(true);
+								trainingFileLabel.setEnabled(true);
+								ignoreMissing.setEnabled(true);
+								ignoreMissingLabel.setEnabled(true);
+							} else {
+								existingModel.setEnabled(true);
+								existingModelLabel.setEnabled(true);
+								customModel.setEnabled(false);
+								customModelLabel.setEnabled(false);
+								bayesModel.setEnabled(false);
+								bayesModelLabel.setEnabled(false);
+								
+								weightName.setEnabled(false);
+								weightNameLabel.setEnabled(false);
+								clusterPrior.setEnabled(false);
+								clusterPriorLabel.setEnabled(false);
+								negativeExamples.setEnabled(false);
+								negativeExamplesLabel.setEnabled(false);
+								trainingFileButton.setEnabled(false);
+								trainingFileLabel.setEnabled(false);
+								ignoreMissing.setEnabled(false);
+								ignoreMissingLabel.setEnabled(false);
+							}
+						}
+					}
+					);
+			
 			
 			existingModel = new JComboBox(getNetworkNames().toArray());
-			JLabel existingModelLabel = new JLabel("Use Trained Model");
+			existingModelLabel = new JLabel("Use Trained Model");
+			existingModel.setEnabled(false);
+			existingModelLabel.setEnabled(false);
 			
 			customModel = new JCheckBox();
-			JLabel customModelLabel = new JLabel("Use Custom Bayesian Network");
+			customModelLabel = new JLabel("Use Custom Bayesian Network");
+			customModel.addActionListener(
+					new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							if(customModel.isEnabled() && customModel.isSelected()) {
+									bayesModel.setEnabled(true);
+									bayesModelLabel.setEnabled(true);
+							} else {
+								bayesModel.setEnabled(false);
+								bayesModelLabel.setEnabled(false);
+							}
+						}
+					}
+					);
+			
+			
 			
 			bayesModel = new JComboBox(getNetworkNames().toArray());
-			JLabel bayesModelLabel = new JLabel("Custom Bayesian Network");
+			bayesModelLabel = new JLabel("Custom Bayesian Network");
 			
 			weightName = new JComboBox(getEdgeColumnNames().toArray());
-			JLabel weightNameLabel = new JLabel("Edge Weight Column");
+			weightNameLabel = new JLabel("Edge Weight Column");
 			
 			clusterPrior = new JTextField("1E-4");
-			JLabel clusterPriorLabel = new JLabel("Cluster Probability Prior");
+			clusterPriorLabel = new JLabel("Cluster Probability Prior");
 			
 			negativeExamples = new JTextField("2000");
-			JLabel negativeExamplesLabel = new JLabel("Generate # of Negative Examples");
+			negativeExamplesLabel = new JLabel("Generate # of Negative Examples");
 			
-			JButton trainingFileButton = new JButton("Select Training File");
+			trainingFileButton = new JButton("Select Training File");
 			trainingFileLabel = new JLabel("Load Positive Training Data");
 	        trainingFileButton.addActionListener(new ActionListener() {	 
 	            public void actionPerformed(ActionEvent e)
@@ -247,7 +387,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	        }); 
 			
 			ignoreMissing = new JCheckBox();
-			JLabel ignoreMissingLabel = new JLabel("Ignore Missing Nodes");
+			ignoreMissingLabel = new JLabel("Ignore Missing Nodes");
 			
 			resultFileLabel = new JLabel("Save Results to File (Optional)");
 			JButton resultFileButton = new JButton("Select Results File");
@@ -366,7 +506,80 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	}
 	
 	private void analyzeButtonPressed() {
-			
+		InputTask inputTask = createInputTask();
+		SupervisedComplexTaskFactory clusterFactory = new SupervisedComplexTaskFactory(inputTask, appManager);		
+		DialogTaskManager dialogTaskManager = registrar.getService(DialogTaskManager.class);
+		TaskIterator taskIter = clusterFactory.createTaskIterator();
+		dialogTaskManager.execute(taskIter);
+
+	}
+	
+	private InputTask createInputTask() {
+		InputTask inputTask = new InputTask();
+		
+		ListSingleSelection<String> inputChooser = new ListSingleSelection<String>("Greedy ISA", "M ISA", "ISA");
+		inputChooser.setSelectedValue(chooser.getSelectedItem().toString());
+		inputTask.chooser = inputChooser;
+		
+		int inputCheckNumNeighbors = Integer.parseInt(checkNumNeighbors.getText());
+		inputTask.checkNumNeighbors = inputCheckNumNeighbors;
+		
+		boolean inputUseSelectedForSeeds = useSelectedForSeeds.isSelected();
+		inputTask.useSelectedForSeeds = inputUseSelectedForSeeds;
+		
+		int inputNumSeeds = Integer.parseInt(numSeeds.getText());
+		inputTask.numSeeds = inputNumSeeds;
+		
+		int inputSearchLimit = Integer.parseInt(searchLimit.getText());
+		inputTask.searchLimit = inputSearchLimit;
+		
+		double inputInitTemp = Double.parseDouble(initTemp.getText());
+		inputTask.initTemp = inputInitTemp;
+		
+		double inputTempScalingFactor = Double.parseDouble(tempScalingFactor.getText());
+		inputTask.tempScalingFactor = inputTempScalingFactor;
+		
+		double inputOverlapLimit = Double.parseDouble(overlapLimit.getText());
+		inputTask.overlapLimit = inputOverlapLimit;
+		
+		double inputMinScoreThreshold = Double.parseDouble(minScoreThreshold.getText());
+		inputTask.minScoreThreshold = inputMinScoreThreshold;
+		
+		int inputMinSize = Integer.parseInt(minSize.getText());
+		inputTask.minSize = inputMinSize;
+		
+		boolean inputTrainNewModel = trainNewModel.isSelected();
+		inputTask.trainNewModel = inputTrainNewModel;
+		
+		ListSingleSelection<String> inputExistingModel = new ListSingleSelection<String>(getNetworkNames());
+		inputExistingModel.setSelectedValue(existingModel.getSelectedItem().toString());
+		inputTask.existingModel = inputExistingModel;
+		
+		boolean inputCustomModel = customModel.isSelected();
+		inputTask.customModel = inputCustomModel;
+		
+		ListSingleSelection<String> inputBayesModel = new ListSingleSelection<String>(getNetworkNames());
+		inputBayesModel.setSelectedValue(bayesModel.getSelectedItem().toString());
+		inputTask.bayesModel = inputBayesModel;
+		
+		ListSingleSelection<String> inputWeightName = new ListSingleSelection<String>(getEdgeColumnNames());
+		inputWeightName.setSelectedValue(weightName.getSelectedItem().toString());
+		inputTask.weightName = inputWeightName;
+		
+		double inputClusterPrior = Double.parseDouble(clusterPrior.getText());
+		inputTask.clusterPrior = inputClusterPrior;
+		
+		int inputNegativeExamples = Integer.parseInt(negativeExamples.getText());
+		inputTask.negativeExamples = inputNegativeExamples;
+		
+		inputTask.trainingFile = trainingFile;
+		
+		boolean inputIgnoreMissing = ignoreMissing.isSelected();
+		inputTask.ignoreMissing = inputIgnoreMissing;
+		
+		inputTask.resultFile = resultFile;
+		
+		return inputTask;
 	}
 	
 }

@@ -3,6 +3,7 @@ package edu.virginia.uvacluster.internal;
 import java.awt.Component;
 import java.util.Properties;
 
+import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.application.swing.CytoPanel;
 import org.cytoscape.application.swing.CytoPanelComponent;
@@ -14,10 +15,12 @@ import org.cytoscape.work.TaskMonitor;
 public class OpenTask implements Task {
 	private final CySwingApplication swingApplication;
 	private final CyServiceRegistrar registrar;
+	private final CyApplicationManager appManager;
 	
-	public OpenTask(CySwingApplication swingApplication, CyServiceRegistrar registrar) {
+	public OpenTask(CySwingApplication swingApplication, CyServiceRegistrar registrar, CyApplicationManager appManager) {
 		this.swingApplication = swingApplication;
 		this.registrar = registrar;
+		this.appManager = appManager;
 	}
 	
 	@Override
@@ -34,7 +37,7 @@ public class OpenTask implements Task {
 			
 			// First we must make sure that the app is not already open
 			if (!isOpen()) {
-				mainPanel = new MyControlPanel();
+				mainPanel = new MyControlPanel(swingApplication, registrar, appManager);
 
 				registrar.registerService(mainPanel, CytoPanelComponent.class, new Properties());
 			} else {

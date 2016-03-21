@@ -25,6 +25,7 @@ public class TrainingTask extends AbstractNetworkTask{
 	
 	@Override
 	public void run(final TaskMonitor taskMonitor) throws Exception{
+		System.out.println("Training task...");
 		CyNetwork outputNet = null, trainedNet = null, modelNetwork = null;
 		
 		taskMonitor.setTitle("Training Task");

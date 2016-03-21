@@ -2,6 +2,7 @@ package edu.virginia.uvacluster.internal;
 
 import java.awt.Component;
 
+import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.application.swing.CytoPanel;
 import org.cytoscape.application.swing.CytoPanelName;
@@ -13,16 +14,18 @@ public class OpenTaskFactory implements TaskFactory{
 	
 	private final CySwingApplication swingApplication;
 	private final CyServiceRegistrar registrar;
+	private final CyApplicationManager appManager;
 	
-	public OpenTaskFactory(final CySwingApplication swingApplication, final CyServiceRegistrar registrar) {
+	public OpenTaskFactory(final CySwingApplication swingApplication, final CyServiceRegistrar registrar, final CyApplicationManager appManager) {
 		this.swingApplication = swingApplication;
 		this.registrar = registrar;
+		this.appManager = appManager;
 	}
 	
 	@Override
 	public TaskIterator createTaskIterator() {
 		// TODO Auto-generated method stub
-		return new TaskIterator(new OpenTask(swingApplication, registrar));
+		return new TaskIterator(new OpenTask(swingApplication, registrar, appManager));
 	}
 
 	@Override
