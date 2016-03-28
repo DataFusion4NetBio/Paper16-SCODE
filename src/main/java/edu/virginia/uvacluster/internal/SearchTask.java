@@ -19,6 +19,7 @@ public class SearchTask extends AbstractNetworkTask{
 	private TrainingTask training = null;
 	private InputTask userInput;
 	private Search selectedSearch;
+	public long elapsedTime;
 	
 	public SearchTask(CyNetwork network, InputTask userInput, TrainingTask training) {
 		super(network);
@@ -41,6 +42,10 @@ public class SearchTask extends AbstractNetworkTask{
 		model = training.clusterModel;
 		
 		try {
+			
+			// Monitor execution time of training task
+			long startTime = System.currentTimeMillis();
+			
 			taskMonitor.setTitle("Searching Network");
 			System.out.println("Selecting search algorithm...");
 			//Perform selected search
@@ -78,6 +83,11 @@ public class SearchTask extends AbstractNetworkTask{
 			
 			
 			System.out.println("Search Complete.");
+			
+			// Monitor execution time of training task
+			long stopTime = System.currentTimeMillis();
+			elapsedTime = stopTime - startTime;
+			elapsedTime = elapsedTime % 1000;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("Searching didn't go so well... " + e.getMessage());

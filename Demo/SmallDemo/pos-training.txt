@@ -1,0 +1,11 @@
+Complex#	ComplexName	Members
+1	histone deacetylase complex	HDA1 HDA2 HDA3
+2	Prp9p/Prp11p/Prp21p complex(SF3a complex)	PRP11 PRP21 PRP9
+3	eEF1	CAM1 EFB1 TEF1 TEF2 TEF4
+4	chromatin accessibility complex	DLS1 DPB4 ISW2 ITC1
+5	TRAPP complex	BET3 BET5 GSG1 KRE11 TRS120 TRS130 TRS20 TRS23 TRS31 TRS33
+6	Mst27p/Mst28p complex	MST27 MST28
+7	Met4p/Met28p/Met31p complex	MET28 MET31 MET4
+8	Ada2p/Gcn5p/Ada3 transcription activator complex	ADA2 AHC1 GCN5 HFI1 NGG1
+9	Cbf1p/Met4p/Met28p complex	CBF1 MET28 MET4
+10	Exocyst complex	EXO70 EXO84 SEC10 SEC15 SEC3 SEC5 SEC6 SEC8

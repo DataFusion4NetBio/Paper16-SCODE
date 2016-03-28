@@ -2,6 +2,8 @@ package edu.virginia.uvacluster.internal;
 
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.SavePolicy;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
@@ -15,6 +17,7 @@ public class TrainingTask extends AbstractNetworkTask{
 	public Model clusterModel = null;
 	private CyRootNetwork rootNetwork;
 	private InputTask userInput;
+	public long elapsedTime = 0;
 	
 	public TrainingTask(CyNetwork network, InputTask userInput){
 			super(network);
@@ -31,6 +34,10 @@ public class TrainingTask extends AbstractNetworkTask{
 		taskMonitor.setTitle("Training Task");
 		System.out.println("Training task is running... ");
 		try {
+			
+			// Monitor execution time of training task
+			long startTime = System.currentTimeMillis();
+			
 			if (userInput.trainNewModel){
 				if (userInput.customModel) {
 					System.out.println("Loading custom model...");
@@ -64,6 +71,11 @@ public class TrainingTask extends AbstractNetworkTask{
 				taskMonitor.setProgress(1.0);
 				System.out.println("Model loaded.");
 			}
+		
+		// Monitor execution time of training task
+		long stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		elapsedTime = elapsedTime % 1000;
 		} catch ( Exception e){
 			e.printStackTrace();
 			throw new Exception("Training didn't work out so well..." + e.getMessage());

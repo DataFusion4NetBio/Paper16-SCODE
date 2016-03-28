@@ -1,0 +1,480 @@
+#ID	Complex Name	Core*
+1	U1 snRNP 	Luc7 Mud1 Nam8 Prp39 Prp40 Prp42 Snp1 Snu56 Snu71 Yhc1
+2	20S core particle of the proteasome 	Pre10 Pre2 Pre3 Pre6 Pre8 Pup3 Scl1 
+3	Lsm2-Lsm8 complex 	Lsm2 Lsm4 Lsm6 Lsm7 Pat1
+4	Casein kinase II complex	Cka1 Cka2 Ckb1 Ckb2
+5	Complex 5	Dbp2 Rpl2a
+6	Complex 6	Ecm5 Psd2 Yfr006w PSH1
+7	Complex 7	Nsa1 Rpf1
+8	m-AAA protease complex	Afg3 Phb2 Yta12
+9	Mitochondrial ribosomal small subunit	Ehd3 Mrp1 Mrp13 Mrp17 Mrp21 Mrp4 Mrp51 Mrps16 Mrps17 Mrps18 Mrps28 Mrps5 Mrps8 Mrps9 Nam9 Pet123 Rsm10 Rsm19 Rsm22 Rsm23 Rsm25 Rsm27 Rsm7
+10	Complex 10	Mae1
+11	Complex 11	Nob1
+12	Complex 12	Mot1
+13	Trehalose-6-phosphate synthase/ phosphatase complex	Gln1 Mcm2 Mks1 Tsc10
+14	V0 vacuolar ATPase complex	Emi2 Vma6 Vph2
+15	Complex 15	Rps25a Rrn3
+16	Complex 16	Pph3 Psy2 PSY4
+17	Complex 17	Bcp1 RKM1
+18	Complex 18	Hca4
+19	Complex 19	Ist2
+20	Complex 20	Loc1 Rpl9a
+21	Complex 21	Shm1
+22	Sin3 Histone deacetylase complex	Cti6 Rpd3 Rxt3 Sap30 Sds3 Sin3 Ume1 RCO1
+23	Complex 23	Emg1 Kre33 Krr1 Noc4 Nop14 ENP2
+24	Complex 24	Bud20
+25	DNA repair complex	Mph1 Msh6 Rad52 Rfa1
+26	Complex 26	Met18 Rad3
+27	Complex 27	Nop14 Utp8
+29	Gcn1/Gcn2/Gcn20 complex 	Gcn1 Gcn20
+30	RNA polymerase I	Rpa12 Rpa190 Rpa43 Rpa49 Rpc40
+31	mRNA decapping complex	Dcp1 Dcp2 Edc3
+32	Ribosome-associated complex   (RAC)	Scp160 Ssz1 Zuo1
+33	U2 snRNP 	Cus1 Hsh155 Hsh49 Lea1 Msl1 Prp11 Prp21 Prp9 Rse1
+34	Scs2/Opi1 complex	Swh1
+35	Sit4/Sap190 complex	Sap190
+36	Complex  36	Fur1 Sar1 Ydr341c Ynk1 
+38	RNA polymerase III complex 	Ret1 Rpc25 Rpc31 Rpc34 Rpc37 Rpc40 Rpc53 Rpc82 Rpo31
+39	Complex 39	Bud20 Ipi3 Nog1 Nog2 Nsa2 Nug1 Rix1 Rpf2 Sda1 RSA4
+40	Cyr1/Srv2   complex	Cyr1 Pho81 Srv2
+41	Complex 41	Dbp8 Esf1 Mvd1
+42	Cytoskeleton-regulatory Lsb3/Las17 complex 	Las17 Lsb3 Sla1
+43	Nup82/Nsp1/Nup159 nuclear pore subcomplex	Nsp1 Nup159 Nup82
+44	Actin-associated motorproteins 1 complex	Myo2 She4
+45	Translation initiation factor eIF3 complex	Fun12 Hcr1 Nip1 Prt1 Rli1 Rpg1 Tif34 Tif35 Tif5
+46	Clathrin	Chc1 Clc1
+47	Complex 47	Nap1 Nis1 NBA1
+48	Complex 48	Nop8 Urb1 Urb2
+49	Actin-associated motorproteins 2 complex	Mlc1 Myo4 She2 She3
+50	Complex 50	Lsg1 Nmd3 Rei1
+51	Complex 51	 Gdb1 Mir1
+52	Signal recognition complex 	Sec65 Srp14 Srp54 Srp68 Srp72
+53	Erv41/Erv46 complex	Ero1 Erv41 Erv46
+55	Complex 55	Loc1
+56	Complex 56	Brx1 Erb1 Mak21 Noc2 Nop4 Puf6
+57	NuA4 Histone Acetyltransferase Complex 	Epl1 Esa1
+58	Complex 58	Hrr25 Ltv1 Nob1 Rio2 Tsr1
+59	V1 vacuolar ATPase complex 	Vma13 Vma4 Vma5 Vma7 Vma8
+60	Mitochondrial ribosomal large subunit	Atg26 Bud3 Mrpl10 Mrpl16 Mrpl23 Mrpl4 Mrpl51
+61	Arginine-specific carbamoyl-phosphate synthase complex	Cpa2
+62	Complex 62	Cic1 Ebp2 Ipi1 Rpl31b
+63	U4/U6.U5 tri-snRNP 	Prp3 Prp31 Prp4 Prp6 Snu66 Spp381
+64	Complex 64	Mtr4 Nab3 Nrd1 Sen1 Sto1
+65	DNA repair complex	Rad16
+66	Complex 66	Mae1 Prs3 Tom1
+67	Pab1/eIF4G/eIF4E complex 	Cdc33 Sbp1 Tif4631 Tif4632
+68	ISW1/IOC3 complex	Ioc3 Isw1
+69	Pre-mRNA cleavage and polyadenylation factor IA 	Clp1 Pcf11 Rna14 Rna15
+70	Small subunit  processome	Nan1 Utp10 Utp15 Utp4 Utp8 Utp9
+72	Complex 72	Bzz1 Ecm25
+73	RNA polymerase II complex 	Iwr1 Rpb11 Rpb2 Rpb3 Rpb4 Rpb7 Rpb9 Tfg1 Tfg2
+74	mRNA guanylyl transferase complex	Ceg1 Cet1
+75	19/22S regulator	Ecm29 Rpn1 Rpn10 Rpn11 Rpn12 Rpn13 Rpn5 Rpn6 Rpn7 Rpn8 Rpn9 Rpt1
+76	Complex 76	Acs2
+77	Polyadenylation Factor I 	Cft1 Cft2 Fip1 Mpe1 Pap1 Pfs2 Pta1 Ysh1 Yth1
+78	Ppz1 protein phosphate complex	Ppz1 CAB3
+79	Protein phosphatase 1 complex 	Ade16 Glc7 Sol2
+80	Prp19-associated complex	Cdc40 Cef1 Clf1 Cwc2 Cwc22 Ecm2 Prp19 Prp45 Prp46 Syf1
+81	SAGA complex	Ada2 Hfi1 Ngg1 Sgf29 Sgf73 Spt20 Spt3 Spt7 Spt8
+82	Karyopherins complex	Kap95 Nup2 Nup60 Srp1
+83	Sit4/Sap185 protein phosphatase complex 	Cdc25 Hrk1 Mds3 Sap185 Sit4
+84	Nup84 sub-complex	Nup120 Nup145 Nup84 Nup85 Sec13 Seh1
+85	Translational release factor complex 	Sup35 Sup45
+86	Pyruvate dehydrogenase	Lat1 Pda1 Pdb1 Pdx1
+87	Complex 87	Cdc55 Iml1
+88	Complex 88	Gaa1 Pgi1
+89	Complex 89	Atg3 Mtr10
+90	Complex 90	Mam33 Mrps35
+91	Complex 91	Psa1
+92	COPI complex	Cop1 Ret2 Ret3 Sec21 Sec26 Sec27 Sec28
+93	Complex 93	Ubp2 RUP1
+94	Complex 94	Hmo1
+95	Actin capping complex	Cap1 Cap2 Yer071c AIM21
+96	Gyp5/Gyl1 complex	Dbp2 Gyl1
+97	Complex 97	SLM3 Ygl039w
+98	Complex 98	Lhp1 Sxm1 Utp30 
+100	Yeats nexin complex	Snx4 Snx41
+101	Complex 101	Dbp8 Rps16a
+102	Complex 102	Npl3 Nrp1
+103	Complex 103	Sgn1
+104	Complex 104	Vma10 Vma2
+105	Complex 105	Hca4 Nrp1
+106	Complex 106	Vac8
+107	Complex 107	Lsm12 Pbp1
+108	Complex 108	Pep4 Rtn1
+109	Complex 109	Rpt3 Tub3
+110	Complex 110	Nab6 Nrp1
+111	Mannan Polymerase II 	Anp1 Hoc1 Mnn10 Mnn11 Mnn9
+112	Complex 112	Lys9 GET4
+113	SNARE complex 	Dsl1 Sec39 Tip20 Ufe1 Use1
+114	Golgi associated retrograde protein  complex 	Kar2 Vps52 Vps53 Vps54
+115	Complex 115	Gln4 Ssl2 Yor352w
+116	Complex 116	Fun19 Rps5
+117	Complex 117	Rpl24a Rps0a
+118	Complex 118	Aco1 Faa4
+119	Complex 119	Nab6 Pab1
+120	Exocyst complex 	Exo84 Sec10 Sec3 Sec5 Sec6 Sec8
+121	Complex 121	Gon7 Kae1 CGI121
+122	Complex 122	Aco1 Mdh1 Yhb1
+123	Complex 123	Pro1
+124	Complex 124	Pdr5 Usa1
+125	Complex 125	Rpl33a Rpl35b
+126	Complex 126	Fpr4 Rix7 Rpl20a
+127	Nucleotide excision repair factor 3 complex	Ssl1 Tfb1 Tfb4
+128	Complex 128	Ebp2 RTR1
+129	Complex 129	Tef4
+130	Complex 130	Atp3 Cdc37
+131	Complex 131	Imp4 Rpn2
+132	Complex 132	Tub3
+133	Complex 133	Aep1 Hrp1 Rps9a
+134	COP9 signalosome complex	Csi1 Csn9 Pci8 Rri1 Rri2
+135	Complex 135	Ilv1 Psa1
+136	Complex 136	Cse1 Sec7
+137	Act1/Sac6 complex	Act1 Sac6
+138	Complex 138	Rpl31a Rpl33b
+139	Complex 139	Rli1
+140	Complex 140	Atg9 Rpl18b Rpl7a
+141	Complex 141	Cam1 Hsl1 RAD34
+142	Ctf19 protein complex 	Chl4 Ctf19 Ctf3 Mcm21 Mcm22 Okp1
+143	AP-2 complex	Apl1 Apm4
+144	Complex 144	Faa4 PGC1
+145	Chaperonine containing T-complex TRiC 	Cct2 Cct7 Plp2 Vid27
+146	RNA polymerase II general trancription factor TFIID 	Taf2 Taf8
+147	Complex 147	Bbc1 MTC1
+148	PAN complex	Pan2 Pan3
+150	Complex 150	Atg9 Rps6a
+151	Complex 151	Dig1 Npl3 Pep1
+152	Bre5/Ubp3 complex	Bre5 Ubp3
+153	Tid3 complex 	Nuf2 Spc24 Spc25 Tid3
+154	Complex 154	Dph2 Eft1 DPH1
+155	Complex 155	Atg11 Atg17 ATG29
+156	Complex 156	Met10 Rpa135
+157	Complex 157	Esf1 Krr1 Mvd1 Nop6 Rpl26b ENP2
+158	Complex 158	Aos1 Spt4
+159	Complex 159	Cdc60 Nan1 Utp15 Utp4
+160	Complex 160	Rpl33b Rpp2b Rsa3
+161	THO complex 	Hpr1 Hrb1 Mft1 THO2 Sub2 Tex1 Thp2
+162	Complex 162	Rfc1 Rfc2
+163	Ccr4/Not protein complex	Caf40 Ccr4 Cdc39 Pop2
+164	Complex 164	Mis1 Pim1
+165	Complex 165	Tub3
+166	Complex 166	Clu1 Kap104
+167	Svg1/cyclin Bur2 protein complex	Bur2 Sgv1
+168	Complex 168	Pfk2 Rps10a Rps22a
+169	 Complex 169	Ade3 Cse1 Tdh1 Tom1 Ydr341c
+170	Complex 170	Hmg1 Rad51 Rpl27b
+171	Complex 171	Gcn1
+172	Complex 172	Ded81
+173	Complex 173	Nam9
+174	Complex 174	ARB1
+175	Complex 175	Brr2 Cus1 Lea1 Prp21 Prp3 Prp31 Prp4 Prp6 Prp8 Prp9 Smb1 Snu114 Snu23 Snu66 Spp381
+176	Complex 176	Rpl19a Rps14a Rps6b
+177	Complex 177	Rpl33b Rps16b Rsa3 Yor1
+178	Complex 178	Bud3 Sec1
+179	Ku complex	Yku70 Yku80
+180	Complex 180	Rpn2 Yol098c
+181	Rubiquitin -activating complex	Uba3 Ula1
+182	TRAPPII complex	Bet3 Bet5 TRS85 TRS65 Trs120 Trs130 Trs20 Trs23 Trs31 Trs33
+183	Complex 183	Ade5,7 Rps5
+184	Kel1/Lte1 complex	Bem2 Kel1 Lte1
+185	Complex 185	Ald6 Ptc2 Shq1
+186	Complex 186	Gln1 Hsp42
+187	 Complex 187	Brr1 Hta1
+188	Origin of replication recognition complex	Orc1 Orc2 Orc3 Orc4 Orc5 Orc6
+189	Complex 189	Prp43 SQS1
+190	INO80 protein complex	Arp5 Arp8 Ies1 Ies3 Ies5 Ino80 Nhp10
+191	Complex 191	Myo5
+192	Complex 192	Ptc4 Ydr186c
+193	Complex 193	Eno1 Nat1
+194	Complex 194	Yor1
+195	Set3 histone deacetylase protein complex	 Cpr1 Hos2 Hos4 Set3 Sif2 Snt1
+196	Complex 196	Rpl19a Rpl9a
+197	Complex 197	Abf2 Vps1
+198	Complex 198	Ebp2 Rpl23b
+200	Complex 200	Dur1,2 Mrpl22 Pro1
+201	RNase MRP	Pop1 Pop3 Pop4 Pop5 Pop8 Rpp1
+202	Complex 202	Sui1
+203	Complex 203	Gbp2 Thp2
+204	Complex 204	Hem13 Psk1 Vas1
+205	Complex 205	Pep4 Ymr196w
+206	Complex 206	Mrp17 Ubp10
+207	Complex 207	Aar2 Bud31 Lin1
+208	Complex 208	Ids2 Pep4
+209	DNA polymearse alpha-primase complex 	Pol1 Pol12 Pri1 Pri2
+210	Complex 210	Dbp9 Spa2 Ymr310c
+211	Complex 211	Bud21 Rrp9 NOP56
+212	Complex 212	Tpi1
+213	Complex 213	Ade5,7 Reb1 Top1
+214	Complex 214	Ktr3 Rpl4a
+215	Complex 215	Ade6 Rsm23
+216	Complex 216	Pse1 Slx9 Spa2 Ulp1
+217	Complex 217	Aro3 Ilv5
+218	C-terminal domain kinase I   complex	Ctk1 Ctk2 Ctk3
+219	Spindle pole body 	Pfk1 Spc72 Spc97 Spc98 Tub4
+220	Complex 220	Psa1 Yol098c
+221	Complex 221	Imd4 Tdh1
+222	Complex 222	End3 Lsb3 Sla2
+223	Complex 223	Sen54 Tuf1
+224	SWI-SNF global transcription activator complex 	Arp9 Snf11 Snf12 Snf5 Snf6 Swi1 Swi3
+225	Complex 225	Ymr310c
+226	Boi2/Bem1/Cdc24 complex	Boi2 Cdc24
+227	Rai1/Rat1 complex	Rai1 Rat1
+228	Complex 228	Ipp1 Rom2 ACK1
+229	Complex 229	Eft2 Hgh1
+230	Complex 230	Ecm30 Ubp15
+231	Complex 231	Mrpl36 MRM1
+232	DNA polymerase delta 	POL3 POL31
+233	Anthranilate synthase complex	Sam1 Trp2 Trp3
+235	SBF, SWI4-SWI6-dependent cell cycle box binding factor complex 	Swi4 Swi6
+236	Pms1/Mlh1 mismatch DNA repair complex 	Mlh1 Pms1
+237	Complex 237	Nrp1
+238	Complex 238	Dbp9 Spa2
+239	Small subunit  processome	Dip2 Mrd1 Nan1 Nop58 Pno1 Pwp2 Rok1 Rrp9 Utp10 Utp13 Utp15 Utp18 Utp21 Utp22 Utp4 Utp6 Utp7 Utp8 Utp9 CMS1
+240	Complex 240	Tif4631 RBG1
+241	Complex 241	Kex2 Sil1 Ybt1
+242	Complex 242	Adh3 Nam7
+243	Phosphoribosyl diphosphate  synthase complex	Prs1 Prs3
+244	Complex 244	Ykr018c
+245	Complex 245	Dbp8 Rpl15a
+246	Complex 246	Dhh1 Sec7
+247	Complex 247	Aro1 Sam1
+248	Protein phosphatase 2A complex	Cdc55 Rts3 Tpd3 Zds1 Zds2
+249	Translation elongation factor EF1	Cam1 Efb1 Tef2
+250	Complex 250	Bms1 Mrd1
+251	Complex 251	Pdr16
+252	Complex 252	Rpl13a Rpl2a
+253	Complex 253	VHR1
+254	Complex 254	Ade3 Dps1 Sar1 Tdh1 Ydr341c Ynk1
+255	Complex 255	Rok1 Rps1b
+256	Chromatin assembly complex 	Cac2 Msi1
+257	Complex 257	Mpm1 Rps25b Tom40 Ygr130c
+258	Kap104/Hrp1 complex	Hrp1 Kap104
+259	Complex 259	Fas1 Trm3
+260	Complex 260	Dcs2 Tfb3 
+262	Clathrin-associated protein AP-3 complex 	Apl5 Apl6 Apm3
+263	Complex 263	Aar2 Gcn2 Snu66
+264	Complex 264	Ade6 Pet123
+265	Complex 265	Fun12 Rpl12b
+266	Complex 266	Mrd1 Utp22 Utp7 CMS1
+267	Complex 267	Imd2 Lys2 Sxm1
+268	Complex 268	Adh1 Prc1
+269	Complex 269	Mec1 Vac14
+270	Complex 270	Clu1 Ura7
+271	alpha-Aminoadipate-semialdehyde dehydrogenase complex	Lys2 Lys5
+272	Complex 272	Asc1 Nat1
+273	Complex 273	Fap1 Yil161w
+274	Complex 274	Tcb3
+275	Complex 275	Pdc1 Ptm1
+276	Ste50/Ste11 complex	Ste11 Ste50
+278	Complex 278	RBG1
+279	Complex 279	Gdb1 Nup192
+280	Complex 280	Ptc3 PAA1
+281	Cytoplasmic mRNA processing body	Krs1 Lsm1 Lsm5 Pat1
+282	Complex 282	Pfk1 Pfk2
+283	Complex 283	Sse2 GET4
+284	Complex 284	Cdc36 Mrd1 Rps10b
+285	Complex 285	Asc1 Rpl27b Skt5
+286	Complex 286	Dbp2
+287	Translation initiation factor eIF2B complex 	Gcd1 Gcd11 Gcd2 Gcd6 Gcd7 Gcn3
+288	Complex 288	End3 Rpc17
+289	Complex 289	Chs1 Eno2 Pgk1
+290	Complex 290	Abz1 Mpa43 Tsa1
+291	Complex 291	Rpl35a Rps6b Ura7
+292	Complex 292	Spo14 Ygl036w
+293	Golgi transport complex 	Cog1 Cog2 Cog3 Cog4 Cog5 Cog6 Cog7 Cog8 Iml1
+294	Complex 294	Fap7
+295	Complex 295	Pro1 Xks1
+296	Histone acetyltransferase B complex 	Hat1 Hat2 Hhf2 Hif1
+297	Complex 297	Pgi1 Sec1
+298	Complex 298	Dps1 Ilv1 Rpl18b
+299	Complex 299	Pab1 Ygr250c
+300	Ufd1/Npl4/Cdc48, ER ubiquitinated proteins degradation complex	Cdc48 Npl4 Shp1 Ufd1 VMS1
+301	RAVE/Skp1 complex	Skp1 Ymr258c
+302	Complex 302	Mtf2 Sls1
+303	2-oxoglutarate dehydrogenase complex	Kgd1 Kgd2 Ymr31
+304	Cytochrome bc1 complex 	Cor1 Qcr2
+305	Methionyl- and glutamyl-tRNA synthetases complex	Arc1 Gus1 Mes1
+306	Complex 306	Hua2 PGC1
+307	Complex 307	Nop13 Rlp7
+308	Complex 308	Aro3 Wtm1 
+310	Complex 310	Top1
+311	Complex 311	Fun19 Kap123 Ypr174c
+312	cAMP-dependent protein kinase complex	Bcy1 Tpk2
+313	Complex 313	Rpl18b Tub3
+314	Complex 314	Aro1 Cct8
+315	AP-1 adaptor complex 	Apl2 Apl4 Apm1 Apm2 Aps1
+316	Complex 316	Fpr4 Nop13 Puf6 Rix7
+317	Complex 317	Kar2 Scj1
+318	Complex 318	Dop1 Mon2
+319	Complex 319	Gpi17 Ptm1
+320	Ribonucleoside-diphosphate reductase complex	Rnr2 Rnr4
+321	Complex 321	Erg1 Sec2
+322	Complex 322	Fur1 Rvb2 Sec53
+323	Complex 323	Rpl38 PSH1
+324	Complex 324	Hir3 Mam33 Rad53
+325	Complex 325	Hem13 Taf7
+326	Exosome 3'-5' exoribonuclease complex 	Csl4 Dis3 Mtr3 Rrp4 Rrp40 Rrp42 Rrp43 Rrp45 Rrp46 Rrp6 Ski6 Ski7
+327	Complex 327	Sen54 Vac14
+328	Complex 328	Bud2 Pdr5 Pet9
+329	Complex 329	Erg1
+330	Complex 330	Fbp26 Ylr345w
+331	Complex 331 	Dbp8 Esf1 Hca4 Mvd1 NOP56
+332	Complex 332	Gdh1 Rpl14a
+333	Septin complex 	Bud4 Cdc10 Cdc11 Cdc12 Cdc3 Shs1
+334	Complex 334	Wrs1 Ymr315w
+335	AMP-dependent protein kinase complex	Gal83 Reg1 Sip1 Snf1 Snf4
+336	Complex 336	Aha1 Ufd4
+337	Complex 337	Spt15 Taf1 Taf11 Taf12 Taf3 Taf4 Taf9
+338	Complex 338	Hua2 GEM1
+339	Complex 339	Act1 Mgs1
+340	Coatomer COPII complex 	Sec13 Sec16 Sec23 Sec24 Sfb2
+341	Complex 341	Nuc1 TRZ1 Ymr099c
+342	Cohesin complex	Smc1 Smc3
+343	Cyclin-dependent protein kinase complex	Cdc28 Cks1 Cln2 Cys4 Sic1
+344	Complex 344	Sse1 Tdh2
+345	Complex 345	Aha1 Aro1
+346	Complex 346	Sec2
+347	Serine palmitoyltransferase  complex	Lcb1 Lcb2
+348	Complex 348	Ecm5 Iml1 Psd2
+349	Complex 349	Met6 Tkl1
+350	Sec62/Sec63 complex	Sec62 Sec63 Sec66 Sec72
+351	Complex 351	MCM7 Erg26
+352	Complex 352	Sam1 Sam2
+353	Bro1/Snf7 complex	Bro1 Snf7
+354	Complex 354	Dip2 Enp1 Kre33 Krr1 Noc4 Nop14 Rok1 Utp22 Utp6 Utp7 ENP2
+355	Complex  355	Mkt1 Rpl13a Vid24
+356	Rtg2/Mks1 complex	Mks1 Rtg2
+357	Complex 357	Crm1
+358	Complex 358	Ssk2
+359	Complex 359	Mrs6 Pyk2
+360	Complex 360	Tkl1 Tsa1
+361	Complex 361	Rps0a Rps9b
+362	Complex 362	Pmr1 Rvb2 Sec53
+363	Mitochondrial ribosomal large subunit	Img1 Mhr1 Mrp49 Mrpl35 Mrpl8 Mrpl9 Yml6
+364	SKI complex	Ski2 Ski3 Ski8
+365	Rvs161/Rvs167 complex	Rvs161 Rvs167
+366	Complex 366	Ald6 Gsh1 Idh2 New1
+367	Complex 367	Bat1 Bat2
+368	Complex 368	Kri1 Rps11b
+369	Complex 369	Fun19 Rps1b
+370	Anaphase-promoting complex, cyclosome	Apc1 Apc2 Apc4 Apc5 Apc9 Cdc16 Cdc23 Cdc27
+371	Complex 371	Nop15
+372	Complex 372	Cin1 Ybl104c
+373	Complex 373	Nfs1 Tdh3 ISD11
+374	COMPASS, histone H3 methyltransferase protein complex	Bre2 Sdc1 Set1 Spp1 Swd1 Swd3
+375	Complex 375	Pst2 RFS1
+376	Complex 376	Mdn1 Nmd5 Tub2
+377	Complex 377	Boi1 Pab1
+378	Complex 378	GET3 Cdc6
+379	Complex 379	Cym1 Mss51
+380	Retromer subcomplex 	Vps29 Vps35 Vps5
+381	GPI transamidase complex	Gaa1 Gpi8
+382	Complex 382	Stm1 VHR1
+383	Complex 383	Rpl33b Rpl43a
+384	Complex 384	Idh2 Lys12
+385	Complex 385	Dcs2 Tfb3
+386	Complex 386	Rpl1a Tcb3
+387	Complex 387	Ade5,7 Pdr5
+388	Pab1/Pan2/Pan3 complex	Pab1 Pan2
+389	Complex 389	Tdh2 Wrs1
+390	Complex 390	Hir3 Rad53
+391	Complex 391	Aro1 Rad51 Yhb1
+392	Ric1/Rgp1 complex	Rgp1 Ric1
+393	Complex 393	Vip1 Ygr017w
+394	Complex 394	Dbp9 Mak21 Mak5 Nop4 Rlp7 Rsa3 Ytm1
+395	Complex 395	Psk1 Taf7
+396	Complex 396	Rpl8a ARB1
+397	Complex 397	Ktr3 Svf1 MRI1
+398	Complex 398	Met12 Met13
+399	Complex 399	Ede1 Syp1
+400	Heteromeric p24 complex 1	Emp24 Erp1 Erp2 Erv25
+401	Complex 401	Bud7 Chs5 Chs6 BCH1
+402	MIND kinetochore complex 	Ame1 Dsn1 Mtw1
+403	Complex 403	Hir2
+404	Far  complex	Far8 Rpl14b
+405	Signal recognition particle receptor 	Srp101 Srp102
+406	Complex 406	Nop13
+407	TFIIIC complex 	Tfc1 Tfc3 Tfc4 Tfc6 Tfc7 Tfc8
+408	Complex 408	Ist2
+409	Complex 409	Arx1 Fpr4 Mrt4 Nip7 Nog1 Nog2 Nop2 Nsa2 Nug1 Rpf2 Sda1 Tif6
+410	Complex 410	Rpl18b Rpl36b
+411	Complex 411	YJR084W
+412	Complex 412	Bud2 Ptm1
+413	Gim complexes	Gim3 Pac10 Yke2
+414	Complex 414	Pus7 Tan1
+415	Complex 415	Doa4 Dur1,2
+416	Complex 416	Ecm5 Nmd5
+417	Complex 417	Cin1 Rpl43a
+418	Complex 418	Cwc23 SPP382
+419	Complex 419	Prs3 Ura7
+420	DNA polymerase epsilon complex 	Dpb2 Dpb4 Pol2
+421	HAP subcomplex of elongator  complex	Elp2 Elp3 Elp4 Iki1 Iki3
+422	Complex 422	Mtr10 Nmd5 Usa1
+423	ARP2/3 complex 	Arc15 Arc18 Arc19 Arc35 Arc40 Arp2 Arp3
+424	Trichostatin A-sensitive class II histone deacetylase complex	Hda1 Hda2 Hda3 Pro2
+425	Complex 425	Sbp1
+426	Complex 426	Rpl30 Ynk1
+427	Complex 427	Pep12 Sec17 Vti1 Ykt6
+428	RSC, abundant chromatin remodeling complex 	Arp7 Npl6 Rsc1 Rsc2 Rsc3 Rsc4 Rsc58 Rsc6 Rsc8 Rsc9 Sfh1 Sth1
+429	38S HOPS complex 	Pep3 Pep5 Vam6 Vps16 Vps33 Vps41 Vps8
+430	Complex 430	TMA20 TMA22
+431	Complex 431	Rli1 Rps7a
+432	Complex 432	Rpl27b TAE2
+433	Complex 433	Cys4 Nis1 Ssc1 NBA1
+434	 Complex 434	 GET3 Ded81 Ils1
+435	Complex 435	Chd1 Ssa4
+436	Complex 436	Brr1
+437	Complex 437	Bmh2 Nth1
+438	Complex 438	Lys9 TRM112 TRM11
+439	Complex 439	Reb1 VHR1
+440	Complex 440	Brx1 Cic1 Mak21 Noc2 Nop4 Spb4 Ytm1
+441	Vps34 PtdIns 3 kinase complex II 	Vps15 Vps30 Vps34 Vps38
+442	Complex 442	Dos2 Kre2
+443	Complex 443	Cct5 Vid27
+444	Complex 444	Mss51 Ssc1
+445	Mediator complex, SRB subcomplex of RNA polymerase II	Cse2 Gal11 Med1 Med11 Med6 Med7 Med8 Nut1 Nut2 Pgd1 Rgr1 Sin4 Srb2 Srb4 Srb5 Srb6 Srb7 Srb8 Ssn2
+446	Complex 446	Aro1 Pfk1 Rps0a
+447	Complex 447	Imp3 CMS1
+448	Complex 448	Rpl30 Yor1 
+450	Complex 450	Ams1
+451	Complex 451	Glt1 Rpl10 Rps5
+452	Complex  452	Mrp8 Pil1 Ylr287c
+453	Complex 453	Gin4 Kcc4
+454	Complex 454	Tef4 OLA1
+455	Frs1/Frs2  phenylalanyl-tRNA synthetase complex	Frs1 Frs2
+456	Complex 456	Ade5,7 Rps3	 
+458	Complex 458	Ilv5 Tdh1
+459	RNA polymerase II general trancription factor TFIID 	Taf1 Taf11 Taf3 Taf4 Taf5
+460	Complex 460	Cys3 Rna1
+461	Complex 461	Cct5 Tuf1
+462	Oligosaccharyl-transferase complex 	Ost1 Stt3 Swp1 Wbp1
+463	Processing peptidase complex	Mas1 Mas2
+464	F0/F1 ATP synthase 	Atp1 Atp3
+465	Compex 465	Gsh1 Gsp2 New1
+466	Complex 466	Mkt1
+467	Complex 467	Tbf1 Tor1 Vid22
+468	Complex 468	Bms1 Bud21 Esf1 Mvd1 Nop6
+469	Complex 469	Rpl26b Rsa3 Yor1
+470	Ctf18/Rfc2/Rfc3/Rfc4/Rfc5 complex 	Elg1 Rfc1 Rfc3 Rfc4 Rfc5
+471	Complex 471	Rpl27b Skt5
+472	Complex 472	Dbp10 Dbp9 Nop13 Nop4 Puf6
+473	Complex 473	Sro7 RAD34
+474	Complex 474	Hta1 Tos4
+475	Complex 475	Rps25b
+476	Vps27/Hse1 protein complex	Hse1 Vps27
+477	Complex 477	Ufd4
+478	eIF4A	Tif1 Tif2
+479	Complex 479	Gfa1 Msn5 Num1
+480	Complex 480	Sse1 Yhb1
+481	Complex 481	Drs2 Pdr5
+482	Complex 482	Erg1 Tef4
+483	Complex 483	Dig1 Sap190
+484	Complex 484	Gdi1 Ypt31 Ypt52
+485	Complex 485	Bud2 Ccp1 Mrp8
+486	Complex 486	Eft1 Yol098c
+487	Complex 487	MCM7 Myo5
+488	Complex 488	OLA1 Ygl039w
+489	Complex 489	Gcn2 Ltv1 Rpm2
+490	Complex  490	Oca1 Siw14 OCA4 OCA5
+491	Complex 491	Shm1 TAE2
+		
