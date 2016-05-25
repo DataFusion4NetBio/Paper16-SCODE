@@ -5,13 +5,22 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.Icon;
@@ -23,6 +32,7 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
@@ -45,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 public class MyControlPanel extends JPanel implements CytoPanelComponent {
 
@@ -52,6 +63,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	
 	private JPanel searchPanel;
 	private JPanel trainPanel;
+	private JPanel evaluatePanel;
 	private JButton analyzeButton;
 	private JComboBox chooser;
 	private JTextField checkNumNeighbors;
@@ -98,6 +110,13 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JLabel negativeExamplesLabel;
 	private JLabel ignoreMissingLabel;
 	
+	private JTextField p;
+	private File evaluationFile;
+	private JButton evaluationFileButton;
+	private JButton evaluateButton;
+	private JLabel pLabel;
+	private JLabel evaluationFileLabel;
+	
 	private final CySwingApplication swingApplication;
 	private final CyServiceRegistrar registrar;
 	private final CyApplicationManager appManager;
@@ -111,10 +130,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		this.registrar = registrar;
 		this.appManager = appManager;
 		
-		final GroupLayout layout = new GroupLayout(this);
-		setLayout(layout);
-		layout.setAutoCreateContainerGaps(false);
-		layout.setAutoCreateGaps(true);
+
 		
 		//this.add(createSearchPanel());
 		
@@ -125,16 +141,54 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			  } 
 			} );
 		
+		evaluateButton = new JButton("Evaluate Results");
+		evaluateButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					evaluateButtonPressed(resultFile, evaluationFile);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+		
+		final GroupLayout layout = new GroupLayout(this);
+		final JPanel outerPanel = new JPanel();
+		outerPanel.add(createSearchPanel());
+		outerPanel.add(createTrainPanel());
+		outerPanel.add(analyzeButton);
+		outerPanel.add(createEvaluatePanel());
+		outerPanel.add(evaluateButton);
+		outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.Y_AXIS));
+		final JScrollPane scrollablePanel = new JScrollPane(outerPanel);
+
+		setLayout(layout);
+		layout.setAutoCreateContainerGaps(false);
+		layout.setAutoCreateGaps(true);
+		
 		layout.setHorizontalGroup(layout.createParallelGroup(Alignment.CENTER, true)
-				.addComponent(createSearchPanel(), 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(createTrainPanel(), 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(analyzeButton, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-		);
-		layout.setVerticalGroup(layout.createSequentialGroup()
-				.addComponent(createSearchPanel(), 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(createTrainPanel(), 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(analyzeButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-		);
+				.addComponent(scrollablePanel)
+				);
+		layout.setVerticalGroup(layout.createParallelGroup(Alignment.CENTER, true)
+				.addComponent(scrollablePanel)
+				);
+		
+//		layout.setHorizontalGroup(layout.createParallelGroup(Alignment.CENTER, true)
+//				.addComponent(createSearchPanel(), 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addComponent(createTrainPanel(), 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addComponent(analyzeButton, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addComponent(createEvaluatePanel(), 0, GroupLayout.DEFAULT_SIZE,Short.MAX_VALUE)
+//				.addComponent(evaluateButton, 0 , GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//		);
+//		layout.setVerticalGroup(layout.createSequentialGroup()
+//				.addComponent(createSearchPanel(), 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addComponent(createTrainPanel(), 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addComponent(analyzeButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addComponent(createEvaluatePanel(), 0, GroupLayout.DEFAULT_SIZE,Short.MAX_VALUE)
+//				.addComponent(evaluateButton, 0 , GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)			
+//		);
 		
 
 	}
@@ -468,6 +522,63 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		}
 		return trainPanel;
 	}
+	
+	public JPanel createEvaluatePanel() {
+		if (evaluatePanel == null) {
+			evaluatePanel = new JPanel();
+			final GroupLayout layout = new GroupLayout(evaluatePanel);
+			evaluatePanel.setLayout(layout);
+			layout.setAutoCreateContainerGaps(true);
+			layout.setAutoCreateGaps(true);
+			
+			TitledBorder eval = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Evaluate Resuls");
+			evaluatePanel.setBorder(eval);
+			
+			p = new JTextField("0.5");
+			pLabel = new JLabel("p");
+			
+			evaluationFileLabel = new JLabel("File of Predicted Complexes");
+			evaluationFileButton = new JButton("Select Evaluation File");
+	        evaluationFileButton.addActionListener(new ActionListener() {
+	        	 
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                JFileChooser evaluationChooser = new JFileChooser();
+	                int evaluation = evaluationChooser.showOpenDialog(MyControlPanel.this);
+	                if (evaluation == JFileChooser.APPROVE_OPTION) {
+	                    evaluationFile = evaluationChooser.getSelectedFile();
+	                    evaluationFileLabel.setText(evaluationFile.getName());
+	                }
+	            }
+	        }); 
+			
+			layout.setHorizontalGroup(
+					layout.createSequentialGroup()
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(pLabel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(evaluationFileLabel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(p, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(evaluationFileButton, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					);
+			layout.setVerticalGroup(
+					layout.createSequentialGroup()
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(pLabel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)								
+								.addComponent(p, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(evaluationFileLabel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(evaluationFileButton, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))				
+					);
+			
+			Component[] components = evaluatePanel.getComponents(); 
+			for(int i = 0; i < components.length; i++) {
+				components[i].setEnabled(false);
+			}
+			evaluateButton.setEnabled(false);
+		}
+		return evaluatePanel;
+	}
 
 	public Component getComponent() {
 		return this;
@@ -514,6 +625,88 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		TaskIterator taskIter = clusterFactory.createTaskIterator();
 		dialogTaskManager.execute(taskIter);
 		
+		if (resultFile != null) {
+			Component[] evalComponents = evaluatePanel.getComponents();
+			for(int i = 0; i < evalComponents.length; i++) {
+				evalComponents[i].setEnabled(true);
+			}
+			evaluateButton.setEnabled(true);
+		}
+	}
+	
+	private void evaluateButtonPressed(File resultFile, File evaluateFile) throws IOException {
+		ArrayList< Set<String> > resultComplexes = new ArrayList< Set<String> >();
+		ArrayList< Set<String> > evalComplexes = new ArrayList< Set<String> >();	
+		FileReader fileReader = new FileReader(resultFile) ;
+		BufferedReader bufferedReader = new BufferedReader(fileReader) ;
+		String line = bufferedReader.readLine() ; 
+		while((line = bufferedReader.readLine()) != null) {
+			String[] l = line.split("\t");
+			String complexes_string = l[2];
+			HashSet result_complexes = new HashSet(Arrays.asList(complexes_string.split(" ")));
+			resultComplexes.add(result_complexes);
+		}
+
+		System.out.println("");
+		System.out.println("");
+
+		FileReader evalfileReader = new FileReader(evaluateFile);
+		BufferedReader evalbufferedReader = new BufferedReader(evalfileReader);
+		line = evalbufferedReader.readLine() ;
+		while((line = evalbufferedReader.readLine()) != null) {
+			String[] l = line.split("\t");
+			String complexes_string = l[2];
+			HashSet eval_complexes = new HashSet(Arrays.asList(complexes_string.split(" ")));
+			evalComplexes.add(eval_complexes);
+		}
+		
+		System.out.println("");
+		System.out.println("");
+	
+		int countPredicted = 0;
+		int countKnown = 0;
+		
+		for (int i = 0; i < resultComplexes.size(); i++) {
+			Set<String> predicted = resultComplexes.get(i);
+			Boolean predictedAlreadyMatched = false;
+			for(int j = 0; j < evalComplexes.size(); j++) {
+				int A = 0; 
+				int B = 0; 
+				int C = 0; 
+				Set<String> known = evalComplexes.get(i);
+				
+				Set<String> intersection = new HashSet<String>(predicted); // use the copy constructor
+				intersection.retainAll(known);
+				
+				C = intersection.size();
+				A = predicted.size() - C;
+				B = known.size() - C;
+				
+				float pVal = Float.parseFloat(p.getText());
+				
+				if ( (C / (A + C) > pVal) && (C / (B + C)) > pVal) {
+					if (!predictedAlreadyMatched) {
+						// This forces to iterate to the next predicted complex, so that a predicted complex is not counted twice
+						// if it matches with multiple known complexes
+						countPredicted ++;
+						predictedAlreadyMatched = true;
+					}
+					countKnown++;
+				}
+			}
+		}
+		
+		// Get the number of positive examples from the test set
+		LineNumberReader  lnr = new LineNumberReader(new FileReader(trainingFile));
+		lnr.skip(Long.MAX_VALUE);
+		int numPosTrainingExamples = lnr.getLineNumber(); 
+		lnr.close();
+		
+		double recall = countKnown / evalComplexes.size() ;
+		double precision = countPredicted / resultComplexes.size();
+		
+		JOptionPane.showMessageDialog(this, "Recall: " + recall + "\nPrecision: " + precision, "Evaluation Scoring", JOptionPane.INFORMATION_MESSAGE);
+
 	}
 	
 	private InputTask createInputTask() {

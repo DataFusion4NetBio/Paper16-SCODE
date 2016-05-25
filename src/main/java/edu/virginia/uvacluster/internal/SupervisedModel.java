@@ -50,12 +50,16 @@ public class SupervisedModel implements Model{
 		this.userInput = userInput;
 		for (Graph g: bayesGraphs) {featureDescs = g.loadModelFrom(modelNetwork);}
 		features = FeatureUtil.parse(featureDescs);
-		
+//		System.out.println("Features: ");
+//		for(String feat : featureDescs) {
+//			System.out.println("\t\t" + feat);
+//		}
 		System.out.println("Cluster model init is finished.");
 		positiveExamples = loadTrainingComplexes(userInput.trainingFile);
 		System.out.println("Positive examples are loaded.");
 		negativeExamples = generateNegativeExamples(userInput.negativeExamples, positiveExamples);
-		System.out.println("Negative examples are generated.");
+//		System.out.println("Negative examples are generated.");
+		System.out.println("Dup");
 		train(positiveExamples, negativeExamples);
 		System.out.println("Model trained...");
 		saveGraphicalBayesianNetwork(outputBayesNet, features);
@@ -245,9 +249,10 @@ public class SupervisedModel implements Model{
 	 * Convenience method for training networks on positive *and* negative examples
 	 */
 	public void train(List<CySubNetwork> positiveExamples, List<CySubNetwork> negativeExamples) {
+		System.out.println("Entered TRAIN");
 		List<Cluster> posExamples = new ArrayList<Cluster>(), negExamples = new ArrayList<Cluster>();
-
 		for(CySubNetwork pos: positiveExamples) {posExamples.add(new Cluster(features, pos)); }
+		System.out.println("Lists of pos and neg training examples created");
 		posBayesGraph.trainOn(posExamples);
 		System.out.println("Model has finished training on " + positiveExamples.size() +  " positive Examples.");
 		for(CySubNetwork neg: negativeExamples) {negExamples.add(new Cluster(features, neg));}

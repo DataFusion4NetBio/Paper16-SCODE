@@ -60,7 +60,6 @@ public class Graph {
 				break;
 			}
 		}
-		
 		do {
 			originLevel.clear();
 			originLevel.addAll(destinationLevel);
@@ -239,28 +238,39 @@ public class Graph {
 	}
 	
 	public void trainOn(List<Cluster> clusters) {
+		System.out.println("Start training on clusters");
 		Map<String, Bin> featureMap;
 		List<Child> currentLevel = new ArrayList<Child>();
 		List<Child> nextLevel = new ArrayList<Child>();
 		for (Cluster cluster: clusters) {
 			cluster.trainBinning();
 		}
-
+		System.out.println("Cluster train binning complete");
+		
 		for (Cluster cluster: clusters) {
+			System.out.println("Loop on cluster");
 			featureMap = cluster.getBinMap();
+			System.out.println("feature map");
 			nextLevel.addAll(root.getChildren());
+			System.out.println("next level");
 			scanGraph(featureMap);
+			System.out.println("About to do");
 			do {
+				System.out.println("Doing");
 				currentLevel.clear();
 				currentLevel.addAll(nextLevel);
 				nextLevel.clear();
+				System.out.println("About to loop on children");
 				for (Child child: currentLevel) {
+					System.out.println("Operating on child");
 					nextLevel.removeAll(child.getChildren());
 					nextLevel.addAll(child.getChildren());
 					child.addTo(featureMap.get(child.getName()).number);
 				}
+				System.out.println("Done doing");
 			} while(nextLevel.size() > 0);
 		}
+		System.out.println("Done training on clusters");
 	}
 	
 	public double score(Cluster cluster) {
@@ -274,13 +284,22 @@ public class Graph {
 		return score;
 	}
 	
+	public void printNetwork() {
+		System.out.print("Children of the root node: ");
+		for (Child c : root.children) {
+			System.out.println("\t\t" + c.getName());
+		}
+	}
 	private void resetGraph() {root.reset();}
 	//Activates all the nodes that should be active, making many-to-one nodes easy to train/score
 	private void scanGraph(Map<String, Bin> features) {
 		List<Child> currentLevel = new ArrayList<Child>();
 		List<Child> nextLevel = new ArrayList<Child>();
 		nextLevel.addAll(root.getChildren());
+		System.out.println("About to reset graph");
+		System.out.println("The name of the root node is: " + root.getDisplayName());
 		resetGraph();
+		System.out.println("In scanGraph: reset graph done");
 		root.activate();
 		do {
 			currentLevel.clear();
@@ -326,8 +345,11 @@ public class Graph {
 		}
 		public void reset() {
 			active = false;
-			for (Child child: children)
+//			System.out.println("The node " + getDisplayName() + " has size " + children.size());
+			for (Child child: children) {
+//				System.out.println("The child about to be reset is: " + child.getName());
 				child.reset();
+			}
 		}
 		public boolean parentsActive() {
 			boolean result = true;
