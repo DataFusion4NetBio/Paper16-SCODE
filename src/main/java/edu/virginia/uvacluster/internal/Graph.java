@@ -239,9 +239,12 @@ public class Graph {
 	
 	public void trainOn(List<Cluster> clusters) {
 		System.out.println("Start training on clusters");
+//		System.out.println("----PRINTING FEATURE NETWORK------");
+		printNetwork();
 		Map<String, Bin> featureMap;
 		List<Child> currentLevel = new ArrayList<Child>();
 		List<Child> nextLevel = new ArrayList<Child>();
+
 		for (Cluster cluster: clusters) {
 			cluster.trainBinning();
 		}
@@ -313,7 +316,7 @@ public class Graph {
 	}
 	
 	private class Node {
-		private ArrayList<Child> children;
+		private List<Child> children;
 		private List<Node> parents = new ArrayList<Node>();
 		private String feature;
 		private Bin bin;
