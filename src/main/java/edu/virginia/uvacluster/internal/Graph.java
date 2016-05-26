@@ -180,10 +180,12 @@ public class Graph {
 						maxMap.put(featureDesc, network.getRow(destination).get("max", Double.class));
 						nodeMap.put(destination, newNode);
 					}
+					
 					child = modelNode.addChild(newNode);
 					probability = network.getRow(edge).get("Probability", Double.class);
 					System.out.println(probability);
 					child.setProbability(probability);
+
 				}
 			}
 		} while(nextOriginLevel.size() > 0);
@@ -240,7 +242,7 @@ public class Graph {
 	public void trainOn(List<Cluster> clusters) {
 		System.out.println("Start training on clusters");
 //		System.out.println("----PRINTING FEATURE NETWORK------");
-		printNetwork();
+//		printNetwork();
 		Map<String, Bin> featureMap;
 		List<Child> currentLevel = new ArrayList<Child>();
 		List<Child> nextLevel = new ArrayList<Child>();
@@ -287,12 +289,21 @@ public class Graph {
 		return score;
 	}
 	
-	public void printNetwork() {
-		System.out.print("Children of the root node: ");
-		for (Child c : root.children) {
-			System.out.println("\t\t" + c.getName());
+	public void printNode(Node n) {
+		System.out.print("Children of the node: " + n.getDisplayName());
+		for (Child c : n.children) {
+			printChild(c);
 		}
 	}
+	
+	public void printChild(Child c) {
+		System.out.println("\t\t" + c.getName());	
+		for (Child c2 : c.getChildren()) {
+			System.out.print("Children of the child node: " + c.getName());
+			printChild(c2);
+		}
+	}
+	
 	private void resetGraph() {root.reset();}
 	//Activates all the nodes that should be active, making many-to-one nodes easy to train/score
 	private void scanGraph(Map<String, Bin> features) {
