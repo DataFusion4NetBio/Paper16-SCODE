@@ -96,6 +96,8 @@ public class InputTask extends AbstractTask{
 //			tooltip="Results are saved as tab separated values.")
 	public File resultFile;
 	
+	public File selectedSeedFile;
+	
 	@Override //Adds other tasks to iterator based on user's input
 	public void run(TaskMonitor arg0) throws Exception {
 		System.out.println("Input is being collected...");

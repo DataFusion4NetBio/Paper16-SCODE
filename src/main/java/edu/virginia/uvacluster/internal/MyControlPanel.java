@@ -1,7 +1,9 @@
 package edu.virginia.uvacluster.internal;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
@@ -69,6 +71,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JComboBox chooser;
 	private JTextField checkNumNeighbors;
 	private JCheckBox useSelectedForSeeds;
+	private File useSelectedForSeedsFile;
+	private JButton useSelectedForSeedsButton;
 	private JTextField numSeeds;
 	private JTextField searchLimit;
 	private JTextField initTemp;
@@ -151,18 +155,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		
 		
 		final GroupLayout layout = new GroupLayout(this);
-		final JPanel outerPanel = new JPanel();
+		final JPanel outerPanel = new JPanel(new BorderLayout());
 		
-		final JPanel searchPanel = new JPanel();
-		searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.Y_AXIS));	
-		searchPanel.add(createSearchPanel());
-		
-		final CollapsiblePanel advancedSearchPanel = new CollapsiblePanel("> Advanced Search Parameters", createAdvancedSearchParams());
-		searchPanel.add(advancedSearchPanel);
-		TitledBorder search = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Search");
-		searchPanel.setBorder(search);
-
-		
+		// Set up train panel
 		final JPanel trainPanel = new JPanel();
 		trainPanel.setLayout(new BoxLayout(trainPanel, BoxLayout.Y_AXIS));	
 		trainPanel.add(createTrainPanel());
@@ -171,24 +166,46 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		trainPanel.add(advancedTrainPanel);
 		TitledBorder train = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Train");
 		trainPanel.setBorder(train);
+		trainPanel.setSize(trainPanel.getPreferredSize());
+
+		// Set up search panel
+		final JPanel searchPanel = new JPanel();
+		searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.Y_AXIS));	
+		searchPanel.add(createSearchPanel());
 		
+		final CollapsiblePanel advancedSearchPanel = new CollapsiblePanel("> Advanced Search Parameters", createAdvancedSearchParams());
+		searchPanel.add(advancedSearchPanel);
+		TitledBorder search = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Search");
+		searchPanel.setBorder(search);
+		Dimension search_dimension = searchPanel.getPreferredSize();
+		Double search_height = search_dimension.getHeight();
+		Dimension train_dimension = trainPanel.getPreferredSize();
+		Double train_width = train_dimension.getWidth();
+		searchPanel.setSize(new Dimension(train_width.intValue(), search_height.intValue()));
+		
+		// Set up evaluation panel
+		final JPanel evaluationPanel = createEvaluatePanel();
+		evaluationPanel.setBorder(null);
+
 		outerPanel.add(searchPanel);
 		outerPanel.add(trainPanel);
 		outerPanel.add(analyzeButton);
-		outerPanel.add(createEvaluatePanel());
+		outerPanel.add(evaluationPanel);
 		outerPanel.add(evaluateButton);
 		outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.Y_AXIS));
-		final JScrollPane scrollablePanel = new JScrollPane(outerPanel);
-
+		outerPanel.setSize(outerPanel.getPreferredSize());
+		
+//		final JScrollPane scrollablePanel = new JScrollPane(outerPanel);
+		
 		setLayout(layout);
-		layout.setAutoCreateContainerGaps(false);
+		layout.setAutoCreateContainerGaps(true);
 		layout.setAutoCreateGaps(true);
 		
 		layout.setHorizontalGroup(layout.createParallelGroup(Alignment.CENTER, true)
-				.addComponent(scrollablePanel)
+				.addComponent(outerPanel)
 				);
 		layout.setVerticalGroup(layout.createParallelGroup(Alignment.CENTER, true)
-				.addComponent(scrollablePanel)
+				.addComponent(outerPanel)
 				);
 	}
 	
@@ -324,21 +341,21 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			checkNumNeighbors.setVisible(false);
 			checkNumNeighborsLabel.setVisible(false);
 			
-			useSelectedForSeeds = new JCheckBox();
-			useSelectedForSeedsLabel = new JLabel("Use Selected Nodes as Seeds");
-			useSelectedForSeeds.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						if(useSelectedForSeeds.isEnabled() && useSelectedForSeeds.isSelected()) {
-							numSeeds.setVisible(false);
-							numSeedsLabel.setVisible(false);
-						} else {
-							numSeeds.setVisible(true);
-							numSeedsLabel.setVisible(true);
-						}
-					}
-				}
-				);
+//			useSelectedForSeeds = new JCheckBox();
+//			useSelectedForSeedsLabel = new JLabel("Use Selected Nodes as Seeds");
+//			useSelectedForSeeds.addActionListener(
+//				new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						if(useSelectedForSeeds.isEnabled() && useSelectedForSeeds.isSelected()) {
+//							numSeeds.setVisible(false);
+//							numSeedsLabel.setVisible(false);
+//						} else {
+//							numSeeds.setVisible(true);
+//							numSeedsLabel.setVisible(true);
+//						}
+//					}
+//				}
+//				);
 			
 			numSeeds = new JTextField("10");
 			numSeedsLabel = new JLabel("Number of Random Seeds");
@@ -362,6 +379,36 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			minSizeLabel = new JLabel("Minimum Complex Size");
 			
 			
+			useSelectedForSeedsButton = new JButton("Select Seed File");
+			
+			useSelectedForSeedsLabel = new JLabel("Use Starting Seeds From File");
+	        useSelectedForSeedsButton.addActionListener(new ActionListener() {	 
+	            public void actionPerformed(ActionEvent e)
+	            {
+	            	if (useSelectedForSeedsButton.getText().equals("Select Seed File")) { 
+		                JFileChooser seedsChooser = new JFileChooser();
+		                int result = seedsChooser.showOpenDialog(MyControlPanel.this);
+		                if (result == JFileChooser.APPROVE_OPTION) {
+		                    useSelectedForSeedsFile = seedsChooser.getSelectedFile();
+		                    if (useSelectedForSeedsFile == null) {
+								numSeeds.setVisible(true);
+								numSeedsLabel.setVisible(true);	             
+		                    } else {
+		                    	useSelectedForSeedsLabel.setText(useSelectedForSeedsFile.getName());
+		                    	useSelectedForSeedsButton.setText("Remove File");
+								numSeeds.setVisible(false);
+								numSeedsLabel.setVisible(false);
+		                    }
+		                }
+	            	} else {
+	                	useSelectedForSeedsLabel.setText("Use Starting Seeds From File");
+	                	useSelectedForSeedsButton.setText("Select Seed File");
+						numSeeds.setVisible(true);
+						numSeedsLabel.setVisible(true);		                	
+                }
+	            }
+	        }); 
+			
 			layout.setHorizontalGroup(
 					layout.createSequentialGroup()
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -372,7 +419,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(chooser)
 								.addComponent(checkNumNeighbors)
-								.addComponent(useSelectedForSeeds))
+								.addComponent(useSelectedForSeedsButton))
 			);
 			
 			layout.setVerticalGroup(
@@ -385,7 +432,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 							.addComponent(checkNumNeighbors))
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(useSelectedForSeedsLabel)
-							.addComponent(useSelectedForSeeds))
+							.addComponent(useSelectedForSeedsButton))
 			);
 		}
 		return searchPanel;
@@ -817,6 +864,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		
 		inputTask.resultFile = resultFile;
 		
+		inputTask.selectedSeedFile = useSelectedForSeedsFile;
 		return inputTask;
 	}
 	

@@ -1,8 +1,12 @@
 package edu.virginia.uvacluster.internal;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cytoscape.model.CyNetwork;
@@ -121,7 +125,28 @@ public class SearchTask extends AbstractNetworkTask{
 	
 	//Use this for alternate seeding
 	private List<CyNode> getSelectedNodes() {
-		return CyTableUtil.getNodesInState(rootNetwork,"selected",true);
+//		return CyTableUtil.getNodesInState(rootNetwork,"selected",true); // -- Gets nodes selected by mouse-click
+		
+		File seedFile = userInput.selectedSeedFile;
+		ArrayList<String> seedNames = new ArrayList<String>();
+		try (BufferedReader br = new BufferedReader(new FileReader(seedFile))) {
+		    String line;
+		    while ((line = br.readLine()) != null) {
+		       seedNames.add(line);
+		    }
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		ArrayList<CyNode> nodeList = new ArrayList<CyNode>();
+		for (CyNode node: network.getNodeList()) {
+			String cyNodeName = network.getRow(node).get("name", String.class);
+			if (nodeList.contains(cyNodeName)) {
+				nodeList.add(node);
+			}
+		}
+		return nodeList;
 	}
 
 }
