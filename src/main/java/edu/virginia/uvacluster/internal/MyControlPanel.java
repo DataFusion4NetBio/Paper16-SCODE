@@ -184,19 +184,19 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		searchPanel.setMaximumSize(new Dimension(train_width.intValue(), search_height.intValue()));
 		
 		// Set up evaluation panel
-		final JPanel evaluationPanel = createEvaluatePanel();
-		evaluationPanel.setBorder(null);
+		evaluatePanel = createEvaluatePanel();
+		evaluatePanel.setBorder(null);
 
 		outerPanel.add(searchPanel);
 		outerPanel.add(trainPanel);
 		outerPanel.add(analyzeButton);
-		outerPanel.add(evaluationPanel);
+		outerPanel.add(evaluatePanel);
 		outerPanel.add(evaluateButton);
 		outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.Y_AXIS));
 		outerPanel.setMaximumSize(outerPanel.getPreferredSize());
 		
 //		final JScrollPane scrollablePanel = new JScrollPane(outerPanel);
-		
+//		scrollablePanel.setPreferredSize(outerPanel.getPreferredSize());
 		setLayout(layout);
 		layout.setAutoCreateContainerGaps(true);
 		layout.setAutoCreateGaps(true);
@@ -735,7 +735,10 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			for(int i = 0; i < evalComponents.length; i++) {
 				evalComponents[i].setVisible(true);
 			}
+			evaluatePanel.setVisible(true);
 			evaluateButton.setVisible(true);
+			TitledBorder eval = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Evaluate Resuls");
+			evaluatePanel.setBorder(eval);
 		}
 	}
 	
