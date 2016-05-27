@@ -186,6 +186,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		// Set up evaluation panel
 		evaluatePanel = createEvaluatePanel();
 		evaluatePanel.setBorder(null);
+		Double eval_height = evaluatePanel.getPreferredSize().getHeight();
+		evaluatePanel.setMaximumSize(new Dimension(train_width.intValue(), eval_height.intValue()));
 
 		outerPanel.add(searchPanel);
 		outerPanel.add(trainPanel);
@@ -636,7 +638,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			layout.setAutoCreateContainerGaps(true);
 			layout.setAutoCreateGaps(true);
 			
-			TitledBorder eval = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Evaluate Resuls");
+			TitledBorder eval = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Evaluate Results");
 			evaluatePanel.setBorder(eval);
 			
 			p = new JTextField("0.5");
@@ -737,7 +739,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			}
 			evaluatePanel.setVisible(true);
 			evaluateButton.setVisible(true);
-			TitledBorder eval = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Evaluate Resuls");
+			TitledBorder eval = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Evaluate Results");
 			evaluatePanel.setBorder(eval);
 		}
 	}
