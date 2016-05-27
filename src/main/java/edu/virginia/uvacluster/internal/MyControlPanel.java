@@ -545,6 +545,18 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	                if (result == JFileChooser.APPROVE_OPTION) {
 	                    trainingFile = trainingChooser.getSelectedFile();
 	                    trainingFileLabel.setText(trainingFile.getName());
+	                    
+	                    // Get number of positive training examples in order to set number of negative training examples
+	                    LineNumberReader lnr;
+						try {
+							lnr = new LineNumberReader(new FileReader(trainingFile));
+		                    lnr.skip(Long.MAX_VALUE);
+							negativeExamples.setText(Integer.toString(lnr.getLineNumber() + 1));
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+	                    
 	                }
 	            }
 	        }); 

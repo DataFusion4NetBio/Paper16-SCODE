@@ -1,5 +1,6 @@
 package edu.virginia.uvacluster.internal;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.ThreadLocalRandom;
@@ -30,6 +31,8 @@ public class SeedSearch implements Runnable {
 			phaser.arriveAndAwaitAdvance();
 			//check overlap and deactivate clusters with too high an overlap ratio
 			for (Cluster cluster: clusters) {
+
+				System.out.println("In SeedSearch.java: searching on cluster " + cluster.getSUID());
 				for (Cluster x: candidates) {
 					if ((! cluster.searchComplete) &&
 						(cluster.getSUID() != x.getSUID()) && 
