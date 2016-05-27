@@ -391,9 +391,11 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		                if (result == JFileChooser.APPROVE_OPTION) {
 		                    useSelectedForSeedsFile = seedsChooser.getSelectedFile();
 		                    if (useSelectedForSeedsFile == null) {
+		                    	useSelectedForSeeds.setSelected(false);
 								numSeeds.setVisible(true);
 								numSeedsLabel.setVisible(true);	             
 		                    } else {
+		                    	useSelectedForSeeds.setSelected(true);
 		                    	useSelectedForSeedsLabel.setText(useSelectedForSeedsFile.getName());
 		                    	useSelectedForSeedsButton.setText("Remove File");
 								numSeeds.setVisible(false);
@@ -401,6 +403,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		                    }
 		                }
 	            	} else {
+	            		useSelectedForSeeds.setSelected(false);
 	                	useSelectedForSeedsLabel.setText("Use Starting Seeds From File");
 	                	useSelectedForSeedsButton.setText("Select Seed File");
 						numSeeds.setVisible(true);
