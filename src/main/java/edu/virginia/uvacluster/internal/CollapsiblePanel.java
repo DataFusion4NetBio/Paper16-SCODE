@@ -33,7 +33,6 @@ class CollapsiblePanel extends JPanel {
             text_ = text;
             font = new Font("sans-serif", Font.PLAIN, 12);
             setPreferredSize(new Dimension(200, 20));
- 
         }
  
         protected void paintComponent(Graphics g) {

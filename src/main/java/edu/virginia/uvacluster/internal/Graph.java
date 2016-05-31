@@ -253,26 +253,26 @@ public class Graph {
 		System.out.println("Cluster train binning complete");
 		
 		for (Cluster cluster: clusters) {
-			System.out.println("Loop on cluster");
+//			System.out.println("Loop on cluster");
 			featureMap = cluster.getBinMap();
-			System.out.println("feature map");
+//			System.out.println("feature map");
 			nextLevel.addAll(root.getChildren());
-			System.out.println("next level");
+//			System.out.println("next level");
 			scanGraph(featureMap);
-			System.out.println("About to do");
+//			System.out.println("About to do");
 			do {
-				System.out.println("Doing");
+//				System.out.println("Doing");
 				currentLevel.clear();
 				currentLevel.addAll(nextLevel);
 				nextLevel.clear();
-				System.out.println("About to loop on children");
+//				System.out.println("About to loop on children");
 				for (Child child: currentLevel) {
-					System.out.println("Operating on child");
+//					System.out.println("Operating on child");
 					nextLevel.removeAll(child.getChildren());
 					nextLevel.addAll(child.getChildren());
 					child.addTo(featureMap.get(child.getName()).number);
 				}
-				System.out.println("Done doing");
+//				System.out.println("Done doing");
 			} while(nextLevel.size() > 0);
 		}
 		System.out.println("Done training on clusters");
@@ -310,10 +310,10 @@ public class Graph {
 		List<Child> currentLevel = new ArrayList<Child>();
 		List<Child> nextLevel = new ArrayList<Child>();
 		nextLevel.addAll(root.getChildren());
-		System.out.println("About to reset graph");
-		System.out.println("The name of the root node is: " + root.getDisplayName());
+//		System.out.println("About to reset graph");
+//		System.out.println("The name of the root node is: " + root.getDisplayName());
 		resetGraph();
-		System.out.println("In scanGraph: reset graph done");
+//		System.out.println("In scanGraph: reset graph done");
 		root.activate();
 		do {
 			currentLevel.clear();

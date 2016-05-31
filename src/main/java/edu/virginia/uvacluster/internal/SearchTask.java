@@ -128,6 +128,7 @@ public class SearchTask extends AbstractNetworkTask{
 //		return CyTableUtil.getNodesInState(rootNetwork,"selected",true); // -- Gets nodes selected by mouse-click
 		
 		File seedFile = userInput.selectedSeedFile;
+		System.out.println("The selected seed file is: " + seedFile.getAbsolutePath());
 		ArrayList<String> seedNames = new ArrayList<String>();
 		try (BufferedReader br = new BufferedReader(new FileReader(seedFile))) {
 		    String line;
@@ -142,9 +143,11 @@ public class SearchTask extends AbstractNetworkTask{
 		ArrayList<CyNode> nodeList = new ArrayList<CyNode>();
 		for (CyNode node: network.getNodeList()) {
 			String cyNodeName = network.getRow(node).get("name", String.class);
-			if (nodeList.contains(cyNodeName)) {
+			if (seedNames.contains(cyNodeName)) {
+				System.out.println("Network contains protein: " + cyNodeName);
 				nodeList.add(node);
 			}
+//			System.out.println("Network does not contain protein: " + cyNodeName);
 		}
 		return nodeList;
 	}
