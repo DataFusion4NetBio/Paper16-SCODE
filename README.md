@@ -5,14 +5,14 @@
 
 
 ****
-This [Cytoscape](http://cytoscape.org/) [app](http://apps.cytoscape.org/) allows users to search for complexes in weighted graphs using a supervised model. It is based on the algorithm developed by Qi et al in [this paper](http://www.cs.cmu.edu/~qyj/SuperComplex/)
+This [Cytoscape](http://cytoscape.org/) [app](http://apps.cytoscape.org/) allows users to search for complexes in weighted graphs using supervised learning on a Bayesian network model. It is based on the algorithm developed by Qi et al in [this paper](http://www.cs.cmu.edu/~qyj/SuperComplex/)
 
 
 ###Reference
 Y. Qi, F. Balem, C. Faloutsos, J. Klein-Seetharaman, Z. Bar-Joseph (2008). Protein Complex Identification by Supervised Graph Clustering , Bioinformatics 2008, 24(13), i250-i268.  
 The 16th Annual International Conference Intelligent Systems for Molecular Biology (ISMB), July 2008  
 (Impact Factor 4.328)   
-(acceptance rate of ISMB08: 17% = 49/292)   
+(Acceptance Rate of ISMB08: 17% = 49/292)   
   
 ###Usage
 ####Installation
@@ -25,13 +25,13 @@ To install, either
 To use this app:
   1. Load the graph on which you would like to search for complexes.
   2. Go to Apps > SCODE > Open SCODE. The application will open in the left panel.
-  3. Customize the search and training parameters. 
+  3. Customize the training and search parameters. 
   4. Load training data (see below for formatting requirements).
   5. Click Analyze.
   6. Results are stored as subnetworks of the target network in your session file, complete with a likelihood score.  The app will also generate a new 'Model' network that represents a trained model, which you can re-use with future searches.
 ***
 
-#####Model
+#####Training the Model
 The type of model used by SCODE is a [Bayesian network](http://en.wikipedia.org/wiki/Bayesian_network).  Bayesian networks are probabilistic graphical models that make it easy to define relationships between supposed features of complexes.  Each node in a Bayesian network represents a feature (e.g. Number of nodes in a complex).  Each edge between nodes represents a dependency between features or conditioning of one feature by another (e.g. the complex's density given the number of nodes in the complex).  The values of each feature are discretized before training or scoring a candidate complex.
 
 SCODE provides several options for creating or loading a model. You may:
@@ -42,18 +42,15 @@ SCODE provides several options for creating or loading a model. You may:
 ######Creating Custom Bayesian Networks
 To create a custom Bayesian network, start with an empty Cytoscape Network.  Your graph must contain a node labeled "Root", which represents classification of candidate complexes (complex/non-complex).  All nodes must be connected by directed edges.  Those edges must not form cycles.
 
-A node's name will determine the feature that it represents.  For example 'Count: Node (3)' represents the number of nodes in a complex, with 3 possible bins for feature values.  Descretization/binning is based on the range of a feature's training values.  If the model is trained on complexes composed of 3-11 nodes, bin 1 would account for complexes of 3-5 nodes, bin 2 for complexes of 6-8 nodes, and bin 3 for complexes of 9-11 nodes.
+Each node name corresponds to the feature that it represents. The general syntax for features is  
+      Statistic : Feature {args} (Bins).  
+Statistics are optional and represent calculations on the value of the feature (such as mean, variance, count, etc). Bins allow non-discrete features to be broken up into ranges of values. This syntax is case insensitive. 
 
-The general syntax for features is [<Statistic>] : <Feature>[{args}] (Bins).  Statistics are used to transform the values returned by a feature, which are generally calculated per node.
-*Note that this syntax is case insensitive.  All features/statistics may be entered as is, unless specific examples are given.*
-* **Statistic** is optional, as the Density feature is a single value and so does not need a statistic. Available statistics include: 
-  * Mean
-  * Median
-  * Max
-  * Variance
-  * Count
-  * Ordinals (e.g. 1st, 2nd, 3rd)
-* Each **Feature** is calculated for complexes during training and candidates during search.  Each node must correspond to a feature.  Available features include:
+For example 'Count: Node (3)' represents the number of nodes in a complex, with 3 possible bins for feature values.  Descretization/binning is based on the range of a feature's training values.  If the model is trained on complexes composed of 3-11 nodes, bin 1 would account for complexes of 3-5 nodes, bin 2 for complexes of 6-8 nodes, and bin 3 for complexes of 9-11 nodes.
+
+Each **Feature** is calculated for positive complex exemplars during training and stored as edge data in the trained model. The trained model is then used to score each candidate complex during the search of the PPI network. 
+
+Available features include:
   * Cluster Coefficient
   * Degree
   * Degree Correlation
@@ -66,6 +63,15 @@ The general syntax for features is [<Statistic>] : <Feature>[{args}] (Bins).  St
   * Node Table Correlation Feature (e.g. node{ColumnName,ColumnName,...}) *The specified columns must contain numeric values.*
   * Singular Value
   * Topological Coefficient
+
+
+Available statistics include: 
+  * Mean
+  * Median
+  * Max
+  * Variance
+  * Count
+  * Ordinals (e.g. 1st, 2nd, 3rd)
 
 ***
 
