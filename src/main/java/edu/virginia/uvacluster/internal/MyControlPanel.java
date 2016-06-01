@@ -3,6 +3,7 @@ package edu.virginia.uvacluster.internal;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -18,6 +19,7 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.Icon;
@@ -29,6 +31,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
@@ -57,6 +60,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JPanel evaluatePanel;
 	private JButton analyzeButton;
 	private JComboBox chooser;
+	private JComboBox proteinGraph;
+	private JComboBox inputGraphChooser;
 	private JTextField checkNumNeighbors;
 	private JCheckBox useSelectedForSeeds;
 	private File useSelectedForSeedsFile;
@@ -71,6 +76,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JTextField minSize;
 	
 	private JLabel chooserLabel;
+	private JLabel proteinGraphLabel;
 	private JLabel checkNumNeighborsLabel;
 	private JLabel useSelectedForSeedsLabel;
 	private JLabel numSeedsLabel;
@@ -83,7 +89,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	
 	private JCheckBox trainNewModel;
 	private JComboBox existingModel;
-	private JCheckBox customModel;
 	private JComboBox bayesModel;
 	private JPanel customModelPanel;
 	private JComboBox weightName;
@@ -92,9 +97,22 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JCheckBox ignoreMissing;
 	private File trainingFile;
 	private JButton trainingFileButton;
-	private File resultFile;
 	private JLabel trainingFileLabel;
+	
+	/* NEW */
+	private JRadioButton useTrainedModel;
+	private JRadioButton trainDefaultModel;
+	private JRadioButton trainCustomModel;
+	private JComboBox model;
+	private JPanel trainingOptionPanel;
+	private File resultFile;
+	
+	private JLabel useTrainedModelLabel;
+	private JLabel trainDefaultModelLabel;
+	private JLabel trainCustomModelLabel;
 	private JLabel resultFileLabel;
+	
+	/* ----- */
 	
 	private JLabel trainNewModelLabel;
 	private JLabel existingModelLabel;
@@ -157,7 +175,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		searchPanel.add(advancedSearchPanel);
 		TitledBorder search = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Search");
 		searchPanel.setBorder(search);
-//		searchPanel.setMaximumSize(searchPanel.getPreferredSize());
 		
 		// Set up train panel
 		final JPanel trainPanel = new JPanel();
@@ -168,44 +185,31 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		trainPanel.add(advancedTrainPanel);
 		TitledBorder train = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Train");
 		trainPanel.setBorder(train);
-		Dimension train_dimension = trainPanel.getPreferredSize();
-		Double train_height = train_dimension.getHeight();
-		Double train_width = train_dimension.getWidth();
-		Dimension search_dimension = searchPanel.getPreferredSize();
-		Double search_width = search_dimension.getWidth();
-		searchPanel.setMaximumSize(new Dimension(train_width.intValue(), 1000));
-		trainPanel.setMaximumSize(new Dimension(train_width.intValue(), 1000));
-//		trainPanel.setMaximumSize(new Dimension(search_width.intValue(), train_height.intValue()));
+
 		
 		// Set up evaluation panel
 		evaluatePanel = createEvaluatePanel();
 		evaluatePanel.setBorder(null);
-		Double eval_height = evaluatePanel.getPreferredSize().getHeight();
-		evaluatePanel.setMaximumSize(new Dimension(train_width.intValue(), 1000));
-//		evaluatePanel.setMaximumSize(new Dimension(search_width.intValue(), eval_height.intValue()));
 
-		outerPanel.add(searchPanel);
+
 		outerPanel.add(trainPanel);
+		outerPanel.add(searchPanel);
 		outerPanel.add(analyzeButton);
 		outerPanel.add(evaluatePanel);
 		outerPanel.add(evaluateButton);
 		outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.Y_AXIS));
-//		outerPanel.setMaximumSize(outerPanel.getPreferredSize());
 		
 		final JScrollPane scrollablePanel = new JScrollPane(outerPanel);
 		scrollablePanel.setBorder(null);
-//		Dimension outerPrefSize = outerPanel.getPreferredSize();
-//		Dimension outerMaxSize = outerPanel.getMaximumSize();
-//		scrollablePanel.setMaximumSize(new Dimension(((Double)outerPrefSize.getWidth()).intValue(), ((Double) outerMaxSize.getHeight()).intValue()));
 		setLayout(layout);
 		layout.setAutoCreateContainerGaps(true);
 		layout.setAutoCreateGaps(true);
 		
 		layout.setHorizontalGroup(layout.createParallelGroup(Alignment.CENTER, true)
-				.addComponent(scrollablePanel)
+				.addComponent(outerPanel)
 				);
 		layout.setVerticalGroup(layout.createParallelGroup(Alignment.CENTER, true)
-				.addComponent(scrollablePanel)
+				.addComponent(outerPanel)
 				);
 	}
 	
@@ -334,11 +338,20 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			  }
 			);
 				
-			chooserLabel = new JLabel("Search Variant: ");
+			chooserLabel = new JLabel("Search Variant");
+			
+			
+			// Select protein graph
+			proteinGraph = new JComboBox(getNetworkNames().toArray());
+			proteinGraphLabel = new JLabel("Protein graph");
+			
+			// Name of column containing weights
+			weightName = new JComboBox(getEdgeColumnNames().toArray());
+			weightNameLabel = new JLabel("Weight column in graph");
 			
 			// Number of neighbors to consider
 			checkNumNeighbors = new JTextField("20");
-			checkNumNeighborsLabel = new JLabel("Neighbors to consider: ");
+			checkNumNeighborsLabel = new JLabel("Neighbors to consider");
 			checkNumNeighbors.setVisible(false);
 			checkNumNeighborsLabel.setVisible(false);
 			
@@ -392,7 +405,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 				);
 			
 			
-			useSelectedForSeedsPanel = new JPanel(); // Container for checkbox and button
+			useSelectedForSeedsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Container for checkbox and button
 			useSelectedForSeedsPanel.add(useSelectedForSeeds);
 			useSelectedForSeedsPanel.add(useSelectedForSeedsButton);
 	        useSelectedForSeedsButton.addActionListener(new ActionListener() {	 
@@ -425,27 +438,66 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	            }
 	        }); 
 			
-	        // Choose protein network graph
-	        
+
+			chooser.addActionListener(
+			  new ActionListener() {
+			    public void actionPerformed(ActionEvent e) {
+			      String searchVariant = (String) chooser.getSelectedItem();
+			      if (searchVariant == "M ISA") {
+			    	  checkNumNeighbors.setVisible(true);
+			    	  checkNumNeighborsLabel.setVisible(true);
+			      } else {
+			    	  checkNumNeighbors.setVisible(false);
+			    	  checkNumNeighborsLabel.setVisible(false);
+			      }
+			    }
+			  }
+			);
+			
+			// Save the results to file
+			resultFileLabel = new JLabel("Save Results to File (Optional)");
+			JButton resultFileButton = new JButton("Select Results File");
+	        resultFileButton.addActionListener(new ActionListener() {
+	        	 
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                JFileChooser resultChooser = new JFileChooser();
+	                int result = resultChooser.showOpenDialog(MyControlPanel.this);
+	                if (result == JFileChooser.APPROVE_OPTION) {
+	                    resultFile = resultChooser.getSelectedFile();
+	                    resultFileLabel.setText(resultFile.getName());
+	                }
+	            }
+	        }); 
 	        
 	        // Add search components to layout
 			layout.setHorizontalGroup(
 					layout.createSequentialGroup()
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(proteinGraphLabel)
+								.addComponent(weightNameLabel)
 								.addComponent(chooserLabel)
 								.addComponent(checkNumNeighborsLabel)
 								.addComponent(useSelectedForSeedsLabel)
-								.addComponent(weightNameLabel))
+								.addComponent(resultFileLabel))
 						
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(proteinGraph)
+								.addComponent(weightName)
 								.addComponent(chooser)
 								.addComponent(checkNumNeighbors)
 								.addComponent(useSelectedForSeedsPanel)
-								.addComponent(weightName))
+								.addComponent(resultFileButton))
 			);
 			
 			layout.setVerticalGroup(
 					layout.createSequentialGroup()
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(proteinGraphLabel)
+							.addComponent(proteinGraph))
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(weightNameLabel)
+							.addComponent(weightName))
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(chooserLabel)
 							.addComponent(chooser))
@@ -456,8 +508,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 							.addComponent(useSelectedForSeedsLabel)
 							.addComponent(useSelectedForSeedsPanel))
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(weightNameLabel)
-							.addComponent(weightName))
+							.addComponent(resultFileLabel)
+							.addComponent(resultFileButton))
 			);
 		}
 		return searchPanel;
@@ -465,92 +517,99 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	
 	public JPanel createTrainPanel() {
 		if (trainPanel == null) {
+			
+			final JPanel modelPanel = new JPanel();
+			final JPanel trainingFilePanel = new JPanel();
+			
 			trainPanel = new JPanel();
-			final GroupLayout layout = new GroupLayout(trainPanel);
-			trainPanel.setLayout(layout);
-			layout.setAutoCreateContainerGaps(true);
-			layout.setAutoCreateGaps(true);
+			trainPanel.setLayout(new BoxLayout(trainPanel, BoxLayout.Y_AXIS));	
+
 			
-			trainNewModel = new JCheckBox();
-			trainNewModelLabel = new JLabel("Train New Model");
-			trainNewModel.setSelected(true);
-			trainNewModel.addActionListener(
-					new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							if(trainNewModel.isEnabled() && trainNewModel.isSelected()) {
-								existingModel.setVisible(false);
-								existingModelLabel.setVisible(false);
-								customModelLabel.setVisible(true);
-								customModelPanel.setVisible(true);
-								if (customModel.isSelected()) {
-									bayesModel.setEnabled(true);
-									bayesModelLabel.setEnabled(true);
-								}
-								
-//								weightName.setVisible(true);
-//								weightNameLabel.setVisible(true);
-								clusterPrior.setVisible(true);
-								clusterPriorLabel.setVisible(true);
-								negativeExamples.setVisible(true);
-								negativeExamplesLabel.setVisible(true);
-								trainingFileButton.setVisible(true);
-								trainingFileLabel.setVisible(true);
-								ignoreMissing.setVisible(true);
-								ignoreMissingLabel.setVisible(true);
-							} else {
-								existingModel.setVisible(true);
-								existingModelLabel.setVisible(true);
-								customModelPanel.setVisible(false);
-								customModelLabel.setVisible(false);
-//								bayesModel.setVisible(false);
-//								bayesModelLabel.setVisible(false);
-								
-//								weightName.setVisible(false);
-//								weightNameLabel.setVisible(false);
-								clusterPrior.setVisible(false);
-								clusterPriorLabel.setVisible(false);
-								negativeExamples.setVisible(false);
-								negativeExamplesLabel.setVisible(false);
-								trainingFileButton.setVisible(false);
-								trainingFileLabel.setVisible(false);
-								ignoreMissing.setVisible(false);
-								ignoreMissingLabel.setVisible(false);
-							}
-						}
-					}
-					);
+			// By Default, the model selection, weight column name, and training file buttons should be disabled
+			// until an option is selected
+			modelPanel.setVisible(false);
+			trainingFilePanel.setVisible(false);
 			
 			
-			existingModel = new JComboBox(getNetworkNames().toArray());
-			existingModelLabel = new JLabel("Use Trained Model");
-			existingModel.setVisible(false);
-			existingModelLabel.setVisible(false);
+			// Use Trained Model?
+			useTrainedModel = new JRadioButton("Provide a trained model");
+			useTrainedModel.addActionListener(new ActionListener() {
+	        	 
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                if (useTrainedModel.isSelected()) {
+	                	modelPanel.setVisible(true);
+	                	trainingFilePanel.setVisible(false);
+	                	
+	                	clusterPrior.setEnabled(false);
+	                	negativeExamples.setEnabled(false);
+	                	ignoreMissing.setEnabled(false);
+	                	
+	                }
+	            }
+	        }); 
 			
-			customModel = new JCheckBox();
-			customModelLabel = new JLabel("Use Custom Bayesian Network");
-			bayesModel = new JComboBox(getNetworkNames().toArray());
-			bayesModelLabel = new JLabel("Custom Bayesian Network");
-			bayesModel.setEnabled(false);
-			bayesModelLabel.setVisible(false);
-			customModel.addActionListener(
-					new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							if(customModel.isEnabled() && customModel.isSelected()) {
-									bayesModel.setEnabled(true);
-//									bayesModelLabel.setVisible(true);
-							} else {
-								bayesModel.setEnabled(false);
-//								bayesModelLabel.setVisible(false);
-							}
-						}
-					}
-					);	
-			customModelPanel = new JPanel();
-			customModelPanel.add(customModel);
-			customModelPanel.add(bayesModel);
+			// Train the Default (Built-in) Model?
+			trainDefaultModel = new JRadioButton("Train the built-in model");
+			trainDefaultModel.addActionListener(new ActionListener() {
+        	 
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                if (trainDefaultModel.isSelected()) {
+	                	modelPanel.setVisible(false);
+	                	trainingFilePanel.setVisible(true);
+	                	
+	                	clusterPrior.setEnabled(true);
+	                	negativeExamples.setEnabled(true);
+	                	ignoreMissing.setEnabled(true);
+	                }
+	            }
+	        }); 
 			
-			weightName = new JComboBox(getEdgeColumnNames().toArray());
-			weightNameLabel = new JLabel("Edge Weight Column");
+			// Train a Custom Model?
+			trainCustomModel = new JRadioButton("Train a custom model");
+			trainCustomModel.addActionListener(new ActionListener() {
+	        	 
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                if (trainCustomModel.isSelected()) {
+	                	modelPanel.setVisible(true);
+	                	trainingFilePanel.setVisible(true);
+	                	
+	                	clusterPrior.setEnabled(true);
+	                	negativeExamples.setEnabled(true);
+	                	ignoreMissing.setEnabled(true);
+	                }
+	            }
+	        }); 
+
+			
+			// Options for training: train built-in model, train a custom model,
+			// or provide an already-trained model. Radio buttons controlling these
+			// options are in one ButtonGroup (only one can be selected at a time
+			ButtonGroup trainingButtons = new ButtonGroup();
+			trainingButtons.add(useTrainedModel);
+			trainingButtons.add(trainDefaultModel);
+			trainingButtons.add(trainCustomModel);
+			
+
+			// Create the panel holding radio buttons for training options
+			trainingOptionPanel = new JPanel();
+			trainingOptionPanel.setLayout(new BoxLayout(trainingOptionPanel, BoxLayout.Y_AXIS));
+			trainingOptionPanel.add(trainDefaultModel);
+			trainingOptionPanel.add(useTrainedModel);
+			trainingOptionPanel.add(trainCustomModel);
+			TitledBorder border = new TitledBorder("Select a Training Option:");
+		    border.setTitleJustification(TitledBorder.CENTER);
+		    border.setTitlePosition(TitledBorder.TOP);
+			trainingOptionPanel.setBorder(border);
+			
+			
+			model = new JComboBox(getNetworkNames().toArray());
+			JLabel modelLabel = new JLabel("Select Model");
+			modelPanel.add(modelLabel);
+			modelPanel.add(model);
+			
 			
 			clusterPrior = new JTextField("1E-4");
 			clusterPriorLabel = new JLabel("Cluster Probability Prior");
@@ -583,70 +642,25 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	                }
 	            }
 	        }); 
+	        trainingFilePanel.add(trainingFileLabel);
+	        trainingFilePanel.add(trainingFileButton);
 			
 			ignoreMissing = new JCheckBox();
 			ignoreMissing.setSelected(true);
 			ignoreMissingLabel = new JLabel("Ignore Missing Nodes");
 			
-			resultFileLabel = new JLabel("Save Results to File (Optional)");
-			JButton resultFileButton = new JButton("Select Results File");
-	        resultFileButton.addActionListener(new ActionListener() {
-	        	 
-	            public void actionPerformed(ActionEvent e)
-	            {
-	                JFileChooser resultChooser = new JFileChooser();
-	                int result = resultChooser.showOpenDialog(MyControlPanel.this);
-	                if (result == JFileChooser.APPROVE_OPTION) {
-	                    resultFile = resultChooser.getSelectedFile();
-	                    resultFileLabel.setText(resultFile.getName());
-	                }
-	            }
-	        }); 
 			
-			layout.setHorizontalGroup(
-					layout.createSequentialGroup()
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(trainNewModelLabel)
-								.addComponent(existingModelLabel)
-								.addComponent(customModelLabel)
-//								.addComponent(bayesModelLabel)
-//								.addComponent(weightNameLabel)
-								.addComponent(trainingFileLabel)
-								.addComponent(resultFileLabel))
-						
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(trainNewModel)
-								.addComponent(existingModel)
-								.addComponent(customModelPanel)
-//								.addComponent(bayesModel)
-//								.addComponent(weightName)
-								.addComponent(trainingFileButton)
-								.addComponent(resultFileButton))
-			);
-			layout.setVerticalGroup(
-					layout.createSequentialGroup()
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(trainNewModelLabel)
-							.addComponent(trainNewModel))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(existingModelLabel)
-							.addComponent(existingModel))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(customModelLabel)
-							.addComponent(customModelPanel))
-//					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//							.addComponent(bayesModelLabel)
-//							.addComponent(bayesModel))
-//					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//							.addComponent(weightNameLabel)
-//							.addComponent(weightName))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(trainingFileLabel)
-							.addComponent(trainingFileButton))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(resultFileLabel)
-							.addComponent(resultFileButton))
-			);
+			
+			// Set the alignment on the panels to be left-justified
+			trainingOptionPanel.setAlignmentX( Component.CENTER_ALIGNMENT );
+			modelPanel.setAlignmentX( Component.CENTER_ALIGNMENT );
+			trainingFilePanel.setAlignmentX( Component.CENTER_ALIGNMENT );	
+			
+
+		trainPanel.add(trainingOptionPanel);
+		trainPanel.add(modelPanel);
+		trainPanel.add(trainingFilePanel);
+		
 		}
 		return trainPanel;
 	}
@@ -846,6 +860,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private InputTask createInputTask() {
 		InputTask inputTask = new InputTask();
 		
+		inputTask.graphName = proteinGraph.getSelectedItem().toString();
+		
 		ListSingleSelection<String> inputChooser = new ListSingleSelection<String>("Greedy ISA", "M ISA", "ISA");
 		inputChooser.setSelectedValue(chooser.getSelectedItem().toString());
 		inputTask.chooser = inputChooser;
@@ -877,18 +893,18 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		int inputMinSize = Integer.parseInt(minSize.getText());
 		inputTask.minSize = inputMinSize;
 		
-		boolean inputTrainNewModel = trainNewModel.isSelected();
+		boolean inputTrainNewModel = trainCustomModel.isSelected() || trainDefaultModel.isSelected();
 		inputTask.trainNewModel = inputTrainNewModel;
 		
 		ListSingleSelection<String> inputExistingModel = new ListSingleSelection<String>(getNetworkNames());
-		inputExistingModel.setSelectedValue(existingModel.getSelectedItem().toString());
+		inputExistingModel.setSelectedValue(model.getSelectedItem().toString());
 		inputTask.existingModel = inputExistingModel;
 		
-		boolean inputCustomModel = customModel.isSelected();
+		boolean inputCustomModel = trainCustomModel.isSelected();
 		inputTask.customModel = inputCustomModel;
 		
 		ListSingleSelection<String> inputBayesModel = new ListSingleSelection<String>(getNetworkNames());
-		inputBayesModel.setSelectedValue(bayesModel.getSelectedItem().toString());
+		inputBayesModel.setSelectedValue(model.getSelectedItem().toString());
 		inputTask.bayesModel = inputBayesModel;
 		
 		ListSingleSelection<String> inputWeightName = new ListSingleSelection<String>(getEdgeColumnNames());

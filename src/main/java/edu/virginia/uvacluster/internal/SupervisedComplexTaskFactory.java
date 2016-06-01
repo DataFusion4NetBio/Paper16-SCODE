@@ -30,7 +30,15 @@ public class SupervisedComplexTaskFactory implements TaskFactory{
 	    
 		TaskIterator programTasks = new TaskIterator();
 		
-		CyNetwork network = appManager.getCurrentNetwork();
+//		CyNetwork network = appManager.getCurrentNetwork();
+		String networkName = inputTask.graphName;
+		CyNetwork network = null;
+		
+		for (CyNetwork n: CyActivator.networkManager.getNetworkSet()) {
+			if ((n.getRow(n).get(CyNetwork.NAME, String.class).equals(networkName))) {
+				network = n;
+			}
+		}
 		
 		InputTask userInput = inputTask;
 		TrainingTask train = new TrainingTask(network, userInput);

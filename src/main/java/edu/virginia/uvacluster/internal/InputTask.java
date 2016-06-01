@@ -14,6 +14,9 @@ import org.cytoscape.work.util.ListSingleSelection;
 public class InputTask extends AbstractTask{
 	//User input collected below. 
 	//Instances of this class also act as parameter containers.  
+	
+	public String graphName = "";
+	
 //	@Tunable(description="Choose a variant", groups={"Search", "Variant"},
 //			tooltip="")
 	public ListSingleSelection<String> chooser = new ListSingleSelection<String>("Greedy ISA", "M ISA", "ISA");
