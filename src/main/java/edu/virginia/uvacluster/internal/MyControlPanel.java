@@ -170,14 +170,18 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		trainPanel.setBorder(train);
 		Dimension train_dimension = trainPanel.getPreferredSize();
 		Double train_height = train_dimension.getHeight();
+		Double train_width = train_dimension.getWidth();
 		Dimension search_dimension = searchPanel.getPreferredSize();
 		Double search_width = search_dimension.getWidth();
+		searchPanel.setMaximumSize(new Dimension(train_width.intValue(), 1000));
+		trainPanel.setMaximumSize(new Dimension(train_width.intValue(), 1000));
 //		trainPanel.setMaximumSize(new Dimension(search_width.intValue(), train_height.intValue()));
 		
 		// Set up evaluation panel
 		evaluatePanel = createEvaluatePanel();
 		evaluatePanel.setBorder(null);
 		Double eval_height = evaluatePanel.getPreferredSize().getHeight();
+		evaluatePanel.setMaximumSize(new Dimension(train_width.intValue(), 1000));
 //		evaluatePanel.setMaximumSize(new Dimension(search_width.intValue(), eval_height.intValue()));
 
 		outerPanel.add(searchPanel);
@@ -190,7 +194,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		
 		final JScrollPane scrollablePanel = new JScrollPane(outerPanel);
 		scrollablePanel.setBorder(null);
-		scrollablePanel.setPreferredSize(outerPanel.getPreferredSize());
+//		Dimension outerPrefSize = outerPanel.getPreferredSize();
+//		Dimension outerMaxSize = outerPanel.getMaximumSize();
+//		scrollablePanel.setMaximumSize(new Dimension(((Double)outerPrefSize.getWidth()).intValue(), ((Double) outerMaxSize.getHeight()).intValue()));
 		setLayout(layout);
 		layout.setAutoCreateContainerGaps(true);
 		layout.setAutoCreateGaps(true);
@@ -330,34 +336,41 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 				
 			chooserLabel = new JLabel("Search Variant: ");
 			
+			// Number of neighbors to consider
 			checkNumNeighbors = new JTextField("20");
 			checkNumNeighborsLabel = new JLabel("Neighbors to consider: ");
 			checkNumNeighbors.setVisible(false);
 			checkNumNeighborsLabel.setVisible(false);
 			
-			
+			// Number of Seeds
 			numSeeds = new JTextField("10");
 			numSeedsLabel = new JLabel("Number of Random Seeds");
 			
+			// Search Limit
 			searchLimit = new JTextField("20");
 			searchLimitLabel = new JLabel("Search Limit");
 			
+			// Initial Temperature
 			initTemp = new JTextField("1.8");
 			initTempLabel = new JLabel("Initial Temperature");
 			
+			// Temperature scaling factor (Rate of change of temperature)
 			tempScalingFactor = new JTextField("0.88");
 			tempScalingFactorLabel = new JLabel("Temperature Scaling Factor");
 			
+			// Permissible amount of overlap between complexes
 			overlapLimit = new JTextField("0.75");
 			overlapLimitLabel = new JLabel("Overlap Limit");
 			
+			// Minimum acceptable score
 			minScoreThreshold = new JTextField("-4E2");
 			minScoreThresholdLabel = new JLabel("Minimum Complex Score");
 			
+			// Minimum acceptable complex size
 			minSize = new JTextField("3");
 			minSizeLabel = new JLabel("Minimum Complex Size");
 			
-			
+			// Selecting seeds from file
 			useSelectedForSeedsButton = new JButton("Select Seed File");
 			useSelectedForSeedsButton.setEnabled(false);
 			useSelectedForSeeds = new JCheckBox();
@@ -412,17 +425,23 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	            }
 	        }); 
 			
+	        // Choose protein network graph
+	        
+	        
+	        // Add search components to layout
 			layout.setHorizontalGroup(
 					layout.createSequentialGroup()
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(chooserLabel)
 								.addComponent(checkNumNeighborsLabel)
-								.addComponent(useSelectedForSeedsLabel))
+								.addComponent(useSelectedForSeedsLabel)
+								.addComponent(weightNameLabel))
 						
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(chooser)
 								.addComponent(checkNumNeighbors)
-								.addComponent(useSelectedForSeedsPanel))
+								.addComponent(useSelectedForSeedsPanel)
+								.addComponent(weightName))
 			);
 			
 			layout.setVerticalGroup(
@@ -436,6 +455,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(useSelectedForSeedsLabel)
 							.addComponent(useSelectedForSeedsPanel))
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(weightNameLabel)
+							.addComponent(weightName))
 			);
 		}
 		return searchPanel;
@@ -465,8 +487,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 									bayesModelLabel.setEnabled(true);
 								}
 								
-								weightName.setVisible(true);
-								weightNameLabel.setVisible(true);
+//								weightName.setVisible(true);
+//								weightNameLabel.setVisible(true);
 								clusterPrior.setVisible(true);
 								clusterPriorLabel.setVisible(true);
 								negativeExamples.setVisible(true);
@@ -483,8 +505,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 //								bayesModel.setVisible(false);
 //								bayesModelLabel.setVisible(false);
 								
-								weightName.setVisible(false);
-								weightNameLabel.setVisible(false);
+//								weightName.setVisible(false);
+//								weightNameLabel.setVisible(false);
 								clusterPrior.setVisible(false);
 								clusterPriorLabel.setVisible(false);
 								negativeExamples.setVisible(false);
@@ -588,7 +610,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 								.addComponent(existingModelLabel)
 								.addComponent(customModelLabel)
 //								.addComponent(bayesModelLabel)
-								.addComponent(weightNameLabel)
+//								.addComponent(weightNameLabel)
 								.addComponent(trainingFileLabel)
 								.addComponent(resultFileLabel))
 						
@@ -597,7 +619,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 								.addComponent(existingModel)
 								.addComponent(customModelPanel)
 //								.addComponent(bayesModel)
-								.addComponent(weightName)
+//								.addComponent(weightName)
 								.addComponent(trainingFileButton)
 								.addComponent(resultFileButton))
 			);
@@ -615,9 +637,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 //					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 //							.addComponent(bayesModelLabel)
 //							.addComponent(bayesModel))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(weightNameLabel)
-							.addComponent(weightName))
+//					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//							.addComponent(weightNameLabel)
+//							.addComponent(weightName))
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(trainingFileLabel)
 							.addComponent(trainingFileButton))
