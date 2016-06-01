@@ -1,51 +1,48 @@
 ##Supervised Complex Detection
 
-###Cytoscape App SCODE: 
-- This is the source code development repo for "SCODE" Cytoscape app, a supervised subgraph clustering application 
-
-- http://apps.cytoscape.org/apps/scode
+###SCODE: A Cytoscape App for Supervised Complex Detection in PPI networks 
+  Available for free download online: http://apps.cytoscape.org/apps/scode
 
 
 ****
-[![Build Status](https://magnum.travis-ci.com/UVA-MachineLearningBioinformatics/Supervised-Complex-Detection.svg?token=tpiCcg1A2miHNa45C9Hq)](https://magnum.travis-ci.com/UVA-MachineLearningBioinformatics/Tool-bioGraphTools-Cytoscape)
-This [Cytoscape](http://cytoscape.org/) [app](http://apps.cytoscape.org/) allows users to search for complexes in weighted graphs using a supervised model. [Paper](http://www.cs.cmu.edu/~qyj/SuperComplex/)
+This [Cytoscape](http://cytoscape.org/) [app](http://apps.cytoscape.org/) allows users to search for complexes in weighted graphs using a supervised model. It is based on the algorithm developed by Qi et al in [this paper](http://www.cs.cmu.edu/~qyj/SuperComplex/)
 
 
 ###Reference
-Y. Qi, F. Balem, C. Faloutsos, J. Klein-Seetharaman, Z. Bar-Joseph, (2008)
-
-Protein Complex Identification by Supervised Graph Clustering , Bioinformatics 2008, 24(13), i250-i268 (The 16th Annual International Conference Intelligent Systems for Molecular Biology (ISMB), July 2008, 
-(Impact Factor 4.328) 
-(acceptance rate of ISMB08: 17% = 49/292) 
-Note: Supervised Information integraion + Structured Prediction + Network biology
-
-
+Y. Qi, F. Balem, C. Faloutsos, J. Klein-Seetharaman, Z. Bar-Joseph (2008). Protein Complex Identification by Supervised Graph Clustering , Bioinformatics 2008, 24(13), i250-i268.  
+The 16th Annual International Conference Intelligent Systems for Molecular Biology (ISMB), July 2008  
+(Impact Factor 4.328)   
+(acceptance rate of ISMB08: 17% = 49/292)   
+  
 ###Usage
 ####Installation
-Supervised Complex Detection (SCODE) is available through the Cytoscape App Store [here](http://apps.cytoscape.org/apps/scode).  To install, either use the automatic install button on the site (while Cytoscape is running) or download and move the '.jar' file to ~/Cytoscape/3/apps/installed/.
+Supervised Complex Detection (SCODE) is available through the Cytoscape App Store [here](http://apps.cytoscape.org/apps/scode).  
+To install, either  
+  1. Open Cytoscape on your machine, and navigate to Apps > App Manager from the menu bar. Search for 'SCODE' and click Install.
+  2. Download the .jar file from the [Cytoscape App Store website](http://apps.cytoscape.org/apps/scode). Then move the jar file into your ~/Cytoscape/3/apps/installed/ directory.
 
 ####Basics
 To use this app:
   1. Load the graph on which you would like to search for complexes.
-  2. Go to Apps > SupervisedComplex > Anaylyze Network
-  3. Customize Parameters
+  2. Go to Apps > SCODE > Open SCODE. The application will open in the left panel.
+  3. Customize the search and training parameters. 
   4. Load training data (see below for formatting requirements).
-  5. Click OK.
-  6. Results are stored as subnetworks of the target network in your session file, complete with a likelihood score.  You may also notice a new 'Model' network that represents a trained model, which you can re-use with future searches.
-***
-
-#####Training Data
-SCODE uses a supervised learning model to find candidate complexes with similar properties to known training complexes. Users provide these training complexes as examples to the model.  Training data should be stored in tab seperated values files, where each row represents a known cluster with an arbitrary number of nodes.  Each value should be the name of a protein as it appears in the graph you are searching, under the 'name' column.  The first two columns should be a numerical id for the complex and a name, respectively.
+  5. Click Analyze.
+  6. Results are stored as subnetworks of the target network in your session file, complete with a likelihood score.  The app will also generate a new 'Model' network that represents a trained model, which you can re-use with future searches.
 ***
 
 #####Model
-*For inforamation on parameters, check out the tooltips!*
-The type of model used by SCODE is a [Bayesian network](http://en.wikipedia.org/wiki/Bayesian_network).  Bayesian networks are probabilistic graphical models that make it easy to define relationships between supposed features of complexes.  Each node in a Bayesian network represents a feature (e.g. Number of nodes in a complex).  Each edge between nodes represents a dependency between features or conditioning of one feature by another (e.g. the complex's density given the number of nodes in the complex).  The values of each feature are discretized before training or scoring a candidate complex.  The default model is based on [this paper](http://www.cs.cmu.edu/~qyj/SuperComplex/).
+The type of model used by SCODE is a [Bayesian network](http://en.wikipedia.org/wiki/Bayesian_network).  Bayesian networks are probabilistic graphical models that make it easy to define relationships between supposed features of complexes.  Each node in a Bayesian network represents a feature (e.g. Number of nodes in a complex).  Each edge between nodes represents a dependency between features or conditioning of one feature by another (e.g. the complex's density given the number of nodes in the complex).  The values of each feature are discretized before training or scoring a candidate complex.
 
-######Custom Bayesian Networks
-To create a custom Bayesian network, start with an empty Cytoscape Network.  Your graph must contain a node labeled "Root", which represents classification of candidate complexes (cluster/non-cluster).  All nodes must be connected by directed edges.  Those edges must not form cycles.
+SCODE provides several options for creating or loading a model. You may:
+  1. Use the default, un-trained model provided by SCODE - the default model is based on [the paper by Qi et al](http://www.cs.cmu.edu/~qyj/SuperComplex/). You must provide training data (positive complex exemplars),
+  2. Load a custom, un-trained model you have created as a network in Cytoscape. You must provide training data (positive complex exemplars), or
+  3. Load a trained model stored as a network in Cytoscape
 
-A node's name will determine the feature that it represents.  For example 'Count: Node (3)' represents the number of nodes in a complex, with 3 possible bins for feature values.  Descretization/binning is based on the range of a feature's training values.  So if the model is trained on complexes composed of 3-11 nodes, bin 1 would account for complexes of 3-5 nodes, bin 2 for complexes of 6-8 nodes, and bin 3 for complexes of 9-11 nodes.
+######Creating Custom Bayesian Networks
+To create a custom Bayesian network, start with an empty Cytoscape Network.  Your graph must contain a node labeled "Root", which represents classification of candidate complexes (complex/non-complex).  All nodes must be connected by directed edges.  Those edges must not form cycles.
+
+A node's name will determine the feature that it represents.  For example 'Count: Node (3)' represents the number of nodes in a complex, with 3 possible bins for feature values.  Descretization/binning is based on the range of a feature's training values.  If the model is trained on complexes composed of 3-11 nodes, bin 1 would account for complexes of 3-5 nodes, bin 2 for complexes of 6-8 nodes, and bin 3 for complexes of 9-11 nodes.
 
 The general syntax for features is [<Statistic>] : <Feature>[{args}] (Bins).  Statistics are used to transform the values returned by a feature, which are generally calculated per node.
 *Note that this syntax is case insensitive.  All features/statistics may be entered as is, unless specific examples are given.*
@@ -71,6 +68,11 @@ The general syntax for features is [<Statistic>] : <Feature>[{args}] (Bins).  St
   * Topological Coefficient
 
 ***
+
+#####Training Data
+SCODE uses a supervised learning model to find candidate complexes with similar properties to known training complexes. Users provide these training complexes as examples to the model.  Training data should be stored in tab seperated values files, where each row represents a known cluster with an arbitrary number of nodes.  Each value should be the name of a protein as it appears in the graph you are searching, under the 'name' column.  The first two columns should be a numerical id for the complex and a name, respectively.
+***
+
 #####Search
 *For inforamation on parameters, check out the tooltips!*
 Currently, SCODE supports an [iterative simulated annealing search](http://en.wikipedia.org/wiki/Simulated_annealing) for finding candidate complexes within a dataset.  This search comes in three flavors:
