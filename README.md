@@ -75,16 +75,24 @@ Available statistics include:
 
 ***
 
-#####Training Data
-SCODE uses a supervised learning model to find candidate complexes with similar properties to known training complexes. Users provide these training complexes as examples to the model.  Training data should be stored in tab seperated values files, where each row represents a known cluster with an arbitrary number of nodes.  Each value should be the name of a protein as it appears in the graph you are searching, under the 'name' column.  The first two columns should be a numerical id for the complex and a name, respectively.
+######Training Data
+SCODE uses a supervised learning model to find candidate complexes with similar properties to known training complexes. Users provide these training complexes as examples to the model.  Training data should be stored according to the following format:
+
+Each row represents a known complex, with tab-separated columns as follows:  
+* Column 1: Numerical identifier for the complex  
+* Column 2: Name identifier for the complex  
+* Column 3: Space-separated names of the protein members of the complex, as they appear in the input PPI graph.  
+
 ***
 
-#####Search
-*For inforamation on parameters, check out the tooltips!*
+######Search
+
 Currently, SCODE supports an [iterative simulated annealing search](http://en.wikipedia.org/wiki/Simulated_annealing) for finding candidate complexes within a dataset.  This search comes in three flavors:
 * ISA: This is the fastest option and will perform the worst.  Each round, a candidate is expanded (or not) using a single, random neighboring node.  
 * M-ISA: This a slower option that will perform better than ISA.  Each round, a candidate is expanded by testing the M highest degree neighboring nodes.  The best of these M nodes is used for expansion.
 * Greedy-ISA:  This option, the slowest, tests all the neighboring nodes for expansion and selects the best one.  This will result in more, larger, higher-scoring candidate complexes.
+
+SCODE allows you to specify several additional search parameters to define the scope of the search (temperature, scaling ratio, etc). For an explanation of each of these parameters, see the more detailed [User Manual](Demo/SCODEUserManual.pdf)
 
 ***
 ###Notes on Development
