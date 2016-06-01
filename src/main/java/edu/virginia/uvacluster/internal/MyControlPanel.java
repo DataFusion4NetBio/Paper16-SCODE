@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -191,13 +193,24 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		evaluatePanel = createEvaluatePanel();
 		evaluatePanel.setBorder(null);
 
-
-		outerPanel.add(trainPanel);
-		outerPanel.add(searchPanel);
-		outerPanel.add(analyzeButton);
-		outerPanel.add(evaluatePanel);
-		outerPanel.add(evaluateButton);
-		outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.Y_AXIS));
+		outerPanel.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weighty = 1.0;
+		gbc.gridy = 0;
+		outerPanel.add(trainPanel, gbc);
+		gbc.gridy = 1;
+		outerPanel.add(searchPanel, gbc);
+		gbc.gridy = 2;
+		outerPanel.add(analyzeButton, gbc);
+		gbc.gridy = 3;
+		outerPanel.add(evaluatePanel, gbc);
+		gbc.gridy = 4;
+		outerPanel.add(evaluateButton, gbc);
+//		outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.Y_AXIS));
+		
+		
+		
 		
 		final JScrollPane scrollablePanel = new JScrollPane(outerPanel);
 		scrollablePanel.setBorder(null);
@@ -206,10 +219,10 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		layout.setAutoCreateGaps(true);
 		
 		layout.setHorizontalGroup(layout.createParallelGroup(Alignment.CENTER, true)
-				.addComponent(outerPanel)
+				.addComponent(scrollablePanel)
 				);
 		layout.setVerticalGroup(layout.createParallelGroup(Alignment.CENTER, true)
-				.addComponent(outerPanel)
+				.addComponent(scrollablePanel)
 				);
 	}
 	
@@ -231,6 +244,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 								.addComponent(overlapLimitLabel)
 								.addComponent(minScoreThresholdLabel)
 								.addComponent(minSizeLabel)
+								.addComponent(useSelectedForSeedsLabel)
 								.addComponent(numSeedsLabel))
 						
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -240,6 +254,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 								.addComponent(overlapLimit)
 								.addComponent(minScoreThreshold)
 								.addComponent(minSize)
+								.addComponent(useSelectedForSeedsPanel)
 								.addComponent(numSeeds))
 			);
 			
@@ -263,6 +278,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(minSizeLabel)
 							.addComponent(minSize))
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(useSelectedForSeedsLabel)
+							.addComponent(useSelectedForSeedsPanel))
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(numSeedsLabel)
 							.addComponent(numSeeds))
@@ -402,8 +420,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 						}
 					}
 				}
-				);
-			
+				);	
 			
 			useSelectedForSeedsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Container for checkbox and button
 			useSelectedForSeedsPanel.add(useSelectedForSeeds);
@@ -478,7 +495,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 								.addComponent(weightNameLabel)
 								.addComponent(chooserLabel)
 								.addComponent(checkNumNeighborsLabel)
-								.addComponent(useSelectedForSeedsLabel)
 								.addComponent(resultFileLabel))
 						
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -486,7 +502,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 								.addComponent(weightName)
 								.addComponent(chooser)
 								.addComponent(checkNumNeighbors)
-								.addComponent(useSelectedForSeedsPanel)
 								.addComponent(resultFileButton))
 			);
 			
@@ -505,9 +520,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 							.addComponent(checkNumNeighborsLabel)
 							.addComponent(checkNumNeighbors))
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(useSelectedForSeedsLabel)
-							.addComponent(useSelectedForSeedsPanel))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(resultFileLabel)
 							.addComponent(resultFileButton))
 			);
@@ -525,7 +537,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			trainPanel.setLayout(new BoxLayout(trainPanel, BoxLayout.Y_AXIS));	
 
 			
-			// By Default, the model selection, weight column name, and training file buttons should be disabled
+			// By Default, the model selection and training file buttons should be disabled
 			// until an option is selected
 			modelPanel.setVisible(false);
 			trainingFilePanel.setVisible(false);
