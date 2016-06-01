@@ -207,10 +207,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		outerPanel.add(evaluatePanel, gbc);
 		gbc.gridy = 4;
 		outerPanel.add(evaluateButton, gbc);
-//		outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.Y_AXIS));
-		
-		
-		
 		
 		final JScrollPane scrollablePanel = new JScrollPane(outerPanel);
 		scrollablePanel.setBorder(null);
@@ -773,21 +769,31 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	}
 	
 	private void analyzeButtonPressed() {
-		InputTask inputTask = createInputTask();
-		SupervisedComplexTaskFactory clusterFactory = new SupervisedComplexTaskFactory(inputTask, appManager);		
-		DialogTaskManager dialogTaskManager = registrar.getService(DialogTaskManager.class);
-		TaskIterator taskIter = clusterFactory.createTaskIterator();
-		dialogTaskManager.execute(taskIter);
 		
-		if (resultFile != null) {
-			Component[] evalComponents = evaluatePanel.getComponents();
-			for(int i = 0; i < evalComponents.length; i++) {
-				evalComponents[i].setVisible(true);
+		Integer inputValidation = validateInput();
+		if (inputValidation == 1) {	
+			InputTask inputTask = createInputTask();
+			SupervisedComplexTaskFactory clusterFactory = new SupervisedComplexTaskFactory(inputTask, appManager);		
+			DialogTaskManager dialogTaskManager = registrar.getService(DialogTaskManager.class);
+			TaskIterator taskIter = clusterFactory.createTaskIterator();
+			dialogTaskManager.execute(taskIter);
+			
+			if (resultFile != null) {
+				Component[] evalComponents = evaluatePanel.getComponents();
+				for(int i = 0; i < evalComponents.length; i++) {
+					evalComponents[i].setVisible(true);
+				}
+				evaluatePanel.setVisible(true);
+				evaluateButton.setVisible(true);
+				TitledBorder eval = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Evaluate Results");
+				evaluatePanel.setBorder(eval);
 			}
-			evaluatePanel.setVisible(true);
-			evaluateButton.setVisible(true);
-			TitledBorder eval = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Evaluate Results");
-			evaluatePanel.setBorder(eval);
+		} else if (inputValidation == 2) {
+			JOptionPane.showMessageDialog(this, "Please select a training option");
+		} else if (inputValidation == 3) {
+			JOptionPane.showMessageDialog(this, "Please load a positive training file");
+		} else if (inputValidation == 4) {
+			JOptionPane.showMessageDialog(this, "Please select the edge weight column under 'Search'");
 		}
 	}
 	
@@ -938,6 +944,23 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		
 		inputTask.selectedSeedFile = useSelectedForSeedsFile;
 		return inputTask;
+	}
+	
+	private Integer validateInput() {
+
+		if (!useTrainedModel.isSelected() && !trainDefaultModel.isSelected() && !trainCustomModel.isSelected()) {
+			// User has not selected a training option
+			return 2;
+		} 
+		else if ( (trainDefaultModel.isSelected() || trainCustomModel.isSelected() ) && trainingFile == null ) {
+			// User has not provided a positive training file for one of the training options
+			return 3;
+		}
+		else if (weightName.getSelectedItem().equals("- Select Column -")) {
+			// User has not selected a weight column
+			return 4;
+		}
+		return 1;
 	}
 	
 }
