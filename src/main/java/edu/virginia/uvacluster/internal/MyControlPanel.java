@@ -691,7 +691,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			p = new JTextField("0.5");
 			pLabel = new JLabel("p");
 			
-			evaluationFileLabel = new JLabel("File of Predicted Complexes");
+			evaluationFileLabel = new JLabel("File of Testing Complexes");
 			evaluationFileButton = new JButton("Select Evaluation File");
 	        evaluationFileButton.addActionListener(new ActionListener() {
 	        	 
@@ -887,12 +887,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					}
 				}
 			}
-			
-			// Get the number of positive examples from the test set
-			LineNumberReader  lnr = new LineNumberReader(new FileReader(trainingFile));
-			lnr.skip(Long.MAX_VALUE);
-			int numPosTrainingExamples = lnr.getLineNumber(); 
-			lnr.close();
 			
 			double recall = countKnown / evalComplexes.size() ;
 			double precision = countPredicted / resultComplexes.size();

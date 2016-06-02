@@ -82,12 +82,14 @@ public class SearchTask extends AbstractNetworkTask{
 			resultComplexes = new ArrayList<CySubNetwork>();
 			for (CySubNetwork result: results) {
 				
+				CyActivator.networkManager.addNetwork(result);
+				
 				for (CyNode n : result.getNodeList()) {
 					n.setNetworkPointer(result);
 				}
 				
 				resultComplexes.add(result);
-				CyActivator.networkManager.addNetwork(result);
+				
 				result.getRow(result).set(CyNetwork.NAME, CyActivator.networkNaming
 						.getSuggestedNetworkTitle(
 								"Complex #" + i + " (Score: " + model.score(new Cluster(model.getFeatures(),result)) + ")"));
