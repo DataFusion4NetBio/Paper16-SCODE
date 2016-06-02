@@ -794,6 +794,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			JOptionPane.showMessageDialog(this, "Please load a positive training file");
 		} else if (inputValidation == 4) {
 			JOptionPane.showMessageDialog(this, "Please select the edge weight column under 'Search'");
+		} else if (inputValidation == 5) {
+			JOptionPane.showMessageDialog(this, "Please load a seed file, or uncheck 'Use Starting Seeds From File' under the advanced search parameters.");
 		}
 	}
 	
@@ -959,6 +961,10 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		else if (weightName.getSelectedItem().equals("- Select Column -")) {
 			// User has not selected a weight column
 			return 4;
+		}
+		else if (useSelectedForSeeds.isSelected() && (useSelectedForSeedsFile == null)) {
+			// User has not provided a seed file
+			return 5;
 		}
 		return 1;
 	}
