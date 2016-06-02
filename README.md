@@ -53,7 +53,7 @@ Each row represents a known complex, with tab-separated columns as follows:
 
 ***
 
-######Search
+#####Searching a PPI Graph
 
 Currently, SCODE supports an [iterative simulated annealing search](http://en.wikipedia.org/wiki/Simulated_annealing) for finding candidate complexes within a dataset.  This search comes in three flavors:
 * ISA: This is the fastest option and will perform the worst.  Each round, a candidate is expanded (or not) using a single, random neighboring node.  
