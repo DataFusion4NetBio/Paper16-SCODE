@@ -44,6 +44,8 @@ import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyNode;
+import org.cytoscape.model.subnetwork.CySubNetwork;
 import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
@@ -125,6 +127,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JLabel negativeExamplesLabel;
 	private JLabel ignoreMissingLabel;
 	
+	SupervisedComplexTaskFactory clusterFactory;
+	private ArrayList<CySubNetwork> searchResults;
 	private JTextField p;
 	private File evaluationFile;
 	private JButton evaluationFileButton;
@@ -773,21 +777,20 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		Integer inputValidation = validateInput();
 		if (inputValidation == 1) {	
 			InputTask inputTask = createInputTask();
-			SupervisedComplexTaskFactory clusterFactory = new SupervisedComplexTaskFactory(inputTask, appManager);		
+			clusterFactory = new SupervisedComplexTaskFactory(inputTask, appManager);		
 			DialogTaskManager dialogTaskManager = registrar.getService(DialogTaskManager.class);
 			TaskIterator taskIter = clusterFactory.createTaskIterator();
 			dialogTaskManager.execute(taskIter);
-			
-			if (resultFile != null) {
-				Component[] evalComponents = evaluatePanel.getComponents();
-				for(int i = 0; i < evalComponents.length; i++) {
-					evalComponents[i].setVisible(true);
-				}
-				evaluatePanel.setVisible(true);
-				evaluateButton.setVisible(true);
-				TitledBorder eval = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Evaluate Results");
-				evaluatePanel.setBorder(eval);
+
+			Component[] evalComponents = evaluatePanel.getComponents();
+			for(int i = 0; i < evalComponents.length; i++) {
+				evalComponents[i].setVisible(true);
 			}
+			evaluatePanel.setVisible(true);
+			evaluateButton.setVisible(true);
+			TitledBorder eval = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Evaluate Results");
+			evaluatePanel.setBorder(eval);				
+
 		} else if (inputValidation == 2) {
 			JOptionPane.showMessageDialog(this, "Please select a training option");
 		} else if (inputValidation == 3) {
@@ -800,81 +803,102 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	}
 	
 	private void evaluateButtonPressed(File resultFile, File evaluateFile) throws IOException {
-		ArrayList< Set<String> > resultComplexes = new ArrayList< Set<String> >();
-		ArrayList< Set<String> > evalComplexes = new ArrayList< Set<String> >();	
-		FileReader fileReader = new FileReader(resultFile) ;
-		BufferedReader bufferedReader = new BufferedReader(fileReader) ;
-		String line = bufferedReader.readLine() ; 
-		while((line = bufferedReader.readLine()) != null) {
-			String[] l = line.split("\t");
-			String complexes_string = l[2];
-			HashSet result_complexes = new HashSet(Arrays.asList(complexes_string.split(" ")));
-			resultComplexes.add(result_complexes);
-		}
-
-		System.out.println("");
-		System.out.println("");
-
-		FileReader evalfileReader = new FileReader(evaluateFile);
-		BufferedReader evalbufferedReader = new BufferedReader(evalfileReader);
-		line = evalbufferedReader.readLine() ;
-		while((line = evalbufferedReader.readLine()) != null) {
-				String[] l = line.split("\t");
-				if (l.length == 3) {
-					System.out.println("Line: " + line);
-					String complexes_string = l[2];
-					HashSet eval_complexes = new HashSet(Arrays.asList(complexes_string.split(" ")));
-					evalComplexes.add(eval_complexes);
+		
+		if (evaluateFile == null) {
+			JOptionPane.showMessageDialog(this, "You must provide an evaluation file.");
+		} else {
+			
+			ArrayList< Set<String> > resultComplexes = new ArrayList< Set<String> >();
+			ArrayList< Set<String> > evalComplexes = new ArrayList< Set<String> >();	
+			
+			searchResults = clusterFactory.getSearchTask().getResults();
+			for (CySubNetwork result : searchResults) {
+				System.out.print("Printing a complex:");
+				List<CyNode> nodes = result.getNodeList();
+				Set<String> nodeNames = new HashSet<String>();
+				for (CyNode n : nodes) {
+					CyNetwork nodeNetwork = n.getNetworkPointer(); // The network pointer is set in SearchTask.java
+					nodeNames.add(nodeNetwork.getDefaultNodeTable().getRow(n.getSUID()).get("shared name", String.class));
+					System.out.print(" " + nodeNetwork.getDefaultNodeTable().getRow(n.getSUID()).get("shared name", String.class));
 				}
-		}
-		
-		System.out.println("");
-		System.out.println("");
+				System.out.println("");
+				resultComplexes.add(nodeNames);
+			}
+			
+			
+	//		FileReader fileReader = new FileReader(resultFile) ;
+	//		BufferedReader bufferedReader = new BufferedReader(fileReader) ;
+	//		String line = bufferedReader.readLine() ; 
+	//		while((line = bufferedReader.readLine()) != null) {
+	//			String[] l = line.split("\t");
+	//			String complexes_string = l[2];
+	//			HashSet result_complexes = new HashSet(Arrays.asList(complexes_string.split(" ")));
+	//			resultComplexes.add(result_complexes);
+	//		}
 	
-		int countPredicted = 0;
-		int countKnown = 0;
-		
-		for (int i = 0; i < resultComplexes.size(); i++) {
-			Set<String> predicted = resultComplexes.get(i);
-			Boolean predictedAlreadyMatched = false;
-			for(int j = 0; j < evalComplexes.size(); j++) {
-				double A = 0; 
-				double B = 0; 
-				double C = 0; 
-				Set<String> known = evalComplexes.get(j);
-				
-				Set<String> intersection = new HashSet<String>(predicted); // use the copy constructor
-				intersection.retainAll(known);
-				
-				C = intersection.size();
-				A = predicted.size() - C;
-				B = known.size() - C;
-				
-				float pVal = Float.parseFloat(p.getText());
-				
-				if ( (C / (A + C) > pVal) && (C / (B + C)) > pVal) {
-					if (!predictedAlreadyMatched) {
-						// This forces to iterate to the next predicted complex, so that a predicted complex is not counted twice
-						// if it matches with multiple known complexes
-						countPredicted ++;
-						predictedAlreadyMatched = true;
+			System.out.println("");
+			System.out.println("");
+	
+			FileReader evalfileReader = new FileReader(evaluateFile);
+			BufferedReader evalbufferedReader = new BufferedReader(evalfileReader);
+			String line = evalbufferedReader.readLine() ;
+			while((line = evalbufferedReader.readLine()) != null) {
+					String[] l = line.split("\t");
+					if (l.length == 3) {
+						System.out.println("Line: " + line);
+						String complexes_string = l[2];
+						HashSet eval_complexes = new HashSet(Arrays.asList(complexes_string.split(" ")));
+						evalComplexes.add(eval_complexes);
 					}
-					countKnown++;
+			}
+			
+			System.out.println("");
+			System.out.println("");
+		
+			int countPredicted = 0;
+			int countKnown = 0;
+			
+			for (int i = 0; i < resultComplexes.size(); i++) {
+				Set<String> predicted = resultComplexes.get(i);
+				Boolean predictedAlreadyMatched = false;
+				for(int j = 0; j < evalComplexes.size(); j++) {
+					double A = 0; 
+					double B = 0; 
+					double C = 0; 
+					Set<String> known = evalComplexes.get(j);
+					
+					Set<String> intersection = new HashSet<String>(predicted); // use the copy constructor
+					intersection.retainAll(known);
+					
+					C = intersection.size();
+					A = predicted.size() - C;
+					B = known.size() - C;
+					
+					float pVal = Float.parseFloat(p.getText());
+					
+					if ( (C / (A + C) > pVal) && (C / (B + C)) > pVal) {
+						if (!predictedAlreadyMatched) {
+							// This forces to iterate to the next predicted complex, so that a predicted complex is not counted twice
+							// if it matches with multiple known complexes
+							countPredicted ++;
+							predictedAlreadyMatched = true;
+						}
+						countKnown++;
+					}
 				}
 			}
+			
+			// Get the number of positive examples from the test set
+			LineNumberReader  lnr = new LineNumberReader(new FileReader(trainingFile));
+			lnr.skip(Long.MAX_VALUE);
+			int numPosTrainingExamples = lnr.getLineNumber(); 
+			lnr.close();
+			
+			double recall = countKnown / evalComplexes.size() ;
+			double precision = countPredicted / resultComplexes.size();
+			
+			JOptionPane.showMessageDialog(this, "Recall: " + recall + "\nPrecision: " + precision, "Evaluation Scoring", JOptionPane.INFORMATION_MESSAGE);
 		}
-		
-		// Get the number of positive examples from the test set
-		LineNumberReader  lnr = new LineNumberReader(new FileReader(trainingFile));
-		lnr.skip(Long.MAX_VALUE);
-		int numPosTrainingExamples = lnr.getLineNumber(); 
-		lnr.close();
-		
-		double recall = countKnown / evalComplexes.size() ;
-		double precision = countPredicted / resultComplexes.size();
-		
-		JOptionPane.showMessageDialog(this, "Recall: " + recall + "\nPrecision: " + precision, "Evaluation Scoring", JOptionPane.INFORMATION_MESSAGE);
-
 	}
 	
 	private InputTask createInputTask() {

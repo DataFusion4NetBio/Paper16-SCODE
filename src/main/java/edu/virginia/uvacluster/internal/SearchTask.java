@@ -23,6 +23,7 @@ public class SearchTask extends AbstractNetworkTask{
 	private TrainingTask training = null;
 	private InputTask userInput;
 	private Search selectedSearch;
+	private ArrayList<CySubNetwork> resultComplexes;
 	public long elapsedTime;
 	
 	public SearchTask(CyNetwork network, InputTask userInput, TrainingTask training) {
@@ -32,6 +33,10 @@ public class SearchTask extends AbstractNetworkTask{
 		this.training = training;
 	}
 
+	public ArrayList<CySubNetwork> getResults() {
+		return resultComplexes;
+	}
+	
 	@Override
 	public void cancel() {
 		selectedSearch.cancel();
@@ -74,7 +79,14 @@ public class SearchTask extends AbstractNetworkTask{
 			taskMonitor.setProgress(0.9);
 			taskMonitor.setStatusMessage("Returning Results...");
 			System.out.println("Adding " + results.size() + " Result Networks via manager...");
+			resultComplexes = new ArrayList<CySubNetwork>();
 			for (CySubNetwork result: results) {
+				
+				for (CyNode n : result.getNodeList()) {
+					n.setNetworkPointer(result);
+				}
+				
+				resultComplexes.add(result);
 				CyActivator.networkManager.addNetwork(result);
 				result.getRow(result).set(CyNetwork.NAME, CyActivator.networkNaming
 						.getSuggestedNetworkTitle(

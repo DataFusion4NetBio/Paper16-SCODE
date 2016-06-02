@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 public class SupervisedComplexTaskFactory implements TaskFactory{
 
 	private final InputTask inputTask;
+	private SearchTask search;
 	CyApplicationManager appManager;
 	Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -42,13 +43,17 @@ public class SupervisedComplexTaskFactory implements TaskFactory{
 		
 		InputTask userInput = inputTask;
 		TrainingTask train = new TrainingTask(network, userInput);
-		SearchTask search = new SearchTask(network, userInput, train);
+		search = new SearchTask(network, userInput, train);
 		
 		//programTasks.append(userInput);
 		programTasks.append(train);
 		programTasks.append(search);
 		
 		return programTasks;
+	}
+	
+	public SearchTask getSearchTask() {
+		return search;
 	}
 
 	@Override
