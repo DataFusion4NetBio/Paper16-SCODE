@@ -15,6 +15,10 @@ The 16th Annual International Conference Intelligent Systems for Molecular Biolo
 (Acceptance Rate of ISMB08: 17% = 49/292)   
   
 ###Usage
+
+****
+A detailed User Manual can be found [here](https://github.com/DataFusion4NetBio/Paper16-SCODE/blob/master/Demo/SCODEUserManual.pdf)
+****
 ####Installation
 Supervised Complex Detection (SCODE) is available through the Cytoscape App Store [here](http://apps.cytoscape.org/apps/scode).  
 To install, either  
@@ -39,42 +43,6 @@ SCODE provides several options for creating or loading a model. You may:
   2. Load a custom, un-trained model you have created as a network in Cytoscape. You must provide training data (positive complex exemplars), or
   3. Load a trained model stored as a network in Cytoscape
 
-######Creating Custom Bayesian Networks
-To create a custom Bayesian network, start with an empty Cytoscape Network.  Your graph must contain a node labeled "Root", which represents classification of candidate complexes (complex/non-complex).  All nodes must be connected by directed edges.  Those edges must not form cycles.
-
-Each node name corresponds to the feature that it represents. The general syntax for features is  
-      Statistic : Feature {args} (Bins).  
-Statistics are optional and represent calculations on the value of the feature (such as mean, variance, count, etc). Bins allow non-discrete features to be broken up into ranges of values. This syntax is case insensitive. 
-
-For example 'Count: Node (3)' represents the number of nodes in a complex, with 3 possible bins for feature values.  Descretization/binning is based on the range of a feature's training values.  If the model is trained on complexes composed of 3-11 nodes, bin 1 would account for complexes of 3-5 nodes, bin 2 for complexes of 6-8 nodes, and bin 3 for complexes of 9-11 nodes.
-
-Each **Feature** is calculated for positive complex exemplars during training and stored as edge data in the trained model. The trained model is then used to score each candidate complex during the search of the PPI network. 
-
-Available features include:
-  * Cluster Coefficient
-  * Degree
-  * Degree Correlation
-  * Density
-  * Density at cutoff N (e.g. Density at cutoff 1.2)
-  * Edge Table Feature (e.g. edge{ColumnName}) *The specified column must contain numeric values.*
-  * Edge Table Correlation Feature (e.g. edge{ColumnName,ColumnName,...}) *The specified columns must contain numeric values.*
-  * Node
-  * Node Table Feature (e.g. node{ColumnName}) *The specified column must contain numeric values.*
-  * Node Table Correlation Feature (e.g. node{ColumnName,ColumnName,...}) *The specified columns must contain numeric values.*
-  * Singular Value
-  * Topological Coefficient
-
-
-Available statistics include: 
-  * Mean
-  * Median
-  * Max
-  * Variance
-  * Count
-  * Ordinals (e.g. 1st, 2nd, 3rd)
-
-***
-
 ######Training Data
 SCODE uses a supervised learning model to find candidate complexes with similar properties to known training complexes. Users provide these training complexes as examples to the model.  Training data should be stored according to the following format:
 
@@ -85,7 +53,7 @@ Each row represents a known complex, with tab-separated columns as follows:
 
 ***
 
-######Search
+#####Searching a PPI Graph
 
 Currently, SCODE supports an [iterative simulated annealing search](http://en.wikipedia.org/wiki/Simulated_annealing) for finding candidate complexes within a dataset.  This search comes in three flavors:
 * ISA: This is the fastest option and will perform the worst.  Each round, a candidate is expanded (or not) using a single, random neighboring node.  
