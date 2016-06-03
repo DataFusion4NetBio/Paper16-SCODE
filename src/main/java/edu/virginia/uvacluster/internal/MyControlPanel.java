@@ -159,7 +159,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		evaluateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					evaluateButtonPressed(resultFile, evaluationFile);
+					evaluateButtonPressed(evaluationFile);
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -802,7 +802,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		}
 	}
 	
-	private void evaluateButtonPressed(File resultFile, File evaluateFile) throws IOException {
+	private void evaluateButtonPressed(File evaluateFile) throws IOException {
 		
 		if (evaluateFile == null) {
 			JOptionPane.showMessageDialog(this, "You must provide an evaluation file.");
@@ -824,24 +824,13 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 				System.out.println("");
 				resultComplexes.add(nodeNames);
 			}
-			
-			
-	//		FileReader fileReader = new FileReader(resultFile) ;
-	//		BufferedReader bufferedReader = new BufferedReader(fileReader) ;
-	//		String line = bufferedReader.readLine() ; 
-	//		while((line = bufferedReader.readLine()) != null) {
-	//			String[] l = line.split("\t");
-	//			String complexes_string = l[2];
-	//			HashSet result_complexes = new HashSet(Arrays.asList(complexes_string.split(" ")));
-	//			resultComplexes.add(result_complexes);
-	//		}
 	
 			System.out.println("");
 			System.out.println("");
 	
 			FileReader evalfileReader = new FileReader(evaluateFile);
 			BufferedReader evalbufferedReader = new BufferedReader(evalfileReader);
-			String line = evalbufferedReader.readLine() ;
+			String line = null ;
 			while((line = evalbufferedReader.readLine()) != null) {
 					String[] l = line.split("\t");
 					if (l.length == 3) {
@@ -851,6 +840,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 						evalComplexes.add(eval_complexes);
 					}
 			}
+			evalbufferedReader.close();
 			
 			System.out.println("");
 			System.out.println("");
@@ -858,38 +848,42 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			int countPredicted = 0;
 			int countKnown = 0;
 			
-			for (int i = 0; i < resultComplexes.size(); i++) {
-				Set<String> predicted = resultComplexes.get(i);
-				Boolean predictedAlreadyMatched = false;
-				for(int j = 0; j < evalComplexes.size(); j++) {
-					double A = 0; 
-					double B = 0; 
-					double C = 0; 
-					Set<String> known = evalComplexes.get(j);
+			for (Set<String> predicted : resultComplexes) {
+				for (Set<String> known : evalComplexes) {
 					
-					Set<String> intersection = new HashSet<String>(predicted); // use the copy constructor
+					Set<String> intersection = new HashSet<String>(predicted);
 					intersection.retainAll(known);
 					
-					C = intersection.size();
-					A = predicted.size() - C;
-					B = known.size() - C;
+					double C = intersection.size() ; 
+					double A = predicted.size() - C ; 
+					double B = known.size() - C ;
 					
 					float pVal = Float.parseFloat(p.getText());
-					
 					if ( (C / (A + C) > pVal) && (C / (B + C)) > pVal) {
-						if (!predictedAlreadyMatched) {
-							// This forces to iterate to the next predicted complex, so that a predicted complex is not counted twice
-							// if it matches with multiple known complexes
-							countPredicted ++;
-							predictedAlreadyMatched = true;
-						}
+						countPredicted++;
+					}
+				}
+			}
+			
+			for (Set<String> known : evalComplexes) {
+				for (Set<String> predicted : resultComplexes) {
+					
+					Set<String> intersection = new HashSet<String>(known);
+					intersection.retainAll(predicted);
+					
+					double C = intersection.size() ; 
+					double A = predicted.size() - C ; 
+					double B = known.size() - C ;
+					
+					float pVal = Float.parseFloat(p.getText());
+					if ( (C / (A + C) > pVal) && (C / (B + C)) > pVal) {
 						countKnown++;
 					}
 				}
 			}
 			
-			double recall = countKnown / evalComplexes.size() ;
-			double precision = countPredicted / resultComplexes.size();
+			double recall = (double) countKnown / (double) evalComplexes.size() ;
+			double precision = (double) countPredicted / (double) resultComplexes.size() ;
 			
 			JOptionPane.showMessageDialog(this, "Recall: " + recall + "\nPrecision: " + precision, "Evaluation Scoring", JOptionPane.INFORMATION_MESSAGE);
 		}

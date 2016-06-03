@@ -61,6 +61,7 @@ public class SearchTask extends AbstractNetworkTask{
 				taskMonitor.setProgress(0.1);
 				taskMonitor.setStatusMessage("Gathering Seeds...");
 				
+				// Either get the nodes the user selected, or choose the highest degree nodes from the network
 				seeds = userInput.useSelectedForSeeds ? getSelectedNodes() : 
 														ClusterUtil.getTopDegreeNodes(rootNetwork, userInput.numSeeds);
 				System.out.println("ISA Search Selected, seeding with " + seeds.size() + " nodes...");
