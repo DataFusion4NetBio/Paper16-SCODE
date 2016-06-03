@@ -360,8 +360,27 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			
 			
 			// Select protein graph
-			proteinGraph = new JComboBox(getNetworkNames().toArray());
+			ArrayList<String> networkNames = new ArrayList<String>();
+			networkNames.add(" - Select Network - ");
+			networkNames.addAll(getNetworkNames());
+			
+			proteinGraph = new JComboBox(networkNames.toArray());
 			proteinGraphLabel = new JLabel("Protein graph");
+			proteinGraph.addActionListener(
+					// Automatically set the number of starting seeds to be 1/8 the number of nodes in the graph
+					  new ActionListener() {
+					    public void actionPerformed(ActionEvent e) {
+					    	if (! proteinGraph.getSelectedItem().equals(" - Select Network - ")) {
+								for (CyNetwork network: CyActivator.networkManager.getNetworkSet()) {	
+									if (network.getRow(network).get(CyNetwork.NAME, String.class).equals(proteinGraph.getSelectedItem())) {
+										int numNodes = network.getNodeCount();
+										numSeeds.setText(Integer.toString(numNodes / 8));
+									}
+								}
+					    	}
+					    }
+					  }
+					);
 			
 			// Name of column containing weights
 			weightName = new JComboBox(getEdgeColumnNames().toArray());
@@ -394,7 +413,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			overlapLimitLabel = new JLabel("Overlap Limit");
 			
 			// Minimum acceptable score
-			minScoreThreshold = new JTextField("-4E2");
+			minScoreThreshold = new JTextField("0");
 			minScoreThresholdLabel = new JLabel("Minimum Complex Score");
 			
 			// Minimum acceptable complex size
@@ -799,6 +818,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			JOptionPane.showMessageDialog(this, "Please select the edge weight column under 'Search'");
 		} else if (inputValidation == 5) {
 			JOptionPane.showMessageDialog(this, "Please load a seed file, or uncheck 'Use Starting Seeds From File' under the advanced search parameters.");
+		} else if (inputValidation == 6) {
+			JOptionPane.showMessageDialog(this, "Please select the protein graph under 'Search'");
 		}
 	}
 	
@@ -969,6 +990,10 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		else if ( (trainDefaultModel.isSelected() || trainCustomModel.isSelected() ) && trainingFile == null ) {
 			// User has not provided a positive training file for one of the training options
 			return 3;
+		}
+		else if (proteinGraph.getSelectedItem().equals(" - Select Network - ")) {
+			// User has not selected a protein graph
+			return 6;
 		}
 		else if (weightName.getSelectedItem().equals("- Select Column -")) {
 			// User has not selected a weight column
