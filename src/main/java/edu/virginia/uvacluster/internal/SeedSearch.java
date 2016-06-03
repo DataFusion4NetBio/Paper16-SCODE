@@ -34,7 +34,8 @@ public class SeedSearch implements Runnable {
 
 				System.out.println("In SeedSearch.java: searching on cluster " + cluster.getSUID());
 				for (Cluster x: candidates) {
-					if ((! cluster.searchComplete) &&
+					// Changed: check that neither one is deactivated -- leave one on
+					if ((! (cluster.searchComplete || x.searchComplete)) &&
 						(cluster.getSUID() != x.getSUID()) && 
 						(getOverlapRatio(cluster,x) > input.overlapLimit)) {
 						cluster.searchComplete = true;
