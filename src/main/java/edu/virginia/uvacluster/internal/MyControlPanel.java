@@ -449,7 +449,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			useSelectedForSeedsButton = new JButton("Seed File (.tab, .tsv)");
 			useSelectedForSeedsButton.setEnabled(false);
 			useSelectedForSeeds = new JCheckBox();
-			useSelectedForSeedsLabel = new JLabel("Use Start Seeds From File");
+			useSelectedForSeedsLabel = new JLabel("Use Seeds From File");
 			useSelectedForSeeds.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -466,7 +466,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 				}
 				);	
 			
-			useSelectedForSeedsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Container for checkbox and button
+			useSelectedForSeedsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0)); // Container for checkbox and button
+			((FlowLayout)useSelectedForSeedsPanel.getLayout()).setHgap(0);
 			useSelectedForSeedsPanel.add(useSelectedForSeeds);
 			useSelectedForSeedsPanel.add(useSelectedForSeedsButton);
 	        useSelectedForSeedsButton.addActionListener(new ActionListener() {	 
@@ -491,7 +492,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		                }
 	            	} else {
 	            		useSelectedForSeeds.setSelected(false);
-	                	useSelectedForSeedsLabel.setText("Use Start Seeds From File");
+	                	useSelectedForSeedsLabel.setText("Use Seeds From File");
 	                	useSelectedForSeedsButton.setText("Seed File (.tab, .tsv)");
 						numSeeds.setVisible(true);
 						numSeedsLabel.setVisible(true);		                	
@@ -536,14 +537,14 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					layout.createSequentialGroup()
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(proteinGraphLabel)
-								.addComponent(weightNameLabel)
+//								.addComponent(weightNameLabel)
 								.addComponent(chooserLabel)
 								.addComponent(checkNumNeighborsLabel)
 								.addComponent(resultFileLabel))
 						
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(proteinGraph)
-								.addComponent(weightName)
+//								.addComponent(weightName)
 								.addComponent(chooser)
 								.addComponent(checkNumNeighbors)
 								.addComponent(resultFileButton))
@@ -554,9 +555,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(proteinGraphLabel)
 							.addComponent(proteinGraph))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(weightNameLabel)
-							.addComponent(weightName))
+//					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//							.addComponent(weightNameLabel)
+//							.addComponent(weightName))
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(chooserLabel)
 							.addComponent(chooser))
@@ -722,8 +723,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			negativeExamples = new JTextField("2000");
 			negativeExamplesLabel = new JLabel("Generate # of Negative Examples");
 			
-			trainingFileButton = new JButton("Select Training File (.tab, .tsv)");
-			trainingFileLabel = new JLabel("Load Positive Training Data");
+			trainingFileButton = new JButton("Training File (.tab, .tsv)");
+			trainingFileLabel = new JLabel("Positive Training Data");
 	        trainingFileButton.addActionListener(new ActionListener() {	 
 	            public void actionPerformed(ActionEvent e)
 	            {
@@ -1035,7 +1036,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		inputTask.bayesModel = inputBayesModel;
 		
 		ListSingleSelection<String> inputWeightName = new ListSingleSelection<String>(getEdgeColumnNames());
-		inputWeightName.setSelectedValue(weightName.getSelectedItem().toString());
+//		inputWeightName.setSelectedValue(weightName.getSelectedItem().toString());
+		inputWeightName.setSelectedValue("weight");
 		inputTask.weightName = inputWeightName;
 		
 		double inputClusterPrior = Double.parseDouble(clusterPrior.getText());
@@ -1072,10 +1074,10 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			// User has not selected a protein graph
 			return 6;
 		}
-		else if (weightName.getSelectedItem().equals("- Select Column -")) {
-			// User has not selected a weight column
-			return 4;
-		}
+//		else if (weightName.getSelectedItem().equals("- Select Column -")) {
+//			// User has not selected a weight column
+//			return 4;
+//		}
 		else if (useSelectedForSeeds.isSelected() && (useSelectedForSeedsFile == null)) {
 			// User has not provided a seed file
 			return 5;
