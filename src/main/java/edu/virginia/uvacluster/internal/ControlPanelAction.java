@@ -29,11 +29,6 @@ public class ControlPanelAction extends AbstractCyAction {
 		this.myControlPanel = myCytoPanel;
 	}
 	
-	/**
-	 *  DOCUMENT ME!
-	 *
-	 * @param e DOCUMENT ME!
-	 */
 	public void actionPerformed(ActionEvent e) {
 		// If the state of the cytoPanelWest is HIDE, show it
 		if (cytoPanelWest.getState() == CytoPanelState.HIDE) {

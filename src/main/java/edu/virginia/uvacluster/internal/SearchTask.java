@@ -91,9 +91,12 @@ public class SearchTask extends AbstractNetworkTask{
 				
 				resultComplexes.add(result);
 				
+				
+				double score = userInput.supervisedLearning ? model.score(new Cluster(model.getFeatures(),result)) :
+					ClusterScore.score(result);
 				result.getRow(result).set(CyNetwork.NAME, CyActivator.networkNaming
 						.getSuggestedNetworkTitle(
-								"Complex #" + i + " (Score: " + model.score(new Cluster(model.getFeatures(),result)) + ")"));
+								"Complex #" + i + " (Score: " + score + ")"));
 				i++;
 			}
 			

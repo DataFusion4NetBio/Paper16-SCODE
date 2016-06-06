@@ -32,7 +32,7 @@ class CollapsiblePanel extends JPanel {
             addMouseListener(this);
             text_ = text;
             font = new Font("sans-serif", Font.PLAIN, 12);
-            setPreferredSize(new Dimension(200, 20));
+            setPreferredSize(new Dimension(75, 20));
         }
  
         protected void paintComponent(Graphics g) {

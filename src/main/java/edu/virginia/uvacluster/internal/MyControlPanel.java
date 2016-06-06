@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -62,6 +63,11 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JPanel searchPanel;
 	private JPanel trainPanel;
 	private JPanel evaluatePanel;
+	private JPanel advancedTrainPanel;
+	private JPanel advancedSearchPanel;
+	private JPanel outerSearchPanel;
+	private JPanel outerTrainPanel;
+	
 	private JButton analyzeButton;
 	private JComboBox chooser;
 	private JComboBox proteinGraph;
@@ -118,6 +124,14 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	
 	/* ----- */
 	
+	/* SCORING */
+	
+	private JPanel scorePanel;
+	private JRadioButton weightScoreOption;
+	private JRadioButton learningScoreOption;
+	
+	/* ------- */
+	
 	private JLabel trainNewModelLabel;
 	private JLabel existingModelLabel;
 	private JLabel customModelLabel;
@@ -166,45 +180,49 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 				}
 			}
 		});
-		
-		
+			
 		final GroupLayout layout = new GroupLayout(this);
 		final JPanel outerPanel = new JPanel();
 
-
 		// Set up search panel
-		final JPanel searchPanel = new JPanel();
-		searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.Y_AXIS));	
-		searchPanel.add(createSearchPanel());
-		
-		final CollapsiblePanel advancedSearchPanel = new CollapsiblePanel("> Advanced Search Parameters", createAdvancedSearchParams());
-		searchPanel.add(advancedSearchPanel);
-		TitledBorder search = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Search");
-		searchPanel.setBorder(search);
+		outerSearchPanel = new JPanel();
+		outerSearchPanel.setLayout(new BoxLayout(outerSearchPanel, BoxLayout.Y_AXIS));	
+		outerSearchPanel.add(createSearchPanel());
+		advancedSearchPanel = new CollapsiblePanel("> Advanced Search Parameters", createAdvancedSearchParams());
+		outerSearchPanel.add(advancedSearchPanel);
+		TitledBorder search = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Searching for Complexes");
+		outerSearchPanel.setBorder(search);
 		
 		// Set up train panel
-		final JPanel trainPanel = new JPanel();
-		trainPanel.setLayout(new BoxLayout(trainPanel, BoxLayout.Y_AXIS));	
-		trainPanel.add(createTrainPanel());
-		
-		final CollapsiblePanel advancedTrainPanel = new CollapsiblePanel("> Advanced Training Parameters", createAdvancedTrainParams());
-		trainPanel.add(advancedTrainPanel);
-		TitledBorder train = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Train");
-		trainPanel.setBorder(train);
+		outerTrainPanel = new JPanel();
+		outerTrainPanel.setLayout(new BoxLayout(outerTrainPanel, BoxLayout.Y_AXIS));	
+		outerTrainPanel.add(createTrainPanel());
+		advancedTrainPanel = new CollapsiblePanel("> Advanced Training Parameters", createAdvancedTrainParams());
+		outerTrainPanel.add(advancedTrainPanel);
+		TitledBorder train = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Training the Bayesian Network");
+		outerTrainPanel.setBorder(train);
+
+		// Set up score panel
+		scorePanel = createScorePanel();	
+		TitledBorder score = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Scoring Complexes");
+		scorePanel.setBorder(score);
 
 		
 		// Set up evaluation panel
 		evaluatePanel = createEvaluatePanel();
 		evaluatePanel.setBorder(null);
-
+		
+		// Wrap all panels in an outer panel
 		outerPanel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(0,0,15,15); 
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weighty = 1.0;
+		gbc.weightx = 1.0;
 		gbc.gridy = 0;
-		outerPanel.add(trainPanel, gbc);
+		outerPanel.add(outerSearchPanel, gbc);
 		gbc.gridy = 1;
-		outerPanel.add(searchPanel, gbc);
+		outerPanel.add(scorePanel, gbc);
 		gbc.gridy = 2;
 		outerPanel.add(analyzeButton, gbc);
 		gbc.gridy = 3;
@@ -212,7 +230,11 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		gbc.gridy = 4;
 		outerPanel.add(evaluateButton, gbc);
 		
+		
+		// Add the outer panel to a JScrollPanel to make it 
+		// vertically scrollable
 		final JScrollPane scrollablePanel = new JScrollPane(outerPanel);
+		scrollablePanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollablePanel.setBorder(null);
 		setLayout(layout);
 		layout.setAutoCreateContainerGaps(true);
@@ -227,106 +249,106 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	}
 	
 	public JPanel createAdvancedSearchParams() {
-		JPanel advancedPanel = null;
 		if (searchPanel != null) {
-			advancedPanel = new JPanel();
-			final GroupLayout layout = new GroupLayout(advancedPanel);
-			advancedPanel.setLayout(layout);
-			layout.setAutoCreateContainerGaps(true);
-			layout.setAutoCreateGaps(true);
-			
-			layout.setHorizontalGroup(
-					layout.createSequentialGroup()
+			if (advancedSearchPanel == null) {
+				advancedSearchPanel = new JPanel();
+				final GroupLayout layout = new GroupLayout(advancedSearchPanel);
+				advancedSearchPanel.setLayout(layout);
+				layout.setAutoCreateContainerGaps(true);
+				layout.setAutoCreateGaps(true);
+				
+				layout.setHorizontalGroup(
+						layout.createSequentialGroup()
+							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+									.addComponent(searchLimitLabel)
+									.addComponent(initTempLabel)
+									.addComponent(tempScalingFactorLabel)
+									.addComponent(overlapLimitLabel)
+									.addComponent(minScoreThresholdLabel)
+									.addComponent(minSizeLabel)
+									.addComponent(useSelectedForSeedsLabel)
+									.addComponent(numSeedsLabel))
+							
+							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+									.addComponent(searchLimit)
+									.addComponent(initTemp)
+									.addComponent(tempScalingFactor)
+									.addComponent(overlapLimit)
+									.addComponent(minScoreThreshold)
+									.addComponent(minSize)
+									.addComponent(useSelectedForSeedsPanel)
+									.addComponent(numSeeds))
+				);
+				
+				layout.setVerticalGroup(
+						layout.createSequentialGroup()
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(searchLimitLabel)
-								.addComponent(initTempLabel)
-								.addComponent(tempScalingFactorLabel)
-								.addComponent(overlapLimitLabel)
-								.addComponent(minScoreThresholdLabel)
-								.addComponent(minSizeLabel)
-								.addComponent(useSelectedForSeedsLabel)
-								.addComponent(numSeedsLabel))
-						
+								.addComponent(searchLimit))
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(searchLimit)
-								.addComponent(initTemp)
-								.addComponent(tempScalingFactor)
-								.addComponent(overlapLimit)
-								.addComponent(minScoreThreshold)
-								.addComponent(minSize)
-								.addComponent(useSelectedForSeedsPanel)
+								.addComponent(initTempLabel)
+								.addComponent(initTemp))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(tempScalingFactorLabel)
+								.addComponent(tempScalingFactor))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(overlapLimitLabel)
+								.addComponent(overlapLimit))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(minScoreThresholdLabel)
+								.addComponent(minScoreThreshold))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(minSizeLabel)
+								.addComponent(minSize))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(useSelectedForSeedsLabel)
+								.addComponent(useSelectedForSeedsPanel))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(numSeedsLabel)
 								.addComponent(numSeeds))
-			);
-			
-			layout.setVerticalGroup(
-					layout.createSequentialGroup()
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(searchLimitLabel)
-							.addComponent(searchLimit))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(initTempLabel)
-							.addComponent(initTemp))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(tempScalingFactorLabel)
-							.addComponent(tempScalingFactor))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(overlapLimitLabel)
-							.addComponent(overlapLimit))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(minScoreThresholdLabel)
-							.addComponent(minScoreThreshold))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(minSizeLabel)
-							.addComponent(minSize))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(useSelectedForSeedsLabel)
-							.addComponent(useSelectedForSeedsPanel))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(numSeedsLabel)
-							.addComponent(numSeeds))
-			);
+				);
+			}
 		}
-		return advancedPanel;
-		
+		return advancedSearchPanel;
 	}
 	
 	public JPanel createAdvancedTrainParams() {
-		JPanel advancedPanel = null;
 		if (trainPanel != null) {
-			advancedPanel = new JPanel();
-			final GroupLayout layout = new GroupLayout(advancedPanel);
-			advancedPanel.setLayout(layout);
-			layout.setAutoCreateContainerGaps(true);
-			layout.setAutoCreateGaps(true);
-			
-			layout.setHorizontalGroup(
-					layout.createSequentialGroup()
+			if (advancedTrainPanel == null) {
+				advancedTrainPanel = new JPanel();
+				final GroupLayout layout = new GroupLayout(advancedTrainPanel);
+				advancedTrainPanel.setLayout(layout);
+				layout.setAutoCreateContainerGaps(true);
+				layout.setAutoCreateGaps(true);
+				
+				layout.setHorizontalGroup(
+						layout.createSequentialGroup()
+							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+									.addComponent(clusterPriorLabel)
+									.addComponent(negativeExamplesLabel)
+									.addComponent(ignoreMissingLabel))
+							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+									.addComponent(clusterPrior)
+									.addComponent(negativeExamples)
+									.addComponent(ignoreMissing))
+				);
+				
+				layout.setVerticalGroup(
+						layout.createSequentialGroup()
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(clusterPriorLabel)
-								.addComponent(negativeExamplesLabel)
-								.addComponent(ignoreMissingLabel))
+								.addComponent(clusterPrior))
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(clusterPrior)
-								.addComponent(negativeExamples)
+								.addComponent(negativeExamplesLabel)
+								.addComponent(negativeExamples))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(ignoreMissingLabel)
 								.addComponent(ignoreMissing))
-			);
+				);
 			
-			layout.setVerticalGroup(
-					layout.createSequentialGroup()
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(clusterPriorLabel)
-							.addComponent(clusterPrior))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(negativeExamplesLabel)
-							.addComponent(negativeExamples))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(ignoreMissingLabel)
-							.addComponent(ignoreMissing))
-			);
-			
-			
+			}
 		}
-		return advancedPanel;
+		return advancedTrainPanel;
 	}
 	
 	
@@ -544,6 +566,45 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			);
 		}
 		return searchPanel;
+	}
+	
+	public JPanel createScorePanel() {
+		
+		if (scorePanel == null) {
+			scorePanel = new JPanel();
+			
+			weightScoreOption = new JRadioButton("Use only weight information (no learning)");
+			weightScoreOption.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                if (weightScoreOption.isSelected()) {
+	                	outerTrainPanel.setVisible(false);
+	                }
+	            }
+			});
+			
+			learningScoreOption = new JRadioButton("Use supervised learning with a Bayesian model");
+			learningScoreOption.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                if (learningScoreOption.isSelected()) {
+	                	scorePanel.add(outerTrainPanel);
+	                	outerTrainPanel.setVisible(true);
+	                }
+	            }
+			});
+					
+			scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
+			
+			scorePanel.add(weightScoreOption);
+			scorePanel.add(learningScoreOption);
+			
+			ButtonGroup scoringButtons = new ButtonGroup();
+			scoringButtons.add(weightScoreOption);
+			scoringButtons.add(learningScoreOption);
+			
+		}
+		return scorePanel;
 	}
 	
 	public JPanel createTrainPanel() {
@@ -880,7 +941,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					double B = known.size() - C ;
 					
 					float pVal = Float.parseFloat(p.getText());
-					if ( (C / (A + C) > pVal) && (C / (B + C)) > pVal) {
+					if ( ((C / (A + C)) > pVal) && ((C / (B + C)) > pVal) ) {
 						countPredicted++;
 					}
 				}
@@ -897,7 +958,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					double B = known.size() - C ;
 					
 					float pVal = Float.parseFloat(p.getText());
-					if ( (C / (A + C) > pVal) && (C / (B + C)) > pVal) {
+					if ( ((C / (A + C)) > pVal) && ((C / (B + C)) > pVal) ) {
 						countKnown++;
 					}
 				}
@@ -978,16 +1039,19 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		inputTask.resultFile = resultFile;
 		
 		inputTask.selectedSeedFile = useSelectedForSeedsFile;
+		
+		inputTask.supervisedLearning = learningScoreOption.isSelected();
+		
 		return inputTask;
 	}
 	
 	private Integer validateInput() {
 
-		if (!useTrainedModel.isSelected() && !trainDefaultModel.isSelected() && !trainCustomModel.isSelected()) {
+		if (learningScoreOption.isSelected() && !useTrainedModel.isSelected() && !trainDefaultModel.isSelected() && !trainCustomModel.isSelected()) {
 			// User has not selected a training option
 			return 2;
 		} 
-		else if ( (trainDefaultModel.isSelected() || trainCustomModel.isSelected() ) && trainingFile == null ) {
+		else if ( learningScoreOption.isSelected() && (trainDefaultModel.isSelected() || trainCustomModel.isSelected() ) && trainingFile == null ) {
 			// User has not provided a positive training file for one of the training options
 			return 3;
 		}

@@ -164,9 +164,11 @@ public class Cluster
   
   private EdgeWeight getEdgeWeightFeature(List<FeatureSet> features) {
 	  EdgeWeight result = null;
-	  for (FeatureSet feature: features) {
-		  if (feature instanceof EdgeWeight)
-			  result = (EdgeWeight)feature;
+	  if (features != null) {
+		  for (FeatureSet feature: features) {
+			  if (feature instanceof EdgeWeight)
+				  result = (EdgeWeight)feature;
+		  }
 	  }
 	  return result;
   }

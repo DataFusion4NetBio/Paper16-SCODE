@@ -101,13 +101,21 @@ public class SupervisedModel implements Model{
 	 * @return
 	 */
 	public double score(Cluster complex) throws Exception{
-		double nonComplexPrior = 1 - complexPrior;
-		return Math.log((complexPrior*posBayesGraph.score(complex))/(nonComplexPrior*negBayesGraph.score(complex)));
+		if (userInput.supervisedLearning) {
+			double nonComplexPrior = 1 - complexPrior;
+			return Math.log((complexPrior*posBayesGraph.score(complex))/(nonComplexPrior*negBayesGraph.score(complex)));
+		} else {
+			return ClusterScore.score(complex);
+		}
 	}
 	
 	public double score(CySubNetwork complex) throws Exception {
-		Cluster cluster = new Cluster(features, complex);
-		return score(cluster);
+		if (userInput.supervisedLearning) {
+			Cluster cluster = new Cluster(features, complex);
+			return score(cluster);
+		} else {
+			return ClusterScore.score(complex);
+		}
 	}
 	
 	/**
