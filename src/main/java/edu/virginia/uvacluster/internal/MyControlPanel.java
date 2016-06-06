@@ -190,7 +190,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		outerSearchPanel.add(createSearchPanel());
 		advancedSearchPanel = new CollapsiblePanel("> Advanced Search Parameters", createAdvancedSearchParams());
 		outerSearchPanel.add(advancedSearchPanel);
-		TitledBorder search = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Searching for Complexes");
+		TitledBorder search = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.blue), "Searching for Complexes");
+		search.setTitleColor(Color.blue);
 		outerSearchPanel.setBorder(search);
 		
 		// Set up train panel
@@ -199,12 +200,14 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		outerTrainPanel.add(createTrainPanel());
 		advancedTrainPanel = new CollapsiblePanel("> Advanced Training Parameters", createAdvancedTrainParams());
 		outerTrainPanel.add(advancedTrainPanel);
-		TitledBorder train = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Training the Bayesian Network");
+		TitledBorder train = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.blue), "Training the Bayesian Network");
+		train.setTitleColor(Color.blue);
 		outerTrainPanel.setBorder(train);
 
 		// Set up score panel
 		scorePanel = createScorePanel();	
-		TitledBorder score = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.gray), "Scoring Complexes");
+		TitledBorder score = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.blue), "Scoring Complexes");
+		score.setTitleColor(Color.blue);
 		scorePanel.setBorder(score);
 
 		
@@ -443,10 +446,10 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			minSizeLabel = new JLabel("Minimum Complex Size");
 			
 			// Selecting seeds from file
-			useSelectedForSeedsButton = new JButton("Select Seed File");
+			useSelectedForSeedsButton = new JButton("Seed File (.tab, .tsv)");
 			useSelectedForSeedsButton.setEnabled(false);
 			useSelectedForSeeds = new JCheckBox();
-			useSelectedForSeedsLabel = new JLabel("Use Starting Seeds From File");
+			useSelectedForSeedsLabel = new JLabel("Use Start Seeds From File");
 			useSelectedForSeeds.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -469,7 +472,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	        useSelectedForSeedsButton.addActionListener(new ActionListener() {	 
 	            public void actionPerformed(ActionEvent e)
 	            {
-	            	if (useSelectedForSeedsButton.getText().equals("Select Seed File")) { 
+	            	if (useSelectedForSeedsButton.getText().equals("Seed File (.tab, .tsv)")) { 
 		                JFileChooser seedsChooser = new JFileChooser();
 		                int result = seedsChooser.showOpenDialog(MyControlPanel.this);
 		                if (result == JFileChooser.APPROVE_OPTION) {
@@ -488,8 +491,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		                }
 	            	} else {
 	            		useSelectedForSeeds.setSelected(false);
-	                	useSelectedForSeedsLabel.setText("Use Starting Seeds From File");
-	                	useSelectedForSeedsButton.setText("Select Seed File");
+	                	useSelectedForSeedsLabel.setText("Use Start Seeds From File");
+	                	useSelectedForSeedsButton.setText("Seed File (.tab, .tsv)");
 						numSeeds.setVisible(true);
 						numSeedsLabel.setVisible(true);		                	
                 }
@@ -588,16 +591,26 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	            public void actionPerformed(ActionEvent e)
 	            {
 	                if (learningScoreOption.isSelected()) {
-	                	scorePanel.add(outerTrainPanel);
 	                	outerTrainPanel.setVisible(true);
 	                }
 	            }
 			});
 					
-			scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
+//			scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
 			
-			scorePanel.add(weightScoreOption);
-			scorePanel.add(learningScoreOption);
+			scorePanel.setLayout(new GridBagLayout());
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.insets = new Insets(0,0,15,15); 
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+			gbc.weighty = 1.0;
+			gbc.weightx = 1.0;
+			gbc.gridy = 0;			
+			scorePanel.add(weightScoreOption, gbc);
+			gbc.gridy = 1;
+			scorePanel.add(learningScoreOption, gbc);
+			gbc.gridy = 2;
+			outerTrainPanel.setVisible(false);
+        	scorePanel.add(outerTrainPanel, gbc);
 			
 			ButtonGroup scoringButtons = new ButtonGroup();
 			scoringButtons.add(weightScoreOption);
@@ -709,7 +722,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			negativeExamples = new JTextField("2000");
 			negativeExamplesLabel = new JLabel("Generate # of Negative Examples");
 			
-			trainingFileButton = new JButton("Select Training File");
+			trainingFileButton = new JButton("Select Training File (.tab, .tsv)");
 			trainingFileLabel = new JLabel("Load Positive Training Data");
 	        trainingFileButton.addActionListener(new ActionListener() {	 
 	            public void actionPerformed(ActionEvent e)
