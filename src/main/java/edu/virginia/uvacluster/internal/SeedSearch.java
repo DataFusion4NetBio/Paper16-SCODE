@@ -112,6 +112,7 @@ public class SeedSearch implements Runnable {
 				//then accept the new complex
 				System.out.println("\n" + model.score(complex) + " is greater than " + originalScore);
 			} else {
+				System.out.println("\n" + model.score(complex) + " < " + originalScore);
 				complex.remove(candidateNode);
 			}
 		}
