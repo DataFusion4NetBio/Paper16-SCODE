@@ -65,7 +65,6 @@ public class SeedSearch implements Runnable {
 		CyNode candidateNode = null, node = null;
 		double newScore, topScore = -Double.MAX_VALUE;
 		double originalScore = model.score(complex);
-		System.out.println("Original score: " + originalScore);
 		double updateProbability = 0;
 		
 		
@@ -75,7 +74,6 @@ public class SeedSearch implements Runnable {
 				for (CyNode n: neighbors) {
 					complex.add(n);
 					
-					//System.out.println(complex.getScore() - topScore);
 					if (model.score(complex) > topScore) {
 						topScore = model.score(complex);
 						candidateNode = n;
@@ -91,7 +89,6 @@ public class SeedSearch implements Runnable {
 					node = neighbors.get(i);
 					complex.add(node);
 					
-					//System.out.println(complex.getScore() - topScore);
 					if (model.score(complex) > topScore) {
 						topScore = model.score(complex);
 						candidateNode = node;
@@ -103,16 +100,11 @@ public class SeedSearch implements Runnable {
 			
 			complex.add(candidateNode);
             newScore = model.score(complex);
-				
-			//System.out.println("Original score: " + originalScore);
-			//System.out.println("New score: " + newScore);
 			updateProbability = Math.exp((newScore - originalScore)/temp); //TODO note this in writeup
 			System.out.print("Update probability: " + updateProbability);
 			if ((newScore > originalScore) || (input.supervisedLearning && (ThreadLocalRandom.current().nextDouble() < updateProbability))){ 
 				//then accept the new complex
-				System.out.println("\n" + model.score(complex) + " is greater than " + originalScore);
 			} else {
-				System.out.println("\n" + model.score(complex) + " < " + originalScore);
 				complex.remove(candidateNode);
 			}
 		}

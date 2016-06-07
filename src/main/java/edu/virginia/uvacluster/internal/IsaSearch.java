@@ -65,8 +65,8 @@ public class IsaSearch implements Search {
 			model.score(complex);
 	}
 	
-	public List<CySubNetwork> execute(InputTask input, TaskMonitor progress) throws Exception {
-		List<CySubNetwork> results = new ArrayList<CySubNetwork>();
+	public List<Cluster> execute(InputTask input, TaskMonitor progress) throws Exception {
+		List<Cluster> results = new ArrayList<Cluster>();
 		int cores = Runtime.getRuntime().availableProcessors() * 2;
 		List<List<Cluster>> jobs = ClusterUtil.divideWork(candidates, cores);
 		executor = Executors.newFixedThreadPool(cores);
@@ -83,7 +83,7 @@ public class IsaSearch implements Search {
 		//Filter out clusters that are too small or too low-scoring and copy good ones to results
 		for (Cluster complex: candidates) {
 			if ((complex.getNodes().size() >= input.minSize) && (model.score(complex) >= input.minScoreThreshold))
-				results.add(complex.getSubNetwork());
+				results.add(complex);
 			else
 				complex.destroy();
 		}

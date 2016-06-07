@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.cytoscape.model.CyNetwork;
@@ -23,7 +25,7 @@ public class SearchTask extends AbstractNetworkTask{
 	private TrainingTask training = null;
 	private InputTask userInput;
 	private Search selectedSearch;
-	private ArrayList<CySubNetwork> resultComplexes;
+	private ArrayList<Cluster> resultComplexes;
 	public long elapsedTime;
 	
 	public SearchTask(CyNetwork network, InputTask userInput, TrainingTask training) {
@@ -33,7 +35,7 @@ public class SearchTask extends AbstractNetworkTask{
 		this.training = training;
 	}
 
-	public ArrayList<CySubNetwork> getResults() {
+	public ArrayList<Cluster> getResults() {
 		return resultComplexes;
 	}
 	
@@ -44,7 +46,7 @@ public class SearchTask extends AbstractNetworkTask{
 	
 	@Override
 	public void run(TaskMonitor taskMonitor) throws Exception { 
-		List<CySubNetwork> results = null;
+		List<Cluster> results = null;
 		List<CyNode> seeds;
 		int i = 1;
 		
@@ -80,17 +82,42 @@ public class SearchTask extends AbstractNetworkTask{
 			taskMonitor.setProgress(0.9);
 			taskMonitor.setStatusMessage("Returning Results...");
 			System.out.println("Adding " + results.size() + " Result Networks via manager...");
-			resultComplexes = new ArrayList<CySubNetwork>();
-			for (CySubNetwork result: results) {
+			resultComplexes = new ArrayList<Cluster>();
+			for (Cluster result: results) {
 				
-				CyActivator.networkManager.addNetwork(result);
-				
-				for (CyNode n : result.getNodeList()) {
-					n.setNetworkPointer(result);
+				CySubNetwork network = result.getSubNetwork();
+				for (CyNode n : network.getNodeList()) {
+					n.setNetworkPointer(network);
 				}
 				
 				resultComplexes.add(result);
 				
+				// Sort the results by their score
+				Collections.sort(resultComplexes, new Comparator<Cluster>() {
+				    @Override
+				    public int compare(Cluster c1, Cluster c2) {
+				        try {
+							return ~Double.compare(model.score(c1), model.score(c2));
+						} catch (Exception e) {
+							return 0;
+						}
+				    }
+				});
+				
+			}
+			
+			// Get the top 10 results sorted by score
+			ArrayList<Cluster> networkResults = new ArrayList<Cluster>(10);
+			if (resultComplexes.size() < 10) {
+				networkResults.addAll(resultComplexes);
+			} else {
+				networkResults.addAll(resultComplexes.subList(0, 10));
+			}
+			
+			// Create networks for the top 10 results
+			for (Cluster network : networkResults) {
+				CySubNetwork result = network.getSubNetwork();
+				CyActivator.networkManager.addNetwork(result);
 				
 				double score = userInput.supervisedLearning ? model.score(new Cluster(model.getFeatures(),result)) :
 					ClusterScore.score(result);
@@ -100,8 +127,9 @@ public class SearchTask extends AbstractNetworkTask{
 				i++;
 			}
 			
-			if (userInput.resultFile != null)
-				outputResultsToFile(results, userInput.resultFile);
+			// Output ALL results to file
+//			if (userInput.resultFile != null)
+			outputResultsToFile(results, userInput.resultFile);
 			
 			
 			System.out.println("Search Complete.");
@@ -117,7 +145,7 @@ public class SearchTask extends AbstractNetworkTask{
 	}
 	
 	
-	private void outputResultsToFile(List<CySubNetwork> results, File file) throws IOException {
+	private void outputResultsToFile(List<Cluster> results, File file) throws IOException {
 		if (! file.exists()) 
 			file.createNewFile();
 		
@@ -126,7 +154,8 @@ public class SearchTask extends AbstractNetworkTask{
 		List<CyNode> nodes;
 		int i  = 1;
 		
-		for (CySubNetwork result: results) {
+		for (Cluster subNetwork: results) {
+			CySubNetwork result = subNetwork.getSubNetwork();
 			nodes = result.getNodeList();
 			
 			fileContents = fileContents + i +"\t" + result.getRow(result).get(CyNetwork.NAME, String.class) + "\t";
@@ -169,5 +198,7 @@ public class SearchTask extends AbstractNetworkTask{
 		}
 		return nodeList;
 	}
+	
 
 }
+

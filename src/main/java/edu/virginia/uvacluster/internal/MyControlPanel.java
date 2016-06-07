@@ -144,7 +144,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JLabel ignoreMissingLabel;
 	
 	SupervisedComplexTaskFactory clusterFactory;
-	private ArrayList<CySubNetwork> searchResults;
+	private ArrayList<Cluster> searchResults;
 	private JTextField p;
 	private File evaluationFile;
 	private JButton evaluationFileButton;
@@ -183,25 +183,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			}
 		});
 		
-		// Save the results to file
-		resultFileLabel = new JLabel("Save Results to File (Optional)");
-		JButton resultFileButton = new JButton("Save Results to File");
-        resultFileButton.addActionListener(new ActionListener() {	 
-            public void actionPerformed(ActionEvent e)
-            {
-                JFileChooser resultChooser = new JFileChooser();
-                int result = resultChooser.showOpenDialog(MyControlPanel.this);
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    resultFile = resultChooser.getSelectedFile();
-                    try {
-						writeResultsToFile(resultFile);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-                }
-            }
-        }); 
 			
 		final GroupLayout layout = new GroupLayout(this);
 		final JPanel outerPanel = new JPanel();
@@ -251,10 +232,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		gbc.gridy = 2;
 		outerPanel.add(analyzeButton, gbc);
 		gbc.gridy = 3;
-		outerPanel.add(resultFileButton, gbc);
-		gbc.gridy = 4;
 		outerPanel.add(evaluatePanel, gbc);
-		gbc.gridy = 5;
+		gbc.gridy = 4;
 		outerPanel.add(evaluateButton, gbc);
 		
 		
@@ -539,24 +518,35 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			    }
 			  }
 			);
-			
+
+			// Save the results to file
+			resultFileLabel = new JLabel("Save Results to File");
+			JButton resultFileButton = new JButton("Save Results to File");
+	        resultFileButton.addActionListener(new ActionListener() {	 
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                JFileChooser resultChooser = new JFileChooser();
+	                int result = resultChooser.showOpenDialog(MyControlPanel.this);
+	                if (result == JFileChooser.APPROVE_OPTION) {
+	                    resultFile = resultChooser.getSelectedFile();
+	                }
+	            }
+	        }); 
 	        
 	        // Add search components to layout
 			layout.setHorizontalGroup(
 					layout.createSequentialGroup()
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(proteinGraphLabel)
-//								.addComponent(weightNameLabel)
 								.addComponent(chooserLabel)
-								.addComponent(checkNumNeighborsLabel))
-//								.addComponent(resultFileLabel))
+								.addComponent(checkNumNeighborsLabel)
+								.addComponent(resultFileLabel))
 						
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(proteinGraph)
-//								.addComponent(weightName)
 								.addComponent(chooser)
-								.addComponent(checkNumNeighbors))
-//								.addComponent(resultFileButton))
+								.addComponent(checkNumNeighbors)
+								.addComponent(resultFileButton))
 			);
 			
 			layout.setVerticalGroup(
@@ -564,18 +554,15 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(proteinGraphLabel)
 							.addComponent(proteinGraph))
-//					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//							.addComponent(weightNameLabel)
-//							.addComponent(weightName))
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(chooserLabel)
 							.addComponent(chooser))
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(checkNumNeighborsLabel)
 							.addComponent(checkNumNeighbors))
-//					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//							.addComponent(resultFileLabel)
-//							.addComponent(resultFileButton))
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(resultFileLabel)
+							.addComponent(resultFileButton))
 			);
 		}
 		return searchPanel;
@@ -605,8 +592,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	                }
 	            }
 			});
-					
-//			scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
 			
 			scorePanel.setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
@@ -900,17 +885,20 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		} else if (inputValidation == 3) {
 			JOptionPane.showMessageDialog(this, "Please load a positive training file");
 		} else if (inputValidation == 4) {
-			JOptionPane.showMessageDialog(this, "Please select the edge weight column under 'Search'");
+			JOptionPane.showMessageDialog(this, "Please select a scoring option");
 		} else if (inputValidation == 5) {
 			JOptionPane.showMessageDialog(this, "Please load a seed file, or uncheck 'Use Starting Seeds From File' under the advanced search parameters.");
 		} else if (inputValidation == 6) {
 			JOptionPane.showMessageDialog(this, "Please select the protein graph under 'Search'");
+		} else if (inputValidation == 7) {
+			JOptionPane.showMessageDialog(this, "Please select the file to which results will be written under 'Search'");
 		}
 	}
 	
 	private void printResults() {
 		searchResults = clusterFactory.getSearchTask().getResults();
-		for (CySubNetwork result : searchResults) {
+		for (Cluster network : searchResults) {
+			CySubNetwork result = network.getSubNetwork();
 			List<CyNode> nodes = result.getNodeList();
 			List<CyEdge> edges = result.getEdgeList();
 			System.out.println(result.getRow(result).get(CyNetwork.NAME, String.class) + ": " + nodes.size() + " nodes and " + edges.size() + " edges.");
@@ -923,7 +911,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		} else if (clusterFactory.getSearchTask().getResults().size() == 0) {
 			JOptionPane.showMessageDialog(this, "Search has not returned any results.");
 		} else {
-//			printResults();
 			searchResults = clusterFactory.getSearchTask().getResults();
 			if (! resultFile.exists()) { resultFile.createNewFile(); }
 			
@@ -931,7 +918,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			String fileContents = "";
 			
 			int counter = 0;
-			for (CySubNetwork result : searchResults) {
+			for (Cluster network : searchResults) {
+				CySubNetwork result = network.getSubNetwork();
 				List<CyNode> nodes = result.getNodeList();
 				fileContents = fileContents + counter +"\t" + result.getRow(result).get(CyNetwork.NAME, String.class) + "\t";
 				for (CyNode n : nodes) {
@@ -958,7 +946,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			ArrayList< Set<String> > evalComplexes = new ArrayList< Set<String> >();	
 			
 			searchResults = clusterFactory.getSearchTask().getResults();
-			for (CySubNetwork result : searchResults) {
+			for (Cluster network : searchResults) {
+				CySubNetwork result = network.getSubNetwork();
 				System.out.print("Printing a complex:");
 				List<CyNode> nodes = result.getNodeList();
 				Set<String> nodeNames = new HashSet<String>();
@@ -1124,10 +1113,14 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			// User has not selected a protein graph
 			return 6;
 		}
-//		else if (weightName.getSelectedItem().equals("- Select Column -")) {
-//			// User has not selected a weight column
-//			return 4;
-//		}
+		else if (resultFile == null) {
+			// User has not specified the result file
+			return 7;
+		}
+		else if (!weightScoreOption.isSelected() && !learningScoreOption.isSelected()) {
+			// User has not selected a scoring option
+			return 4;
+		}
 		else if (useSelectedForSeeds.isSelected() && (useSelectedForSeedsFile == null)) {
 			// User has not provided a seed file
 			return 5;
