@@ -63,7 +63,9 @@ public class SeedSearch implements Runnable {
 	private void updateCluster(Cluster complex) throws Exception {
 		List<CyNode> neighbors = complex.getNeighborList();
 		CyNode candidateNode = null, node = null;
-		double newScore, topScore = -Double.MAX_VALUE, originalScore = model.score(complex);
+		double newScore, topScore = -Double.MAX_VALUE;
+		double originalScore = model.score(complex);
+		System.out.println("Original score: " + originalScore);
 		double updateProbability = 0;
 		
 		
@@ -106,8 +108,9 @@ public class SeedSearch implements Runnable {
 			//System.out.println("New score: " + newScore);
 			updateProbability = Math.exp((newScore - originalScore)/temp); //TODO note this in writeup
 			System.out.print("Update probability: " + updateProbability);
-			if ((newScore > originalScore) || (ThreadLocalRandom.current().nextDouble() < updateProbability)){ 
+			if ((newScore > originalScore) || (input.supervisedLearning && (ThreadLocalRandom.current().nextDouble() < updateProbability))){ 
 				//then accept the new complex
+				System.out.println("\n" + model.score(complex) + " is greater than " + originalScore);
 			} else {
 				complex.remove(candidateNode);
 			}

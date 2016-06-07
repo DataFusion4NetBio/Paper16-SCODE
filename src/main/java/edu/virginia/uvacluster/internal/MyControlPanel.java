@@ -45,6 +45,7 @@ import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.model.CyColumn;
+import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.subnetwork.CySubNetwork;
@@ -892,7 +893,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			evaluateButton.setVisible(true);
 			TitledBorder eval = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.blue), "Evaluate Results");
 			eval.setTitleColor(Color.blue);
-			evaluatePanel.setBorder(eval);				
+			evaluatePanel.setBorder(eval);			
 
 		} else if (inputValidation == 2) {
 			JOptionPane.showMessageDialog(this, "Please select a training option");
@@ -907,13 +908,22 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		}
 	}
 	
+	private void printResults() {
+		searchResults = clusterFactory.getSearchTask().getResults();
+		for (CySubNetwork result : searchResults) {
+			List<CyNode> nodes = result.getNodeList();
+			List<CyEdge> edges = result.getEdgeList();
+			System.out.println(result.getRow(result).get(CyNetwork.NAME, String.class) + ": " + nodes.size() + " nodes and " + edges.size() + " edges.");
+		}
+	}
+	
 	private void writeResultsToFile(File resultFile) throws IOException {
-		
 		if (clusterFactory == null || clusterFactory.getSearchTask() == null) {
 			JOptionPane.showMessageDialog(this, "You have not performed search yet.");
 		} else if (clusterFactory.getSearchTask().getResults().size() == 0) {
 			JOptionPane.showMessageDialog(this, "Search has not returned any results.");
 		} else {
+//			printResults();
 			searchResults = clusterFactory.getSearchTask().getResults();
 			if (! resultFile.exists()) { resultFile.createNewFile(); }
 			
