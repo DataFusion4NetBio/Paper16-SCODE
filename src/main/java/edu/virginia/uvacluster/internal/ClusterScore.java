@@ -22,35 +22,11 @@ public class ClusterScore {
 		
 		double score = 0.0;
 		for (Double d : edgeWeights) {
-//			System.out.println("Normalized edge weight: " + d / norm + " vs. original edge weight: " + d);
 			score += d / norm ;
 		}
-//		System.out.println("Total score: " + score);
-		
+
+		score = score / edges.size();
 		return score;
-		
-		///////////////////////////////////////////////////////
-//		ArrayList<Double> edgeWeights = new ArrayList<Double>();
-//		double sumWeights = 0;
-//		for (CyEdge edge : edges) {
-//			Double weightVal = complex.getRootNetwork().getDefaultEdgeTable().getRow(edge.getSUID()).get("weight", Double.class);
-//			edgeWeights.add(weightVal);
-//			sumWeights += weightVal;
-//		}
-//		
-//		double mean = sumWeights / edgeWeights.size();
-//		double sumDiffsSquared = 0;
-//		for (Double d : edgeWeights) {
-//			sumDiffsSquared += Math.pow(Math.abs(d - mean), 2);
-//		}
-//		double stdDev = Math.sqrt(sumDiffsSquared / mean);
-//		
-//		double score = 0;
-//		for (Double d : edgeWeights) {
-//			double z = d - mean / stdDev;
-//			score += z ; 
-//		}
-//		return score;
 		
 	}
 	
