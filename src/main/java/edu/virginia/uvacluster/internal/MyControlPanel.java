@@ -952,7 +952,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			String fileContents = "";
 			
 			int counter = 1;
-			List<Cluster> limitedResults = searchResults.subList(0, Integer.valueOf(numResults.getText()));
+			int resultsBound = Math.min(Integer.valueOf(numResults.getText()), Integer.valueOf(searchResults.size()));
+			List<Cluster> limitedResults = searchResults.subList(0, resultsBound);
 			for (Cluster network : limitedResults) {
 				CySubNetwork result = network.getSubNetwork();
 				List<CyNode> nodes = result.getNodeList();
