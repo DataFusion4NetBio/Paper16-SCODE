@@ -989,7 +989,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			ArrayList< Set<String> > evalComplexes = new ArrayList< Set<String> >();	
 			
 			searchResults = clusterFactory.getSearchTask().getResults();
-			List<Cluster> limitedResults =  searchResults.subList(0, Integer.valueOf(numResults.getText()));
+			int resultsBound = Math.min(Integer.valueOf(numResults.getText()), Integer.valueOf(searchResults.size()));
+			List<Cluster> limitedResults =  searchResults.subList(0, resultsBound);
 			for (Cluster network : limitedResults) {
 				CySubNetwork result = network.getSubNetwork();
 				System.out.print("Printing a complex:");
