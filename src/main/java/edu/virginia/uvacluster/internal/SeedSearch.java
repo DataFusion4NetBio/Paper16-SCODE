@@ -83,7 +83,7 @@ public class SeedSearch implements Runnable {
 				}
 			} else if (input.getSelectedSearch().equals("ISA")) {
 			    candidateNode = neighbors.get((int) Math.round(ThreadLocalRandom.current().nextDouble() * neighbors.size()));
-			} else if (input.getSelectedSearch().equals("M ISA")) {
+			} else if (input.getSelectedSearch().equals("Sorted-Neighbor ISA")) {
 				neighbors = ClusterUtil.sortByDegree(complex.getRootNetwork(), neighbors);
 
 				for (int i = 0; i < input.checkNumNeighbors; i++) {
@@ -91,7 +91,7 @@ public class SeedSearch implements Runnable {
 					if (i < neighbors.size()) {
 						node = neighbors.get(i);
 						complex.add(node);
-						System.out.println("M ISA - iterating on node: " + node.getSUID());
+						System.out.println("Sorted-Neighbor ISA - iterating on node: " + node.getSUID());
 						
 						if (ClusterScore.score(complex, model) > topScore) {
 							topScore = ClusterScore.score(complex, model);

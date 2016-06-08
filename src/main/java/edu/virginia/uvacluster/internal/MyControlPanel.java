@@ -48,6 +48,7 @@ import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
+import org.cytoscape.model.CyTable;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.work.TaskIterator;
@@ -130,6 +131,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	
 	/* SCORING */
 	
+	Double minScore = null;
 	private JPanel scorePanel;
 	private JRadioButton weightScoreOption;
 	private JRadioButton learningScoreOption;
@@ -296,7 +298,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 									.addComponent(initTempLabel)
 									.addComponent(tempScalingFactorLabel)
 									.addComponent(overlapLimitLabel)
-									.addComponent(minScoreThresholdLabel)
 									.addComponent(minSizeLabel)
 									.addComponent(useSelectedForSeedsLabel)
 									.addComponent(numSeedsLabel)
@@ -307,7 +308,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 									.addComponent(initTemp)
 									.addComponent(tempScalingFactor)
 									.addComponent(overlapLimit)
-									.addComponent(minScoreThreshold)
 									.addComponent(minSize)
 									.addComponent(useSelectedForSeedsPanel)
 									.addComponent(numSeeds)
@@ -328,9 +328,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(overlapLimitLabel)
 								.addComponent(overlapLimit))
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(minScoreThresholdLabel)
-								.addComponent(minScoreThreshold))
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(minSizeLabel)
 								.addComponent(minSize))
@@ -361,10 +358,12 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 				layout.setHorizontalGroup(
 						layout.createSequentialGroup()
 							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+									.addComponent(minScoreThresholdLabel)
 									.addComponent(clusterPriorLabel)
 									.addComponent(negativeExamplesLabel)
 									.addComponent(ignoreMissingLabel))
 							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+									.addComponent(minScoreThreshold)
 									.addComponent(clusterPrior)
 									.addComponent(negativeExamples)
 									.addComponent(ignoreMissing))
@@ -372,6 +371,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 				
 				layout.setVerticalGroup(
 						layout.createSequentialGroup()
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(minScoreThresholdLabel)
+								.addComponent(minScoreThreshold))
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(clusterPriorLabel)
 								.addComponent(clusterPrior))
@@ -397,14 +399,14 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			layout.setAutoCreateContainerGaps(true);
 			layout.setAutoCreateGaps(true);
 			
-			String[] variants = { "ISA", "M ISA", "Greedy ISA"};
+			String[] variants = { "ISA", "Greedy ISA", "Sorted-Neighbor ISA" };
 			chooser = new JComboBox(variants);
 
 			chooser.addActionListener(
 			  new ActionListener() {
 			    public void actionPerformed(ActionEvent e) {
 			      String searchVariant = (String) chooser.getSelectedItem();
-			      if (searchVariant == "M ISA") {
+			      if (searchVariant == "Sorted-Neighbor ISA") {
 			    	  checkNumNeighbors.setVisible(true);
 			    	  checkNumNeighborsLabel.setVisible(true);
 			      } else {
@@ -446,7 +448,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			weightNameLabel = new JLabel("Weight column in graph");
 			
 			// Number of neighbors to consider
-			checkNumNeighbors = new JTextField("20");
+			checkNumNeighbors = new JTextField("5");
 			checkNumNeighborsLabel = new JLabel("Neighbors to consider");
 			checkNumNeighbors.setVisible(false);
 			checkNumNeighborsLabel.setVisible(false);
@@ -470,10 +472,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			// Permissible amount of overlap between complexes
 			overlapLimit = new JTextField("0.75");
 			overlapLimitLabel = new JLabel("Overlap Limit");
-			
-			// Minimum acceptable score
-			minScoreThreshold = new JTextField("0");
-			minScoreThresholdLabel = new JLabel("Minimum Complex Score");
 			
 			// Minimum acceptable complex size
 			minSize = new JTextField("3");
@@ -543,7 +541,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			  new ActionListener() {
 			    public void actionPerformed(ActionEvent e) {
 			      String searchVariant = (String) chooser.getSelectedItem();
-			      if (searchVariant == "M ISA") {
+			      if (searchVariant == "Sorted-Neighbor ISA") {
 			    	  checkNumNeighbors.setVisible(true);
 			    	  checkNumNeighborsLabel.setVisible(true);
 			      } else {
@@ -595,12 +593,24 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		if (scorePanel == null) {
 			scorePanel = new JPanel();
 			
+			final ButtonGroup scoringButtons = new ButtonGroup();
+			/* For the simple search without learning: */
+			/* Calculate the mean of the edge weights in the input graph (if it has weights) 
+			 * in order to auto-set the min score threshold */
 			weightScoreOption = new JRadioButton("Use only edge information (no learning)");
 			weightScoreOption.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e)
 	            {
 	                if (weightScoreOption.isSelected()) {
 	                	outerTrainPanel.setVisible(false);
+            			minScore = minScoreThreshold();
+            			if (minScore < 0) {
+            				// User needs to select a protein graph
+            				scoringButtons.clearSelection();
+            			} else {
+            				minScoreThreshold.setText(Double.toString(minScore));
+            			}
+
 	                }
 	            }
 			});
@@ -611,6 +621,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	            {
 	                if (learningScoreOption.isSelected()) {
 	                	outerTrainPanel.setVisible(true);
+	                	minScoreThreshold.setText("0");
 	                }
 	            }
 			});
@@ -628,8 +639,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			gbc.gridy = 2;
 			outerTrainPanel.setVisible(false);
         	scorePanel.add(outerTrainPanel, gbc);
-			
-			ButtonGroup scoringButtons = new ButtonGroup();
+		
 			scoringButtons.add(weightScoreOption);
 			scoringButtons.add(learningScoreOption);
 			
@@ -732,6 +742,10 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			modelPanel.add(modelLabel);
 			modelPanel.add(model);
 			
+			
+			// Minimum acceptable score
+			minScoreThreshold = new JTextField("0");
+			minScoreThresholdLabel = new JLabel("Minimum Complex Score");
 			
 			clusterPrior = new JTextField("1E-4");
 			clusterPriorLabel = new JLabel("Cluster Probability Prior");
@@ -938,7 +952,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			String fileContents = "";
 			
 			int counter = 1;
-			for (Cluster network : searchResults) {
+			List<Cluster> limitedResults = searchResults.subList(0, Integer.valueOf(numResults.getText()));
+			for (Cluster network : limitedResults) {
 				CySubNetwork result = network.getSubNetwork();
 				List<CyNode> nodes = result.getNodeList();
 				
@@ -1051,12 +1066,44 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		}
 	}
 	
+	private Double minScoreThreshold() {
+		if (proteinGraph.getSelectedItem().toString().equals(" - Select Network - ")) {
+			JOptionPane.showMessageDialog(this, "Please select a protein graph under 'Search'");
+		} else {
+			CyNetwork nw = null;
+			for (CyNetwork network: CyActivator.networkManager.getNetworkSet()) {
+				if (network.getRow(network).get(CyNetwork.NAME, String.class).equals(proteinGraph.getSelectedItem().toString())) {
+					nw = network; 
+					break;
+				}
+			}
+			
+			CyTable nodeTable = nw.getDefaultEdgeTable();
+			if(nodeTable.getColumn("weight") != null) {
+				// Network has weight column
+				CyColumn column = nodeTable.getColumn("weight");
+				List<Double> values = column.getValues(Double.class);
+				Double avgWeight = 0.0;
+				for (Double value : values) {
+					avgWeight += value;
+				}
+				avgWeight = avgWeight / values.size();
+				return avgWeight * Integer.valueOf(minSize.getText()) / 10;
+			} else {
+				// No weight column
+				return 0.5;
+			}
+			
+		}
+		return -1.0;
+	}
+	
 	private InputTask createInputTask() {
 		InputTask inputTask = new InputTask();
 		
 		inputTask.graphName = proteinGraph.getSelectedItem().toString();
 		
-		ListSingleSelection<String> inputChooser = new ListSingleSelection<String>("Greedy ISA", "M ISA", "ISA");
+		ListSingleSelection<String> inputChooser = new ListSingleSelection<String>("ISA","Greedy ISA", "Sorted-Neighbor ISA");
 		inputChooser.setSelectedValue(chooser.getSelectedItem().toString());
 		inputTask.chooser = inputChooser;
 		

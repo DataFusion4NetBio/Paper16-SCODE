@@ -19,10 +19,10 @@ public class InputTask extends AbstractTask{
 	
 //	@Tunable(description="Choose a variant", groups={"Search", "Variant"},
 //			tooltip="")
-	public ListSingleSelection<String> chooser = new ListSingleSelection<String>("Greedy ISA", "M ISA", "ISA");
+	public ListSingleSelection<String> chooser = new ListSingleSelection<String>("Greedy ISA", "Sorted-Neighbor ISA", "ISA");
 	
-//	@Tunable(description="Neighbors to Consider", groups={"Search", "Variant"}, dependsOn="chooser=M ISA", 
-//			tooltip="When using M ISA, this is the number of nodes that are scanned in the neighborhoods of candidates at each search step.")
+//	@Tunable(description="Neighbors to Consider", groups={"Search", "Variant"}, dependsOn="chooser=Sorted-Neighbor ISA", 
+//			tooltip="When using Sorted-Neighbor ISA, this is the number of nodes that are scanned in the neighborhoods of candidates at each search step.")
 	public int checkNumNeighbors = 20;
 //	
 //	@Tunable(description="Use Selected Nodes as Seeds", groups={"Search"},
