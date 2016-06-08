@@ -988,13 +988,14 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			ArrayList< Set<String> > evalComplexes = new ArrayList< Set<String> >();	
 			
 			searchResults = clusterFactory.getSearchTask().getResults();
-			for (Cluster network : searchResults) {
+			List<Cluster> limitedResults =  searchResults.subList(0, Integer.valueOf(numResults.getText()));
+			for (Cluster network : limitedResults) {
 				CySubNetwork result = network.getSubNetwork();
 				System.out.print("Printing a complex:");
 				List<CyNode> nodes = result.getNodeList();
 				Set<String> nodeNames = new HashSet<String>();
 				for (CyNode n : nodes) {
-					CyNetwork nodeNetwork = getNetworkPointer(); // The network pointer is set in SearchTask.java
+					CyNetwork nodeNetwork = getNetworkPointer(); 
 					nodeNames.add(nodeNetwork.getDefaultNodeTable().getRow(n.getSUID()).get("shared name", String.class));
 					System.out.print(" " + nodeNetwork.getDefaultNodeTable().getRow(n.getSUID()).get("shared name", String.class));
 				}
