@@ -1041,6 +1041,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					float pVal = Float.parseFloat(p.getText());
 					if ( ((C / (A + C)) > pVal) && ((C / (B + C)) > pVal) ) {
 						countPredicted++;
+						break; // Prevents double counting
 					}
 				}
 			}
@@ -1058,6 +1059,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					float pVal = Float.parseFloat(p.getText());
 					if ( ((C / (A + C)) > pVal) && ((C / (B + C)) > pVal) ) {
 						countKnown++;
+						break; // Prevents double counting
 					}
 				}
 			}
@@ -1065,7 +1067,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			double recall = (double) countKnown / (double) evalComplexes.size() ;
 			double precision = (double) countPredicted / (double) resultComplexes.size() ;
 			
-			JOptionPane.showMessageDialog(this, "Recall: " + recall + "\nPrecision: " + precision, "Evaluation Scoring", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Recall: " + recall + "\nPrecision: " + precision + 
+					" = countPredicted: " + countPredicted + " / resultComplexesSize: " + resultComplexes.size()
+					, "Evaluation Scoring", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 	
