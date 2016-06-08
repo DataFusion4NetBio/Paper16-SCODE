@@ -1067,8 +1067,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			double recall = (double) countKnown / (double) evalComplexes.size() ;
 			double precision = (double) countPredicted / (double) resultComplexes.size() ;
 			
-			JOptionPane.showMessageDialog(this, "Recall: " + recall + "\nPrecision: " + precision + 
-					" = countPredicted: " + countPredicted + " / resultComplexesSize: " + resultComplexes.size()
+			JOptionPane.showMessageDialog(this, "Recall: " + recall + "\nPrecision: " + precision
 					, "Evaluation Scoring", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
