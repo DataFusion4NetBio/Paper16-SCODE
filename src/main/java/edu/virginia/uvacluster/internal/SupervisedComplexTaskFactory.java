@@ -42,11 +42,14 @@ public class SupervisedComplexTaskFactory implements TaskFactory{
 		}
 		
 		InputTask userInput = inputTask;
-		TrainingTask train = new TrainingTask(network, userInput);
-		search = new SearchTask(network, userInput, train);
 		
-		//programTasks.append(userInput);
-		programTasks.append(train);
+		// If training a bayesian network then add training task to the iterator, otherwise
+		// Perform only simple search
+		TrainingTask train = new TrainingTask(network, userInput);
+		if (userInput.supervisedLearning) {
+			programTasks.append(train);
+		}
+		search = new SearchTask(network, userInput, train);
 		programTasks.append(search);
 		
 		return programTasks;

@@ -64,7 +64,7 @@ public class SeedSearch implements Runnable {
 		List<CyNode> neighbors = complex.getNeighborList();
 		CyNode candidateNode = null, node = null;
 		double newScore, topScore = -Double.MAX_VALUE;
-		double originalScore = model.score(complex);
+		double originalScore = ClusterScore.score(complex, model);
 		double updateProbability = 0;
 		
 		
@@ -74,8 +74,8 @@ public class SeedSearch implements Runnable {
 				for (CyNode n: neighbors) {
 					complex.add(n);
 					
-					if (model.score(complex) > topScore) {
-						topScore = model.score(complex);
+					if (ClusterScore.score(complex, model) > topScore) {
+						topScore = ClusterScore.score(complex, model);
 						candidateNode = n;
 					}
 						
@@ -85,21 +85,26 @@ public class SeedSearch implements Runnable {
 			    candidateNode = neighbors.get((int) Math.round(ThreadLocalRandom.current().nextDouble() * neighbors.size()));
 			} else if (input.getSelectedSearch().equals("M ISA")) {
 				neighbors = ClusterUtil.sortByDegree(complex.getRootNetwork(), neighbors);
+
 				for (int i = 0; i < input.checkNumNeighbors; i++) {
-					node = neighbors.get(i);
-					complex.add(node);
 					
-					if (model.score(complex) > topScore) {
-						topScore = model.score(complex);
-						candidateNode = node;
-					}
+					if (i < neighbors.size()) {
+						node = neighbors.get(i);
+						complex.add(node);
+						System.out.println("M ISA - iterating on node: " + node.getSUID());
 						
-					complex.remove(node);
+						if (ClusterScore.score(complex, model) > topScore) {
+							topScore = ClusterScore.score(complex, model);
+							candidateNode = node;
+						}
+							
+						complex.remove(node);
+					}
 				}
 			}
 			
 			complex.add(candidateNode);
-            newScore = model.score(complex);
+            newScore = ClusterScore.score(complex, model);
 			updateProbability = Math.exp((newScore - originalScore)/temp); //TODO note this in writeup
 			System.out.print("Update probability: " + updateProbability);
 			if ((newScore > originalScore) || (input.supervisedLearning && (ThreadLocalRandom.current().nextDouble() < updateProbability))){ 

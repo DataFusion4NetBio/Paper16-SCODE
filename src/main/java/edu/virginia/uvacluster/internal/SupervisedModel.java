@@ -105,7 +105,7 @@ public class SupervisedModel implements Model{
 			double nonComplexPrior = 1 - complexPrior;
 			return Math.log((complexPrior*posBayesGraph.score(complex))/(nonComplexPrior*negBayesGraph.score(complex)));
 		} else {
-			return ClusterScore.score(complex);
+			return ClusterScore.score(complex, null);
 		}
 	}
 	
@@ -114,7 +114,7 @@ public class SupervisedModel implements Model{
 			Cluster cluster = new Cluster(features, complex);
 			return score(cluster);
 		} else {
-			return ClusterScore.score(complex);
+			return ClusterScore.score(complex, null);
 		}
 	}
 	

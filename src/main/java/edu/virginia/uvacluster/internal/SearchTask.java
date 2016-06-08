@@ -85,11 +85,6 @@ public class SearchTask extends AbstractNetworkTask{
 			resultComplexes = new ArrayList<Cluster>();
 			for (Cluster result: results) {
 				
-				CySubNetwork network = result.getSubNetwork();
-				for (CyNode n : network.getNodeList()) {
-					n.setNetworkPointer(network);
-				}
-				
 				resultComplexes.add(result);
 				
 				// Sort the results by their score
@@ -107,20 +102,20 @@ public class SearchTask extends AbstractNetworkTask{
 			}
 			
 			// Get the top 10 results sorted by score
-			ArrayList<Cluster> networkResults = new ArrayList<Cluster>(10);
-			if (resultComplexes.size() < 10) {
+			ArrayList<Cluster> networkResults = new ArrayList<Cluster>(userInput.numResults);
+			if (resultComplexes.size() < userInput.numResults) {
 				networkResults.addAll(resultComplexes);
 			} else {
-				networkResults.addAll(resultComplexes.subList(0, 10));
+				networkResults.addAll(resultComplexes.subList(0, userInput.numResults));
 			}
 			
-			// Create networks for the top 10 results
+			// Create networks for the top N results
 			for (Cluster network : networkResults) {
 				CySubNetwork result = network.getSubNetwork();
 				CyActivator.networkManager.addNetwork(result);
 				
 				double score = userInput.supervisedLearning ? model.score(new Cluster(model.getFeatures(),result)) :
-					ClusterScore.score(result);
+					ClusterScore.score(result, null);
 				result.getRow(result).set(CyNetwork.NAME, CyActivator.networkNaming
 						.getSuggestedNetworkTitle(
 								"Complex #" + i + " (Score: " + score + ")"));
@@ -129,7 +124,7 @@ public class SearchTask extends AbstractNetworkTask{
 			
 			// Output ALL results to file
 //			if (userInput.resultFile != null)
-			outputResultsToFile(results, userInput.resultFile);
+//			outputResultsToFile(results, userInput.resultFile);
 			
 			
 			System.out.println("Search Complete.");

@@ -86,6 +86,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JTextField overlapLimit;
 	private JTextField minScoreThreshold;
 	private JTextField minSize;
+	private JTextField numResults;
 	
 	private JLabel chooserLabel;
 	private JLabel proteinGraphLabel;
@@ -98,6 +99,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JLabel overlapLimitLabel;
 	private JLabel minScoreThresholdLabel;
 	private JLabel minSizeLabel;
+	private JLabel numResultsLabel;
 	
 	private JCheckBox trainNewModel;
 	private JComboBox existingModel;
@@ -218,6 +220,28 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		evaluatePanel = createEvaluatePanel();
 		evaluatePanel.setBorder(null);
 		
+		
+		// Button to save the results to file
+//		resultFileLabel = new JLabel("Save Results to File");
+		JButton resultFileButton = new JButton("Save Results To File");
+        resultFileButton.addActionListener(new ActionListener() {	 
+            public void actionPerformed(ActionEvent e)
+            {
+                JFileChooser resultChooser = new JFileChooser();
+                int result = resultChooser.showOpenDialog(MyControlPanel.this);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    resultFile = resultChooser.getSelectedFile();
+                    try {
+						writeResultsToFile(resultFile);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+                }
+            }
+        }); 
+		
+		
 		// Wrap all panels in an outer panel
 		outerPanel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -232,8 +256,10 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		gbc.gridy = 2;
 		outerPanel.add(analyzeButton, gbc);
 		gbc.gridy = 3;
-		outerPanel.add(evaluatePanel, gbc);
+		outerPanel.add(resultFileButton, gbc);
 		gbc.gridy = 4;
+		outerPanel.add(evaluatePanel, gbc);
+		gbc.gridy = 5;
 		outerPanel.add(evaluateButton, gbc);
 		
 		
@@ -273,7 +299,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 									.addComponent(minScoreThresholdLabel)
 									.addComponent(minSizeLabel)
 									.addComponent(useSelectedForSeedsLabel)
-									.addComponent(numSeedsLabel))
+									.addComponent(numSeedsLabel)
+									.addComponent(numResultsLabel))
 							
 							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 									.addComponent(searchLimit)
@@ -283,7 +310,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 									.addComponent(minScoreThreshold)
 									.addComponent(minSize)
 									.addComponent(useSelectedForSeedsPanel)
-									.addComponent(numSeeds))
+									.addComponent(numSeeds)
+									.addComponent(numResults))
 				);
 				
 				layout.setVerticalGroup(
@@ -312,6 +340,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(numSeedsLabel)
 								.addComponent(numSeeds))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(numResultsLabel)
+								.addComponent(numResults))
 				);
 			}
 		}
@@ -501,7 +532,11 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 						numSeedsLabel.setVisible(true);		                	
 	            	}
 	            }
-	        }); 
+	        });
+	        
+	        // Number of results to save to file
+	        numResults = new JTextField("10");
+	        numResultsLabel = new JLabel("Number of results to display");
 			
 
 			chooser.addActionListener(
@@ -518,20 +553,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			    }
 			  }
 			);
-
-			// Save the results to file
-			resultFileLabel = new JLabel("Save Results to File");
-			JButton resultFileButton = new JButton("Save Results to File");
-	        resultFileButton.addActionListener(new ActionListener() {	 
-	            public void actionPerformed(ActionEvent e)
-	            {
-	                JFileChooser resultChooser = new JFileChooser();
-	                int result = resultChooser.showOpenDialog(MyControlPanel.this);
-	                if (result == JFileChooser.APPROVE_OPTION) {
-	                    resultFile = resultChooser.getSelectedFile();
-	                }
-	            }
-	        }); 
 	        
 	        // Add search components to layout
 			layout.setHorizontalGroup(
@@ -539,14 +560,15 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(proteinGraphLabel)
 								.addComponent(chooserLabel)
-								.addComponent(checkNumNeighborsLabel)
-								.addComponent(resultFileLabel))
+								.addComponent(checkNumNeighborsLabel))
+						
+//								.addComponent(resultFileLabel))
 						
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(proteinGraph)
 								.addComponent(chooser)
-								.addComponent(checkNumNeighbors)
-								.addComponent(resultFileButton))
+								.addComponent(checkNumNeighbors))
+//								.addComponent(resultFileButton))
 			);
 			
 			layout.setVerticalGroup(
@@ -560,9 +582,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(checkNumNeighborsLabel)
 							.addComponent(checkNumNeighbors))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(resultFileLabel)
-							.addComponent(resultFileButton))
+//					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//							.addComponent(resultFileLabel)
+//							.addComponent(resultFileButton))
 			);
 		}
 		return searchPanel;
@@ -573,7 +595,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		if (scorePanel == null) {
 			scorePanel = new JPanel();
 			
-			weightScoreOption = new JRadioButton("Use only weight information (no learning)");
+			weightScoreOption = new JRadioButton("Use only edge information (no learning)");
 			weightScoreOption.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e)
 	            {
@@ -890,8 +912,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			JOptionPane.showMessageDialog(this, "Please load a seed file, or uncheck 'Use Starting Seeds From File' under the advanced search parameters.");
 		} else if (inputValidation == 6) {
 			JOptionPane.showMessageDialog(this, "Please select the protein graph under 'Search'");
-		} else if (inputValidation == 7) {
-			JOptionPane.showMessageDialog(this, "Please select the file to which results will be written under 'Search'");
 		}
 	}
 	
@@ -917,14 +937,21 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			FileWriter writer = new FileWriter(resultFile);
 			String fileContents = "";
 			
-			int counter = 0;
+			int counter = 1;
 			for (Cluster network : searchResults) {
 				CySubNetwork result = network.getSubNetwork();
 				List<CyNode> nodes = result.getNodeList();
-				fileContents = fileContents + counter +"\t" + result.getRow(result).get(CyNetwork.NAME, String.class) + "\t";
+				
+				String complexName = (result.getRow(result).get(CyNetwork.NAME, String.class) == null) ? 
+						"Complex #" + counter 
+						: result.getRow(result).get(CyNetwork.NAME, String.class);
+				fileContents = fileContents + counter +"\t" + complexName + "\t";
+				
+				
+				
 				for (CyNode n : nodes) {
-					CyNetwork nodeNetwork = n.getNetworkPointer(); // The network pointer is set in SearchTask.java
-					fileContents = fileContents + (nodeNetwork.getDefaultNodeTable().getRow(n.getSUID()).get("shared name", String.class));
+					CyNetwork nodeNetwork = getNetworkPointer(); // The network pointer is set in SearchTask.java
+					fileContents = fileContents + " " + (nodeNetwork.getDefaultNodeTable().getRow(n.getSUID()).get("shared name", String.class));
 				}
 				fileContents = fileContents + "\n";
 				counter++;
@@ -952,7 +979,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 				List<CyNode> nodes = result.getNodeList();
 				Set<String> nodeNames = new HashSet<String>();
 				for (CyNode n : nodes) {
-					CyNetwork nodeNetwork = n.getNetworkPointer(); // The network pointer is set in SearchTask.java
+					CyNetwork nodeNetwork = getNetworkPointer(); // The network pointer is set in SearchTask.java
 					nodeNames.add(nodeNetwork.getDefaultNodeTable().getRow(n.getSUID()).get("shared name", String.class));
 					System.out.print(" " + nodeNetwork.getDefaultNodeTable().getRow(n.getSUID()).get("shared name", String.class));
 				}
@@ -1096,6 +1123,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		
 		inputTask.supervisedLearning = learningScoreOption.isSelected();
 		
+		inputTask.numResults = Integer.parseInt((numResults.getText()));
+		
 		return inputTask;
 	}
 	
@@ -1113,10 +1142,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			// User has not selected a protein graph
 			return 6;
 		}
-		else if (resultFile == null) {
-			// User has not specified the result file
-			return 7;
-		}
 		else if (!weightScoreOption.isSelected() && !learningScoreOption.isSelected()) {
 			// User has not selected a scoring option
 			return 4;
@@ -1126,6 +1151,16 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			return 5;
 		}
 		return 1;
+	}
+	
+	private CyNetwork getNetworkPointer() {
+		CyNetwork networkptr = null;
+		for (CyNetwork network: CyActivator.networkManager.getNetworkSet()) {
+			if (network.getRow(network).get(CyNetwork.NAME, String.class).equals(proteinGraph.getSelectedItem().toString())) {
+				networkptr = network;
+			}
+		}
+		return networkptr;
 	}
 	
 }

@@ -5,6 +5,8 @@ import org.cytoscape.model.subnetwork.*;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.work.TaskMonitor;
 
+import edu.virginia.uvacluster.internal.feature.FeatureSet;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -29,7 +31,13 @@ public class IsaSearch implements Search {
 		for (CyNode seed: seedNodes) {
 			net = rootNetwork.addSubNetwork();
 			net.addNode(seed);
-			candidates.add(new Cluster(model.getFeatures(),net));
+			if (model == null) {
+				// No training, so no model
+				candidates.add(new Cluster(new ArrayList<FeatureSet>(),net));
+			} else {
+				// Training from model
+				candidates.add(new Cluster(model.getFeatures(),net));
+			}
 		}
 		
 		//add highest degree neighbor of each seed
@@ -62,7 +70,8 @@ public class IsaSearch implements Search {
 		
 		//give each cluster an initial score
 		for (Cluster complex: candidates)
-			model.score(complex);
+			
+			ClusterScore.score(complex, model);
 	}
 	
 	public List<Cluster> execute(InputTask input, TaskMonitor progress) throws Exception {
@@ -82,7 +91,7 @@ public class IsaSearch implements Search {
 		
 		//Filter out clusters that are too small or too low-scoring and copy good ones to results
 		for (Cluster complex: candidates) {
-			if ((complex.getNodes().size() >= input.minSize) && (model.score(complex) >= input.minScoreThreshold))
+			if ((complex.getNodes().size() >= input.minSize) && (ClusterScore.score(complex, model) >= input.minScoreThreshold))
 				results.add(complex);
 			else
 				complex.destroy();
