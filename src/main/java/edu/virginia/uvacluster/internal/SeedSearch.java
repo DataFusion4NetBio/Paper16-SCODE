@@ -32,7 +32,7 @@ public class SeedSearch implements Runnable {
 			//check overlap and deactivate clusters with too high an overlap ratio
 			for (Cluster cluster: clusters) {
 
-				System.out.println("In SeedSearch.java: searching on cluster " + cluster.getSUID());
+//				System.out.println("In SeedSearch.java: searching on cluster " + cluster.getSUID());
 				for (Cluster x: candidates) {
 					// Changed: check that neither one is deactivated -- leave one on
 					if ((! (cluster.searchComplete || x.searchComplete)) &&
@@ -68,7 +68,7 @@ public class SeedSearch implements Runnable {
 		double updateProbability = 0;
 		
 		
-		System.out.println("Neighbors: " + neighbors.size());
+//		System.out.println("Neighbors: " + neighbors.size());
 		if (neighbors.size() > 0) {	
 			if (input.getSelectedSearch().equals("Greedy ISA")) {
 				for (CyNode n: neighbors) {
@@ -106,7 +106,7 @@ public class SeedSearch implements Runnable {
 			complex.add(candidateNode);
             newScore = ClusterScore.score(complex, model);
 			updateProbability = Math.exp((newScore - originalScore)/temp); //TODO note this in writeup
-			System.out.print("Update probability: " + updateProbability);
+//			System.out.print("Update probability: " + updateProbability);
 			if ((newScore > originalScore) || (input.supervisedLearning && (ThreadLocalRandom.current().nextDouble() < updateProbability))){ 
 				//then accept the new complex
 			} else {

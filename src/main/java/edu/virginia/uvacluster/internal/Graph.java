@@ -35,12 +35,17 @@ public class Graph {
 		root = new Node(getRootName(),null);
 	}
 	
+	Node getRoot() {
+		return root;
+	}
+	
 	private String getRootName() {
 		return "Root " + category;
 	}
 	
 	//returns a set of node names in the form "Statistic: Feature (TotalBins)"
 	public Set<String> loadModelFrom(CyNetwork network) {
+		System.out.println("----------------LOAD MODEL FROM CYTOSCAPE NETWORK ----------------");
 		Set<String> features = new HashSet<String>();
 		Map<CyNode, List<Node>> nodeMap = new HashMap<CyNode, List<Node>>();
 		List<CyNode> originLevel = new ArrayList<CyNode>(), 
@@ -67,8 +72,11 @@ public class Graph {
 			for (CyNode origin: originLevel) {
 				nodesVisited.add(origin);
 				destinationLevel.removeAll(network.getNeighborList(origin, Type.OUTGOING)); //to prevent duplicates
+//				System.out.println("Size of destination level: " + destinationLevel.size());
 				destinationLevel.addAll(network.getNeighborList(origin, Type.OUTGOING));
                 for (CyNode destination: destinationLevel) {
+                	
+                	System.out.println("Origin: " + origin.getSUID() + ", Destination: " + destination.getSUID());
 					parentNumNodes.clear();
 					parentNumNodesVisited.clear();
 					for (CyNode parent: network.getNeighborList(destination, Type.INCOMING)) {
@@ -90,11 +98,17 @@ public class Graph {
 						featureDesc = spacesPattern.matcher(featureDesc).replaceAll(" ").trim();
 						features.add(nodeName);
 						newNodes = toNodeBins;
-						for (Integer numNodes: parentNumNodes) {newNodes *= numNodes;}
+//						for (Integer numNodes: parentNumNodes) {newNodes *= numNodes;}
 						nodesPerBin = newNodes/toNodeBins; 
 						for (int i = 0; i < newNodes; i++) {
+//							System.out.println("newNodes: " + newNodes);
 							//Order of bins in list is important, note integer division
+//							System.out.println("Graph size before: " + this.getRoot().getChildren().size() + " -- node being added: " + featureDesc + " (" + (i/nodesPerBin) + "/" + toNodeBins + ")");
+							
+							Node currentNode = new Node(featureDesc, new Bin((i/nodesPerBin)+1,toNodeBins));
+//							printNode(currentNode);
 							nodeMap.get(destination).add(new Node(featureDesc, new Bin((i/nodesPerBin)+1,toNodeBins)));
+//							System.out.println("Graph size after: " + this.getRoot().getChildren().size());
 						}
 					}
 					
@@ -102,15 +116,28 @@ public class Graph {
 					fromNodes = nodeMap.get(origin);
 					toNodes = nodeMap.get(destination);
 					for (Integer parentNodesVisited: parentNumNodesVisited) {reps *= parentNodesVisited;}
+					System.out.println("Reps - 1: " + reps);
 					reps /= fromNodes.size();
-					for (int toNode = 0, fromNode = 0, i = 0; toNode < toNodes.size(); toNode++) {
-							if (i == reps) {
-								fromNode = (fromNode + 1)%fromNodes.size();
-								i = 0;
-							}
-							fromNodes.get(fromNode).addChild(toNodes.get(toNode));
-							i++;
+					System.out.println("Reps - 2: " + reps);
+					
+					for (Node fromNode : fromNodes) {
+						for (Node toNode : toNodes) {
+							fromNode.addChild(toNode);
+						}
 					}
+//					for (int toNode = 0, fromNode = 0, i = 0; toNode < toNodes.size(); toNode++) {
+//						System.out.println("Reps - 3: " + reps);
+//						System.out.println("FROM");
+//						printNode(fromNodes.get(fromNode));
+//						System.out.println("TO");
+//						printNode(toNodes.get(toNode));
+//							if (i == reps) {
+//								fromNode = (fromNode + 1)%fromNodes.size();
+//								i = 0;
+//							}
+//							fromNodes.get(fromNode).addChild(toNodes.get(toNode));
+//							i++;
+//					}
                 }
 			}
 		} while (destinationLevel.size() > 0);
@@ -200,7 +227,9 @@ public class Graph {
 	
 	public void saveTrainedModelTo(CyNetwork network, List<FeatureSet> features) {
 		Map<String,Statistic> statsMap = new HashMap<String,Statistic>();
+		System.out.println("The size of the feature set is : " + features.size());
 		for (FeatureSet f: features) {statsMap.putAll(f.getStatisticMap());}
+
 		List<Node> originLevel = new ArrayList<Node>(), nextOriginLevel = new ArrayList<Node>();
 		Node destination = null;
 		CyEdge edge = null;
@@ -247,32 +276,30 @@ public class Graph {
 		List<Child> currentLevel = new ArrayList<Child>();
 		List<Child> nextLevel = new ArrayList<Child>();
 
+		// trainBinning() gets the range of each feature
+		System.out.println("Before trainBinning: the size of the graph is: " + this.getRoot().getChildren().size());
 		for (Cluster cluster: clusters) {
 			cluster.trainBinning();
+			System.out.println("After trainBinning: the size of the graph is: " + this.getRoot().getChildren().size());
 		}
 		System.out.println("Cluster train binning complete");
 		
+		
 		for (Cluster cluster: clusters) {
-//			System.out.println("Loop on cluster");
 			featureMap = cluster.getBinMap();
-//			System.out.println("feature map");
+			System.out.println("In trainOn: the size of the featureMap for cluster " + cluster.getSUID() + " is: " + featureMap.size());
+			System.out.println("In trainOn: the size of the graph is: " + this.getRoot().getChildren().size());
 			nextLevel.addAll(root.getChildren());
-//			System.out.println("next level");
 			scanGraph(featureMap);
-//			System.out.println("About to do");
 			do {
-//				System.out.println("Doing");
 				currentLevel.clear();
 				currentLevel.addAll(nextLevel);
 				nextLevel.clear();
-//				System.out.println("About to loop on children");
 				for (Child child: currentLevel) {
-//					System.out.println("Operating on child");
 					nextLevel.removeAll(child.getChildren());
 					nextLevel.addAll(child.getChildren());
 					child.addTo(featureMap.get(child.getName()).number);
 				}
-//				System.out.println("Done doing");
 			} while(nextLevel.size() > 0);
 		}
 		System.out.println("Done training on clusters");
@@ -290,10 +317,10 @@ public class Graph {
 	}
 	
 	public void printNode(Node n) {
-		System.out.print("Children of the node: " + n.getDisplayName());
-		for (Child c : n.children) {
-			printChild(c);
-		}
+		System.out.println("Children of the node: " + n.getDisplayName());
+//		for (Child c : n.children) {
+//			printChild(c);
+//		}
 	}
 	
 	public void printChild(Child c) {
@@ -326,7 +353,7 @@ public class Graph {
 		} while(nextLevel.size() > 0);
 	}
 	
-	private class Node {
+	class Node {
 		private List<Child> children;
 		private List<Node> parents = new ArrayList<Node>();
 		private String feature;

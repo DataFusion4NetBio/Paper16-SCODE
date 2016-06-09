@@ -594,15 +594,16 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			scorePanel = new JPanel();
 			
 			final ButtonGroup scoringButtons = new ButtonGroup();
-			/* For the simple search without learning: */
-			/* Calculate the mean of the edge weights in the input graph (if it has weights) 
-			 * in order to auto-set the min score threshold */
+
 			weightScoreOption = new JRadioButton("Use only edge information (no learning)");
 			weightScoreOption.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e)
 	            {
 	                if (weightScoreOption.isSelected()) {
 	                	outerTrainPanel.setVisible(false);
+	        			/* For the simple search without learning: */
+	        			/* Calculate the mean of the edge weights in the input graph (if it has weights) 
+	        			 * in order to auto-set the min score threshold */
             			minScore = minScoreThreshold();
             			if (minScore < 0) {
             				// User needs to select a protein graph
@@ -962,8 +963,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 						"Complex #" + counter 
 						: result.getRow(result).get(CyNetwork.NAME, String.class);
 				fileContents = fileContents + counter +"\t" + complexName + "\t";
-				
-				
 				
 				for (CyNode n : nodes) {
 					CyNetwork nodeNetwork = getNetworkPointer(); // The network pointer is set in SearchTask.java

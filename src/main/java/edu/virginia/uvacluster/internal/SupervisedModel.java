@@ -48,7 +48,12 @@ public class SupervisedModel implements Model{
 		rootNetwork = trainingNetwork;
 		this.complexPrior = userInput.clusterPrior;
 		this.userInput = userInput;
-		for (Graph g: bayesGraphs) {featureDescs = g.loadModelFrom(modelNetwork);}
+		for (Graph g: bayesGraphs) {
+			System.out.println("Before loading model: graph size is " + g.getRoot().getChildren().size());
+			System.out.println("The Cytoscape model network has size " + modelNetwork.getNodeCount());
+			featureDescs = g.loadModelFrom(modelNetwork);
+			System.out.println("After loading model: graph size is " + g.getRoot().getChildren().size());
+			}
 		features = FeatureUtil.parse(featureDescs);
 //		System.out.println("Features: ");
 //		for(String feat : featureDescs) {
@@ -56,10 +61,13 @@ public class SupervisedModel implements Model{
 //		}
 		System.out.println("Cluster model init is finished.");
 		positiveExamples = loadTrainingComplexes(userInput.trainingFile);
+		System.out.println("Trained on positive complexes: " + positiveExamples.size());
 		System.out.println("Positive examples are loaded.");
 		negativeExamples = generateNegativeExamples(userInput.negativeExamples, positiveExamples);
-//		System.out.println("Negative examples are generated.");
+		System.out.println("Trained on negative complexes: " + negativeExamples.size());
+		System.out.println("Negative examples are generated.");
 		System.out.println("Dup");
+
 		train(positiveExamples, negativeExamples);
 		System.out.println("Model trained...");
 		saveGraphicalBayesianNetwork(outputBayesNet, features);
@@ -90,6 +98,8 @@ public class SupervisedModel implements Model{
 	 */
 	public void saveGraphicalBayesianNetwork(CyNetwork emptyNetwork, List<FeatureSet> features) {
 		for(Graph g: bayesGraphs) {
+			System.out.println("--------SAVING TRAINED MODEL-----------");
+			System.out.println("The size of the trained model is: " + g.getRoot().getChildren().size());
 			g.saveTrainedModelTo(emptyNetwork,features);
 		}
 	}
@@ -263,6 +273,7 @@ public class SupervisedModel implements Model{
 		System.out.println("Lists of pos and neg training examples created");
 		posBayesGraph.trainOn(posExamples);
 		System.out.println("Model has finished training on " + positiveExamples.size() +  " positive Examples.");
+		System.out.println("The size of the pos bayes graph is: " + posBayesGraph.getRoot().getChildren().size());
 		for(CySubNetwork neg: negativeExamples) {negExamples.add(new Cluster(features, neg));}
 		negBayesGraph.trainOn(negExamples);
 		System.out.println("Model has finished training on " + negativeExamples.size() +  " negative Examples.");
