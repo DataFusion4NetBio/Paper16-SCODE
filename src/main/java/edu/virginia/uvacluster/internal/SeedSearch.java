@@ -106,7 +106,9 @@ public class SeedSearch implements Runnable {
 			complex.add(candidateNode);
             newScore = ClusterScore.score(complex, model);
 			updateProbability = Math.exp((newScore - originalScore)/temp); //TODO note this in writeup
-//			System.out.print("Update probability: " + updateProbability);
+//            updateProbability = 0;
+			System.out.print("Update probability: " + updateProbability);
+			System.out.println("New Score is: " + newScore);
 			if ((newScore > originalScore) || (input.supervisedLearning && (ThreadLocalRandom.current().nextDouble() < updateProbability))){ 
 				//then accept the new complex
 			} else {
