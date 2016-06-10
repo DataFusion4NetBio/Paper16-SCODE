@@ -30,8 +30,8 @@ public class SupervisedModel implements Model{
 	private InputTask userInput;
 
 	private void setup() {
-		negBayesGraph = new Graph("NonCluster");
-		posBayesGraph = new Graph("Cluster");
+		negBayesGraph = new Graph("NonCluster", (1 - userInput.clusterPrior));
+		posBayesGraph = new Graph("Cluster", userInput.clusterPrior);
 		bayesGraphs = Arrays.asList(negBayesGraph,posBayesGraph);
 	}
 	/**
@@ -42,31 +42,31 @@ public class SupervisedModel implements Model{
 	 * @throws An exception from loading the training data file
 	 */
 	SupervisedModel(CyRootNetwork trainingNetwork, CyNetwork modelNetwork, CyNetwork outputBayesNet, InputTask userInput) throws Exception {
-		setup();
 		Set<String> featureDescs = null;
 		List<CySubNetwork> positiveExamples = null, negativeExamples = null;
 		rootNetwork = trainingNetwork;
 		this.complexPrior = userInput.clusterPrior;
 		this.userInput = userInput;
+		setup();
 		for (Graph g: bayesGraphs) {
-			System.out.println("Before loading model: graph size is " + g.getRoot().getChildren().size());
-			System.out.println("The Cytoscape model network has size " + modelNetwork.getNodeCount());
+//			System.out.println("Before loading model: graph size is " + g.getRoot().getChildren().size());
+//			System.out.println("The Cytoscape model network has size " + modelNetwork.getNodeCount());
 			featureDescs = g.loadModelFrom(modelNetwork);
-			System.out.println("After loading model: graph size is " + g.getRoot().getChildren().size());
+//			System.out.println("After loading model: graph size is " + g.getRoot().getChildren().size());
 			}
 		features = FeatureUtil.parse(featureDescs);
 //		System.out.println("Features: ");
 //		for(String feat : featureDescs) {
 //			System.out.println("\t\t" + feat);
 //		}
-		System.out.println("Cluster model init is finished.");
+//		System.out.println("Cluster model init is finished.");
 		positiveExamples = loadTrainingComplexes(userInput.trainingFile);
-		System.out.println("Trained on positive complexes: " + positiveExamples.size());
-		System.out.println("Positive examples are loaded.");
+//		System.out.println("Trained on positive complexes: " + positiveExamples.size());
+//		System.out.println("Positive examples are loaded.");
 		negativeExamples = generateNegativeExamples(userInput.negativeExamples, positiveExamples);
-		System.out.println("Trained on negative complexes: " + negativeExamples.size());
-		System.out.println("Negative examples are generated.");
-		System.out.println("Dup");
+//		System.out.println("Trained on negative complexes: " + negativeExamples.size());
+//		System.out.println("Negative examples are generated.");
+//		System.out.println("Dup");
 
 		train(positiveExamples, negativeExamples);
 		System.out.println("Model trained...");

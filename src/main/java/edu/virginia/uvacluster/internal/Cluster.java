@@ -83,6 +83,14 @@ public class Cluster
  	return result;
   }
   
+  public Map<String, Bin> getNewBinMap() {
+	  HashMap<String, Bin> result = new HashMap<String, Bin>();
+	  for (FeatureSet feature: features) {
+		  result.putAll(feature.getNewBinMap(this));
+	  }
+	  return result;
+  }
+  
   public void trainBinning() {
 	  for (FeatureSet f: features) {
 		  f.train(this);

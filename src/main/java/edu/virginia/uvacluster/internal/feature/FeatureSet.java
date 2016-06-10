@@ -63,6 +63,17 @@ public abstract class FeatureSet {
 		return result;
 	}
 	
+	public Map<String, Bin> getNewBinMap(Cluster cluster) {
+		// Bin: (Number, Total)
+		HashMap<String, Bin> result = new HashMap<String, Bin>();
+		Iterator<Integer> binIter = getBinnedValues(cluster).iterator();
+		Iterator<Statistic> statIter = statistics.iterator();
+		for (String name: getDescriptions()) {
+			result.put(name, new Bin(binIter.next(),statIter.next().getRange().getNumBins()));
+		}
+		return result;
+	}
+	
 	public Map<String, Statistic> getStatisticMap() {
 		HashMap<String, Statistic> result = new HashMap<String, Statistic>();
 		Iterator<Statistic> statIter = statistics.iterator();
