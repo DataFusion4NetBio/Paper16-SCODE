@@ -68,6 +68,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JPanel evaluatePanel;
 	private JPanel advancedTrainPanel;
 	private JPanel advancedSearchPanel;
+	private JPanel advancedScorePanel;
 	private JPanel outerSearchPanel;
 	private JPanel outerTrainPanel;
 	
@@ -119,6 +120,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JRadioButton trainDefaultModel;
 	private JRadioButton trainCustomModel;
 	private JComboBox model;
+	private JComboBox trainedModel;
 	private JPanel trainingOptionPanel;
 	private File resultFile;
 	
@@ -135,6 +137,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JPanel scorePanel;
 	private JRadioButton weightScoreOption;
 	private JRadioButton learningScoreOption;
+	private JRadioButton trainedModelOption;
 	
 	/* ------- */
 	
@@ -172,6 +175,25 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		analyzeButton.addActionListener(new ActionListener() { 
 			  public void actionPerformed(ActionEvent e) { 
 			    analyzeButtonPressed();
+			    
+//				// Reset the combo boxes so that new networks are displayed
+//				String graph = proteinGraph.getSelectedItem().toString();
+//				String trained = trainedModel.getSelectedItem().toString();
+//				String customModel = model.getSelectedItem().toString();
+//				
+//				proteinGraph.removeAllItems();
+//				trainedModel.removeAllItems();
+//				model.removeAllItems();
+//
+//				for(String s : getNetworkNames()) {
+//					proteinGraph.addItem(s.toString());
+//					trainedModel.addItem(s.toString());
+//					model.addItem(s.toString());
+//					}
+//				
+//				proteinGraph.setSelectedItem(graph);
+//				trainedModel.setSelectedItem(trained);
+//				model.setSelectedItem(customModel);
 			  } 
 			} );
 		
@@ -358,25 +380,15 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 				layout.setHorizontalGroup(
 						layout.createSequentialGroup()
 							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-									.addComponent(minScoreThresholdLabel)
-									.addComponent(clusterPriorLabel)
 									.addComponent(negativeExamplesLabel)
 									.addComponent(ignoreMissingLabel))
 							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-									.addComponent(minScoreThreshold)
-									.addComponent(clusterPrior)
 									.addComponent(negativeExamples)
 									.addComponent(ignoreMissing))
 				);
 				
 				layout.setVerticalGroup(
 						layout.createSequentialGroup()
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(minScoreThresholdLabel)
-								.addComponent(minScoreThreshold))
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(clusterPriorLabel)
-								.addComponent(clusterPrior))
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(negativeExamplesLabel)
 								.addComponent(negativeExamples))
@@ -390,6 +402,46 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		return advancedTrainPanel;
 	}
 	
+	public JPanel createAdvancedScoreParams() {
+		if (scorePanel != null) {
+			if (advancedScorePanel == null) {
+				advancedScorePanel = new JPanel();
+				final GroupLayout layout = new GroupLayout(advancedScorePanel);
+				advancedScorePanel.setLayout(layout);
+				layout.setAutoCreateContainerGaps(true);
+				layout.setAutoCreateGaps(true);					
+				
+				// Minimum acceptable score
+				minScoreThreshold = new JTextField("0");
+				minScoreThresholdLabel = new JLabel("Minimum Complex Score");
+				
+				clusterPrior = new JTextField("1E-4");
+				clusterPriorLabel = new JLabel("Cluster Probability Prior");
+						
+				layout.setHorizontalGroup(
+						layout.createSequentialGroup()
+							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+									.addComponent(minScoreThresholdLabel)
+									.addComponent(clusterPriorLabel))
+							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+									.addComponent(minScoreThreshold)
+									.addComponent(clusterPrior))
+				);
+				
+				layout.setVerticalGroup(
+						layout.createSequentialGroup()
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(minScoreThresholdLabel)
+								.addComponent(minScoreThreshold))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(clusterPriorLabel)
+								.addComponent(clusterPrior))
+				);
+				
+			}
+		}
+		return advancedScorePanel;
+	}
 	
 	public JPanel createSearchPanel() {
 		if (searchPanel == null) {		
@@ -595,12 +647,13 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			
 			final ButtonGroup scoringButtons = new ButtonGroup();
 
-			weightScoreOption = new JRadioButton("Use only edge information (no learning)");
+			weightScoreOption = new JRadioButton("Score with edge information (no learning)");
 			weightScoreOption.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e)
 	            {
 	                if (weightScoreOption.isSelected()) {
 	                	outerTrainPanel.setVisible(false);
+	                	trainedModel.setVisible(true);
 	        			/* For the simple search without learning: */
 	        			/* Calculate the mean of the edge weights in the input graph (if it has weights) 
 	        			 * in order to auto-set the min score threshold */
@@ -611,21 +664,38 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
             			} else {
             				minScoreThreshold.setText(Double.toString(minScore));
             			}
-
+            		trainedModel.setVisible(false);
 	                }
 	            }
 			});
 			
-			learningScoreOption = new JRadioButton("Use supervised learning with a Bayesian model");
+			learningScoreOption = new JRadioButton("Train a Bayesian template to score complexes");
 			learningScoreOption.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e)
 	            {
 	                if (learningScoreOption.isSelected()) {
 	                	outerTrainPanel.setVisible(true);
 	                	minScoreThreshold.setText("0");
+	                	trainedModel.setVisible(false);
 	                }
 	            }
 			});
+
+			
+			trainedModel = new JComboBox(getNetworkNames().toArray());
+			trainedModelOption = new JRadioButton("Provide a trained Bayesian model to score complexes");
+			trainedModelOption.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                if (trainedModelOption.isSelected()) { 
+	                	minScoreThreshold.setText("0");
+	                	outerTrainPanel.setVisible(false);
+	                	trainedModel.setVisible(true);
+	                }
+	            }
+			});
+			
+			advancedScorePanel = new CollapsiblePanel("> Advanced Scoring Parameters", createAdvancedScoreParams());
 			
 			scorePanel.setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
@@ -636,13 +706,20 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			gbc.gridy = 0;			
 			scorePanel.add(weightScoreOption, gbc);
 			gbc.gridy = 1;
-			scorePanel.add(learningScoreOption, gbc);
+			scorePanel.add(trainedModelOption, gbc);
 			gbc.gridy = 2;
-			outerTrainPanel.setVisible(false);
+			scorePanel.add(learningScoreOption, gbc);
+			gbc.gridy = 3;
+			scorePanel.add(trainedModel, gbc);
+			gbc.gridy = 4;
         	scorePanel.add(outerTrainPanel, gbc);
-		
+        	gbc.gridy = 5;
+        	scorePanel.add(advancedScorePanel, gbc);
+			outerTrainPanel.setVisible(false);
+			trainedModel.setVisible(false);
 			scoringButtons.add(weightScoreOption);
 			scoringButtons.add(learningScoreOption);
+			scoringButtons.add(trainedModelOption);
 			
 		}
 		return scorePanel;
@@ -664,26 +741,26 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			trainingFilePanel.setVisible(false);
 			
 			
-			// Use Trained Model?
-			useTrainedModel = new JRadioButton("Provide a trained model");
-			useTrainedModel.addActionListener(new ActionListener() {
-	        	 
-	            public void actionPerformed(ActionEvent e)
-	            {
-	                if (useTrainedModel.isSelected()) {
-	                	modelPanel.setVisible(true);
-	                	trainingFilePanel.setVisible(false);
-	                	
-	                	clusterPrior.setEnabled(false);
-	                	negativeExamples.setEnabled(false);
-	                	ignoreMissing.setEnabled(false);
-	                	
-	                }
-	            }
-	        }); 
+//			// Use Trained Model?
+//			useTrainedModel = new JRadioButton("Provide a trained model");
+//			useTrainedModel.addActionListener(new ActionListener() {
+//	        	 
+//	            public void actionPerformed(ActionEvent e)
+//	            {
+//	                if (useTrainedModel.isSelected()) {
+//	                	modelPanel.setVisible(true);
+//	                	trainingFilePanel.setVisible(false);
+//	                	
+//	                	clusterPrior.setEnabled(false);
+//	                	negativeExamples.setEnabled(false);
+//	                	ignoreMissing.setEnabled(false);
+//	                	
+//	                }
+//	            }
+//	        }); 
 			
 			// Train the Default (Built-in) Model?
-			trainDefaultModel = new JRadioButton("Train the built-in model");
+			trainDefaultModel = new JRadioButton("Train the built-in template");
 			trainDefaultModel.addActionListener(new ActionListener() {
         	 
 	            public void actionPerformed(ActionEvent e)
@@ -700,7 +777,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	        }); 
 			
 			// Train a Custom Model?
-			trainCustomModel = new JRadioButton("Train a custom model");
+			trainCustomModel = new JRadioButton("Train a custom template");
 			trainCustomModel.addActionListener(new ActionListener() {
 	        	 
 	            public void actionPerformed(ActionEvent e)
@@ -721,7 +798,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			// or provide an already-trained model. Radio buttons controlling these
 			// options are in one ButtonGroup (only one can be selected at a time
 			ButtonGroup trainingButtons = new ButtonGroup();
-			trainingButtons.add(useTrainedModel);
+//			trainingButtons.add(useTrainedModel);
 			trainingButtons.add(trainDefaultModel);
 			trainingButtons.add(trainCustomModel);
 			
@@ -730,7 +807,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			trainingOptionPanel = new JPanel();
 			trainingOptionPanel.setLayout(new BoxLayout(trainingOptionPanel, BoxLayout.Y_AXIS));
 			trainingOptionPanel.add(trainDefaultModel);
-			trainingOptionPanel.add(useTrainedModel);
+//			trainingOptionPanel.add(useTrainedModel);
 			trainingOptionPanel.add(trainCustomModel);
 			TitledBorder border = new TitledBorder("Select a Training Option:");
 		    border.setTitleJustification(TitledBorder.CENTER);
@@ -744,12 +821,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			modelPanel.add(model);
 			
 			
-			// Minimum acceptable score
-			minScoreThreshold = new JTextField("0");
-			minScoreThresholdLabel = new JLabel("Minimum Complex Score");
-			
-			clusterPrior = new JTextField("1E-4");
-			clusterPriorLabel = new JLabel("Cluster Probability Prior");
+
 			
 			negativeExamples = new JTextField("2000");
 			negativeExamplesLabel = new JLabel("Generate # of Negative Examples");
@@ -916,7 +988,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			TitledBorder eval = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.blue), "Evaluate Results");
 			eval.setTitleColor(Color.blue);
 			evaluatePanel.setBorder(eval);			
-
+			
 		} else if (inputValidation == 2) {
 			JOptionPane.showMessageDialog(this, "Please select a training option");
 		} else if (inputValidation == 3) {
@@ -1143,7 +1215,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		inputTask.trainNewModel = inputTrainNewModel;
 		
 		ListSingleSelection<String> inputExistingModel = new ListSingleSelection<String>(getNetworkNames());
-		inputExistingModel.setSelectedValue(model.getSelectedItem().toString());
+		inputExistingModel.setSelectedValue(trainedModel.getSelectedItem().toString());
 		inputTask.existingModel = inputExistingModel;
 		
 		boolean inputCustomModel = trainCustomModel.isSelected();
@@ -1173,7 +1245,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		
 		inputTask.selectedSeedFile = useSelectedForSeedsFile;
 		
-		inputTask.supervisedLearning = learningScoreOption.isSelected();
+		inputTask.supervisedLearning = learningScoreOption.isSelected() || trainedModelOption.isSelected();
 		
 		inputTask.numResults = Integer.parseInt((numResults.getText()));
 		
@@ -1182,7 +1254,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	
 	private Integer validateInput() {
 
-		if (learningScoreOption.isSelected() && !useTrainedModel.isSelected() && !trainDefaultModel.isSelected() && !trainCustomModel.isSelected()) {
+		if (learningScoreOption.isSelected() && !trainDefaultModel.isSelected() && !trainCustomModel.isSelected()) {
 			// User has not selected a training option
 			return 2;
 		} 
@@ -1194,7 +1266,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			// User has not selected a protein graph
 			return 6;
 		}
-		else if (!weightScoreOption.isSelected() && !learningScoreOption.isSelected()) {
+		else if (!weightScoreOption.isSelected() && !learningScoreOption.isSelected() && (!trainedModelOption.isSelected())) {
 			// User has not selected a scoring option
 			return 4;
 		}

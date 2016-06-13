@@ -53,7 +53,7 @@ public class ClusterUtil {
 			node = modelNetwork.addNode();
 			modelNetwork.getRow(node).set("name", featureNames[i]);
 			modelNetwork.addEdge(root, node, true);
-			modelNetwork.addEdge(size, node, true);
+//			modelNetwork.addEdge(size, node, true);
 		}
 		return modelNetwork;
 	}

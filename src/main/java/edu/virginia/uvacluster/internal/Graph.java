@@ -326,7 +326,7 @@ public class Graph {
 //				System.out.println("For cluster " + cluster.getSUID() + ":");
 //				System.out.println("\tFeature= " + feature + "\tBin=" + featureMap.get(feature).number);
 //			}
-			System.out.println("Cluster: " + cluster.getSUID());
+//			System.out.println("Cluster: " + cluster.getSUID());
 //			featureMap = cluster.getNewBinMap();
 //			System.out.println("In trainOn: the size of the featureMap for cluster " + cluster.getSUID() + " is: " + featureMap.size());
 //			System.out.println("In trainOn: the size of the graph is: " + this.getRoot().getChildren().size());
@@ -359,14 +359,14 @@ public class Graph {
 		Map<String, Bin> features = cluster.getBinMap();
 		
 		scanGraph(features);
-//		System.out.println("Scoring on cluster: " + cluster.getSUID());
-//		for (Child child : getRootFeatures()) {
-//			score *= child.score(features.get(child.getName()).number);
-//		}
-		for (Child child: root.getChildren()) {
+		for (Child child : getRootFeatures()) {
 			score *= child.score(features.get(child.getName()).number);
-			score *= childScore(child, cluster);
 		}
+//		System.out.println("\t\t" + cluster.getSUID() + ": " + score);
+//		for (Child child: root.getChildren()) {
+//			score *= child.score(features.get(child.getName()).number);
+//			score *= childScore(child, cluster);
+//		}
 		return score;
 	}
 	
@@ -421,7 +421,7 @@ public class Graph {
 		} while(nextLevel.size() > 0);
 	}
 	
-	class Node {
+	private class Node {
 		private List<Child> children;
 		private List<Node> parents = new ArrayList<Node>();
 		private String feature;

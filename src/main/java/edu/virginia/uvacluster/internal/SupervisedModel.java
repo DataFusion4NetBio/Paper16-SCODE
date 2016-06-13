@@ -99,7 +99,7 @@ public class SupervisedModel implements Model{
 	public void saveGraphicalBayesianNetwork(CyNetwork emptyNetwork, List<FeatureSet> features) {
 		for(Graph g: bayesGraphs) {
 			System.out.println("--------SAVING TRAINED MODEL-----------");
-			System.out.println("The size of the trained model is: " + g.getRoot().getChildren().size());
+//			System.out.println("The size of the trained model is: " + g.getRoot().getChildren().size());
 			g.saveTrainedModelTo(emptyNetwork,features);
 		}
 	}
@@ -113,7 +113,11 @@ public class SupervisedModel implements Model{
 	public double score(Cluster complex) throws Exception{
 		if (userInput.supervisedLearning) {
 			double nonComplexPrior = 1 - complexPrior;
-			return Math.log((complexPrior*posBayesGraph.score(complex))/(nonComplexPrior*negBayesGraph.score(complex)));
+			System.out.println("Root Cluster: " + posBayesGraph.score(complex)) ;
+			System.out.println("Root Non-Cluster: " + negBayesGraph.score(complex)) ;
+			System.out.println("Score: " + Math.log((complexPrior*posBayesGraph.score(complex))/(nonComplexPrior*negBayesGraph.score(complex))));
+
+			return Math.log(complexPrior*posBayesGraph.score(complex)) - Math.log(nonComplexPrior*negBayesGraph.score(complex));
 		} else {
 			return ClusterScore.score(complex, null);
 		}
@@ -273,7 +277,7 @@ public class SupervisedModel implements Model{
 		System.out.println("Lists of pos and neg training examples created");
 		posBayesGraph.trainOn(posExamples);
 		System.out.println("Model has finished training on " + positiveExamples.size() +  " positive Examples.");
-		System.out.println("The size of the pos bayes graph is: " + posBayesGraph.getRoot().getChildren().size());
+//		System.out.println("The size of the pos bayes graph is: " + posBayesGraph.getRoot().getChildren().size());
 		for(CySubNetwork neg: negativeExamples) {negExamples.add(new Cluster(features, neg));}
 		negBayesGraph.trainOn(negExamples);
 		System.out.println("Model has finished training on " + negativeExamples.size() +  " negative Examples.");
