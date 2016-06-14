@@ -30,8 +30,8 @@ public class SupervisedModel implements Model{
 	private InputTask userInput;
 
 	private void setup() {
-		negBayesGraph = new Graph("NonCluster", (1 - userInput.clusterPrior));
-		posBayesGraph = new Graph("Cluster", userInput.clusterPrior);
+		negBayesGraph = new Graph("NonCluster", (1 - complexPrior));
+		posBayesGraph = new Graph("Cluster", complexPrior);
 		bayesGraphs = Arrays.asList(negBayesGraph,posBayesGraph);
 	}
 	/**
@@ -115,8 +115,8 @@ public class SupervisedModel implements Model{
 			double nonComplexPrior = 1 - complexPrior;
 			double scorePos = posBayesGraph.score(complex);
 			double scoreNeg = negBayesGraph.score(complex);
-			System.out.print("\nRoot Cluster: " + scorePos + "\n\t\tRoot Non-Cluster: " 
-			+ scoreNeg + "\n\t\tScore: " + Math.log((complexPrior * scorePos) / (nonComplexPrior*scoreNeg)) );
+//			System.out.print("\nRoot Cluster: " + scorePos + "\n\t\tRoot Non-Cluster: " 
+//			+ scoreNeg + "\n\t\tScore: " + Math.log((complexPrior * scorePos) / (nonComplexPrior*scoreNeg)) );
 
 			return Math.log((complexPrior * scorePos) / (nonComplexPrior*scoreNeg));
 		} else {
