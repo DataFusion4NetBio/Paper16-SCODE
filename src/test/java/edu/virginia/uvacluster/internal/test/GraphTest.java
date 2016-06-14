@@ -26,7 +26,7 @@ public class GraphTest extends TestNetwork {
  	List<CySubNetwork> examples;
 	List<CySubNetwork> negExamples;
 	CySubNetwork validationExample;
-	CyNode root, nodeCount, maxDegree, density;
+	CyNode root, nodeCount, maxDegree, density, weight;
 	CyNode a,b,c,d,e;
 	CyEdge ab,ac,bc,cd,ce,de,ad, bd;
 	
@@ -47,6 +47,15 @@ public class GraphTest extends TestNetwork {
 		assertEquals("Model should score each example correctly",(4.0/49.0),result,0.001);
 		result = graph.score(new Cluster(features, validationExample));
 		assertEquals("Model should score each example correctly",(6.0/49.0),result,0.001);
+	}
+	
+	
+	@Test
+	public void weightModel() {
+		double scorePos, scoreNeg, resultScore;
+		Graph posGraph = new Graph("Positive Bayes", 0.0001);
+		Graph negGraph = new Graph("Negative Bayes", 0.9999);
+		List<FeatureSet> features = FeatureUtil.parse(posGraph.loadModelFrom(getOneToManyModel()));
 	}
 	
 	@Test
@@ -119,6 +128,8 @@ public class GraphTest extends TestNetwork {
 		net.getRow(maxDegree).set("name", "Max : Degree (3)");
 		density = net.addNode();
 		net.getRow(density).set("name", "Density (3)");
+		weight = net.addNode();
+		net.getRow(weight).set("name", "Mean : weight{weight} (3)");
 		return net;
 	}
 	
@@ -126,6 +137,12 @@ public class GraphTest extends TestNetwork {
 		CyNetwork net = getModelWireFrame();
 		net.addEdge(root, nodeCount, true);
 		net.addEdge(root, maxDegree, true);
+		return net;
+	}
+	
+	private CyNetwork getWeightModel() {
+		CyNetwork net = getModelWireFrame();
+		net.addEdge(root, weight, true);
 		return net;
 	}
 	

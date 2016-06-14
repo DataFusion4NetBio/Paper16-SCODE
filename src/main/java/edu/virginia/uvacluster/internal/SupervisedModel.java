@@ -113,11 +113,12 @@ public class SupervisedModel implements Model{
 	public double score(Cluster complex) throws Exception{
 		if (userInput.supervisedLearning) {
 			double nonComplexPrior = 1 - complexPrior;
-			System.out.println("Root Cluster: " + posBayesGraph.score(complex)) ;
-			System.out.println("Root Non-Cluster: " + negBayesGraph.score(complex)) ;
-			System.out.println("Score: " + Math.log((complexPrior*posBayesGraph.score(complex))/(nonComplexPrior*negBayesGraph.score(complex))));
+			double scorePos = posBayesGraph.score(complex);
+			double scoreNeg = negBayesGraph.score(complex);
+			System.out.print("\nRoot Cluster: " + scorePos + "\n\t\tRoot Non-Cluster: " 
+			+ scoreNeg + "\n\t\tScore: " + Math.log((complexPrior * scorePos) / (nonComplexPrior*scoreNeg)) );
 
-			return Math.log(complexPrior*posBayesGraph.score(complex)) - Math.log(nonComplexPrior*negBayesGraph.score(complex));
+			return Math.log((complexPrior * scorePos) / (nonComplexPrior*scoreNeg));
 		} else {
 			return ClusterScore.score(complex, null);
 		}

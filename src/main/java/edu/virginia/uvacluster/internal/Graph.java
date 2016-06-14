@@ -499,12 +499,12 @@ public class Graph {
 		}
 		public double score(int bin) {
 			double score = 1;
-//			if (node.parentsActive()) {
+			if (node.parentsActive()) {
 				if(node.getBin() == bin) {
 //					System.out.println("\t\tChild.score-Scoring on " + this.getName() + " - bin #" + node.getBin() + ": score = score*" + probability);
 					score = probability;
 				}
-//			}
+			}
 			return score;
 		}
 		public void activate(int bin) {

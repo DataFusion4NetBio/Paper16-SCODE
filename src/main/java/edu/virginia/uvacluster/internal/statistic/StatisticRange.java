@@ -12,10 +12,15 @@ public class StatisticRange {
 	}
 	
 	public void train(double val) {
-		if (val < min)
+		System.out.println("TRAINING STATISTIC RANGE");
+		if (val < min) {
+			System.out.println("Old min : " + min + "\nNew min : " + val);
 			min = val;
-		else if (val > max)
+		}
+		if (val > max) {
+			System.out.println("Old max : " + max + "\nNew max : " + val);
 			max = val;
+			}
 		span = max - min;
 	}
 	
