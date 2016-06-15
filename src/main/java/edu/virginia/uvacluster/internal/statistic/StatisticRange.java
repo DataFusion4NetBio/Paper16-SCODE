@@ -12,13 +12,13 @@ public class StatisticRange {
 	}
 	
 	public void train(double val) {
-		System.out.println("TRAINING STATISTIC RANGE");
+//		System.out.println("TRAINING STATISTIC RANGE");
 		if (val < min) {
-			System.out.println("Old min : " + min + "\nNew min : " + val);
+//			System.out.println("Old min : " + min + "\nNew min : " + val);
 			min = val;
 		}
 		if (val > max) {
-			System.out.println("Old max : " + max + "\nNew max : " + val);
+//			System.out.println("Old max : " + max + "\nNew max : " + val);
 			max = val;
 			}
 		span = max - min;
@@ -32,6 +32,10 @@ public class StatisticRange {
 				bin = i; 
 				break;
 			}
+//			if (val < (min - segmentSize)) {
+//				bin = -1;
+//				break;
+//			}
 		}
 		return bin;
 	}

@@ -302,6 +302,15 @@ public class Graph {
 		return results;
 	}
 	
+	public void trainBins(List<Cluster> clusters) {
+		// trainBinning() gets the range of each feature
+//		System.out.println("Before trainBinning: the size of the graph is: " + this.getRoot().getChildren().size());
+		for (Cluster cluster: clusters) {
+			cluster.trainBinning();
+//			System.out.println("After trainBinning: the size of the graph is: " + this.getRoot().getChildren().size());
+		}
+		System.out.println("Cluster train binning complete");
+	}
 	
 	public void trainOn(List<Cluster> clusters) {
 		System.out.println("Start training on clusters");
@@ -310,15 +319,6 @@ public class Graph {
 		Map<String, Bin> featureMap;
 		List<Child> currentLevel = new ArrayList<Child>();
 		List<Child> nextLevel = new ArrayList<Child>();
-
-		// trainBinning() gets the range of each feature
-//		System.out.println("Before trainBinning: the size of the graph is: " + this.getRoot().getChildren().size());
-		for (Cluster cluster: clusters) {
-			cluster.trainBinning();
-//			System.out.println("After trainBinning: the size of the graph is: " + this.getRoot().getChildren().size());
-		}
-		System.out.println("Cluster train binning complete");
-		
 		
 		for (Cluster cluster: clusters) {
 			featureMap = cluster.getBinMap();
@@ -360,6 +360,7 @@ public class Graph {
 		
 		scanGraph(features);
 		for (Child child : getRootFeatures()) {
+			if (features.get(child.getName()).number < 0)
 			score *= child.score(features.get(child.getName()).number);
 		}
 //		System.out.println("\t\t" + cluster.getSUID() + ": " + score);
@@ -470,7 +471,7 @@ public class Graph {
 	}
 	
 	//Stores transition information
-	private class Child {
+	public class Child {
 		private Node node;
 		private int count = 0;
 		private int totalSamples = 0;
@@ -489,7 +490,7 @@ public class Graph {
 		public void addTo(int bin) {
 //			if (node.parentsActive()) {
 				if (node.getBin() == bin) {
-					System.out.println("\t\tJust added to " + this.getName() + " - bin # " + bin);
+//					System.out.println("\t\tJust added to " + this.getName() + " - bin # " + bin);
 					count++;
 				} 
 				totalSamples++;

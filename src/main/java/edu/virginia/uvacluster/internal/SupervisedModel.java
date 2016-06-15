@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -17,8 +18,10 @@ import org.cytoscape.model.SavePolicy;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
+import edu.virginia.uvacluster.internal.Graph.Child;
 import edu.virginia.uvacluster.internal.feature.FeatureSet;
 import edu.virginia.uvacluster.internal.feature.FeatureUtil;
+import edu.virginia.uvacluster.internal.statistic.Statistic;
 
 public class SupervisedModel implements Model{
 	//data members
@@ -159,19 +162,24 @@ public class SupervisedModel implements Model{
 		}
 		
 		exponent = getSizeDistributionExponent(positiveExampleSizes);
-		//System.out.println("Exp: " + exponent);
+		System.out.println("Exp: " + exponent);
 		
 		for(i = 0; i < sizeDistributionValues.length; i++) {
 			sizeDistributionValues[i] = (1/(Math.pow((i + minSize), exponent)));
+			System.out.println("sizeDistributionValues[" + i + "] : " + sizeDistributionValues[i]);
 			sizeDistributionTotal = sizeDistributionTotal + sizeDistributionValues[i];
 		}
 		
 		for(i = 0; i < sizeDistributionValues.length; i++) {
+			
 			sizeDistributionRatios[i] = sizeDistributionValues[i]/sizeDistributionTotal;
 		}
 		
+		System.out.println("Generating negative examples");
 		for(i = 0; i < sizeDistributionRatios.length; i++) {
+//			System.out.println("sizeDistributionRatios[" + i + "] : " + sizeDistributionRatios[i]);
 			for (int x = 0; x < Math.round(sizeDistributionRatios[i] * numExamples); x++) {
+				System.out.println("x: " + x);
 				example = genNegativeExample(i + minSize, positiveExamples);
 				if ((example != null) && (example.getNodeCount() >= (i + minSize))) {
 					negativeExamples.add(example);
@@ -276,11 +284,41 @@ public class SupervisedModel implements Model{
 		List<Cluster> posExamples = new ArrayList<Cluster>(), negExamples = new ArrayList<Cluster>();
 		for(CySubNetwork pos: positiveExamples) {posExamples.add(new Cluster(features, pos)); }
 		System.out.println("Lists of pos and neg training examples created");
+		
+		posBayesGraph.trainBins(posExamples);
+		// Min/Max update
+		System.out.println("TRAINED BINS ON POSITIVE COMPLEXES:");
+		for (FeatureSet feature : features) {
+			List<String> statNames = feature.getDescriptions();
+			Map<String, Statistic> statMap = feature.getStatisticMap();
+			for (String statName : statNames) {
+				Statistic stat = statMap.get(statName);
+				Double min = stat.getRange().getMin();
+				Double max = stat.getRange().getMax();
+				System.out.println(statName + "\n\tMin: " + min + "\n\tMax: " + max);
+			}
+		}
+	
+		negBayesGraph.trainBins(negExamples);
+		System.out.println("TRAINED BINS ON NEGATIVE COMPLEXES:");
+		for (FeatureSet feature : features) {
+			List<String> statNames = feature.getDescriptions();
+			Map<String, Statistic> statMap = feature.getStatisticMap();
+			for (String statName : statNames) {
+				Statistic stat = statMap.get(statName);
+				Double min = stat.getRange().getMin();
+				Double max = stat.getRange().getMax();
+				System.out.println(statName + "\n\tMin: " + min + "\n\tMax: " + max);
+			}
+		}
+		// Min/max update
 		posBayesGraph.trainOn(posExamples);
+		// Min/max stable
 		System.out.println("Model has finished training on " + positiveExamples.size() +  " positive Examples.");
-//		System.out.println("The size of the pos bayes graph is: " + posBayesGraph.getRoot().getChildren().size());
 		for(CySubNetwork neg: negativeExamples) {negExamples.add(new Cluster(features, neg));}
+		
 		negBayesGraph.trainOn(negExamples);
+		// Min/max stable
 		System.out.println("Model has finished training on " + negativeExamples.size() +  " negative Examples.");
 	}
 	
@@ -373,14 +411,19 @@ public class SupervisedModel implements Model{
 	private double getSizeDistributionExponent(int[] positiveExampleSizes) {
 		double exponent = 0;
 		double min = ClusterUtil.arrayMin(positiveExampleSizes);
+		double max = ClusterUtil.arrayMax(positiveExampleSizes);
 		double n = positiveExampleSizes.length;
 		
-		for (int i = 0; i < n; i++) {
-			exponent = exponent + Math.log(positiveExampleSizes[i]/min);
+		if (min != max) {
+			for (int i = 0; i < n; i++) {
+				exponent = exponent + Math.log(positiveExampleSizes[i]/min);
+			}
+			System.out.println("exponent: " + exponent);
+			exponent = 1 + (n / exponent);
+		} else {
+			// Avoid dividing by zero
+			exponent = 2;
 		}
-		
-		exponent = 1 + (n / exponent);
-		
 		return exponent;
 	}
 }

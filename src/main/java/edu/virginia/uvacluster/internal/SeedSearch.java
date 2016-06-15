@@ -82,7 +82,7 @@ public class SeedSearch implements Runnable {
 					complex.remove(n);
 				}
 			} else if (input.getSelectedSearch().equals("ISA")) {
-			    candidateNode = neighbors.get((int) Math.round(ThreadLocalRandom.current().nextDouble() * neighbors.size()));
+			    candidateNode = neighbors.get((int) Math.round(ThreadLocalRandom.current().nextDouble() * (neighbors.size() - 1)));
 			} else if (input.getSelectedSearch().equals("Sorted-Neighbor ISA")) {
 				neighbors = ClusterUtil.sortByDegree(complex.getRootNetwork(), neighbors);
 
@@ -107,8 +107,8 @@ public class SeedSearch implements Runnable {
             newScore = ClusterScore.score(complex, model);
 			updateProbability = Math.exp((newScore - originalScore)/temp); //TODO note this in writeup
 //            updateProbability = 0;
-			System.out.print("Update probability: " + updateProbability);
-			System.out.println("New Score is: " + newScore);
+//			System.out.print("Update probability: " + updateProbability);
+//			System.out.println("New Score is: " + newScore);
 			if ((newScore > originalScore) || (input.supervisedLearning && (ThreadLocalRandom.current().nextDouble() < updateProbability))){ 
 				//then accept the new complex
 			} else {

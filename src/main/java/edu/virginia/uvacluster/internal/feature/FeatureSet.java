@@ -25,7 +25,7 @@ public abstract class FeatureSet {
 	public List<Statistic> train(Cluster cluster) {
 		for (Statistic statistic: statistics)
 			statistic.train(computeInputs(cluster));
-		System.out.println("Training feature");
+//		System.out.println("Training feature");
 		return statistics;
 	}
 	
