@@ -24,7 +24,7 @@ public abstract class FeatureSet {
 	
 	public List<Statistic> train(Cluster cluster) {
 		for (Statistic statistic: statistics)
-			statistic.train(computeInputs(cluster));
+			statistic.train(computeInputs(cluster), cluster);
 //		System.out.println("Training feature");
 		return statistics;
 	}
@@ -32,14 +32,14 @@ public abstract class FeatureSet {
 	public List<Double> getValues(Cluster cluster) {
 		List<Double> result = new ArrayList<Double>();
 		for(Statistic statistic: statistics)
-			result.add(statistic.transform(computeInputs(cluster)));
+			result.add(statistic.transform(computeInputs(cluster), cluster));
 		return result;
 	}
 
 	public List<Integer> getBinnedValues(Cluster cluster) {
 		List<Integer> result = new ArrayList<Integer>();
 		for(Statistic statistic: statistics)
-			result.add(statistic.binTransform(computeInputs(cluster)));
+			result.add(statistic.binTransform(computeInputs(cluster), cluster));
 		return result;
 	}
 

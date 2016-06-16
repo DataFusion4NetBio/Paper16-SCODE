@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import edu.virginia.uvacluster.internal.Cluster;
+
 public class Median extends Statistic {
 
 	public Median(StatisticRange range) {
 		super(range, "median");
 	}
 
-	public double transform(List<Double> values) {
+	public double transform(List<Double> values, Cluster cluster) {
 		ArrayList<Double> copy = new ArrayList<Double>(values);
 	    double median = 0;
 	    int numElements = copy.size();

@@ -2,6 +2,8 @@ package edu.virginia.uvacluster.internal.statistic;
 
 import java.util.List;
 
+import edu.virginia.uvacluster.internal.Cluster;
+
 public class Ordinal extends Statistic {
 	private Integer ordinalNum;
 	
@@ -11,7 +13,7 @@ public class Ordinal extends Statistic {
 	}
 
 	@Override
-	public double transform(List<Double> values) {
+	public double transform(List<Double> values, Cluster cluster) {
 		return values.get(getIndex());
 	}
 

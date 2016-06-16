@@ -48,6 +48,11 @@ public class FeatureUtil {
 			m.matches();
 			numBins = Integer.parseInt(m.group(2));
 			
+			// Check if Mean : weight -- to use alternative mean calculation
+			// over all possible edges
+			if (weightFeaturePattern.matcher(featureName).matches())
+				statName = "mean possible";
+			
 			if (statsMap.get(featureName) == null) 
 				statsMap.put(featureName, new HashSet<Statistic>());
 			statsMap.get(featureName).add(getStat(statName, numBins));
@@ -83,6 +88,9 @@ public class FeatureUtil {
 			break;
 		case "mean": 
 			stat = new Mean(range);
+			break;
+		case "mean possible":
+			stat = new MeanPossible(range);
 			break;
 		case "median": 
 			stat = new Median(range);

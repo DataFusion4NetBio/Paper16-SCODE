@@ -2,14 +2,16 @@ package edu.virginia.uvacluster.internal.statistic;
 
 import java.util.List;
 
+import edu.virginia.uvacluster.internal.Cluster;
+
 public class Variance extends Statistic {
 	
 	public Variance(StatisticRange range) {
 		super(range, "variance");
 	}
 
-	public double transform(List<Double> values) {
-		return transform(values, new Mean(null).transform(values)); 
+	public double transform(List<Double> values, Cluster cluster) {
+		return transform(values, new Mean(null).transform(values, cluster)); 
 	}
 	
 	public double transform(List<Double> values, double mean)

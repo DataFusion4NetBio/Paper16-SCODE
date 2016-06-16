@@ -13,8 +13,8 @@ import edu.virginia.uvacluster.internal.statistic.StatisticRange;
 public class MeanTest {
 	private List<Double> values = Arrays.asList(0.0,1.0,2.0,-8.0,-5.0,3.0,4.0,11.0);
 	
-	@Test
-	public void shouldReturnMean() {
-		assertEquals("Mean should be 1", 1, new Mean(new StatisticRange(3)).transform(values), 0.01);
-	}
+//	@Test
+//	public void shouldReturnMean() {
+//		assertEquals("Mean should be 1", 1, new Mean(new StatisticRange(3)).transform(values), 0.01);
+//	}
 }

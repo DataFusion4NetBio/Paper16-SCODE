@@ -4,25 +4,23 @@ import java.util.List;
 
 import edu.virginia.uvacluster.internal.Cluster;
 
-public class Mean extends Statistic {
+public class MeanPossible extends Statistic {
 
-	public Mean(StatisticRange range) {
+	public MeanPossible(StatisticRange range) {
 		super(range, "mean");
 	}
-
+	
 	public double transform(List<Double> values, Cluster cluster) {
-		double mean = 0;
 	    double sum = 0;
-	    double numElements = values.size();
-
+	    int clusterSize = cluster.size();
+	    double possibleEdges = clusterSize * (clusterSize - 1) / 2;
+	    
 	    for (Double value: values)
 	    {
 	      sum += value;
 	    }
-
-	    if (numElements > 0)
-	      mean = sum/numElements;
 	    
-	    return mean;
+	    return sum / possibleEdges;
 	}
+
 }

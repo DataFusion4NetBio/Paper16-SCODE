@@ -285,6 +285,13 @@ public class SupervisedModel implements Model{
 	 */
 	public void train(List<CySubNetwork> positiveExamples, List<CySubNetwork> negativeExamples) {
 		System.out.println("Entered TRAIN");
+		
+		for (FeatureSet feature : features) {
+			for (String desc : feature.getDescriptions()) {
+				System.out.println(desc);
+			}
+		}
+		
 		List<Cluster> posExamples = new ArrayList<Cluster>(), negExamples = new ArrayList<Cluster>();
 		for(CySubNetwork pos: positiveExamples) {posExamples.add(new Cluster(features, pos)); }
 		for(CySubNetwork neg: negativeExamples) {negExamples.add(new Cluster(features, neg));}
