@@ -333,6 +333,7 @@ public class Graph {
 			nextLevel.addAll(root.getChildren());
 
 			for (Child child : getRootFeatures()) {
+				System.out.println(child.getName());
 				child.addTo(featureMap.get(child.getName()).number);
 			}
 			

@@ -50,7 +50,7 @@ public class FeatureUtil {
 			
 			// Check if Mean : weight -- to use alternative mean calculation
 			// over all possible edges
-			if (weightFeaturePattern.matcher(featureName).matches())
+			if (weightFeaturePattern.matcher(featureName).matches() && statName.equals("Mean"))
 				statName = "mean possible";
 			
 			if (statsMap.get(featureName) == null) 
