@@ -284,73 +284,17 @@ public class SupervisedModel implements Model{
 	 * Convenience method for training networks on positive *and* negative examples
 	 */
 	public void train(List<CySubNetwork> positiveExamples, List<CySubNetwork> negativeExamples) {
-		System.out.println("Entered TRAIN");
-		
-		for (FeatureSet feature : features) {
-			for (String desc : feature.getDescriptions()) {
-				System.out.println(desc);
-			}
-		}
-		
 		List<Cluster> posExamples = new ArrayList<Cluster>(), negExamples = new ArrayList<Cluster>();
 		for(CySubNetwork pos: positiveExamples) {posExamples.add(new Cluster(features, pos)); }
 		for(CySubNetwork neg: negativeExamples) {negExamples.add(new Cluster(features, neg));}
 
 		System.out.println("Lists of pos and neg training examples created");
-		
-//		System.out.println("TRAINING BINS ON POSITIVE COMPLEXES:");
+
 		posBayesGraph.trainBins(posExamples);
-//		for (FeatureSet feature : features) {
-//			List<String> statNames = feature.getDescriptions();
-//			Map<String, Statistic> statMap = feature.getStatisticMap();
-//			for (String statName : statNames) {
-//				Statistic stat = statMap.get(statName);
-//				Double min = stat.getRange().getMin();
-//				Double max = stat.getRange().getMax();
-//				System.out.println(statName + "\n\tMin: " + min + "\n\tMax: " + max);
-//			}
-//		}
-	
-//		System.out.println("TRAINING BINS ON NEGATIVE COMPLEXES:");
 		negBayesGraph.trainBins(negExamples);
-//		for (FeatureSet feature : features) {
-//			List<String> statNames = feature.getDescriptions();
-//			Map<String, Statistic> statMap = feature.getStatisticMap();
-//			for (String statName : statNames) {
-//				Statistic stat = statMap.get(statName);
-//				Double min = stat.getRange().getMin();
-//				Double max = stat.getRange().getMax();
-//				System.out.println(statName + "\n\tMin: " + min + "\n\tMax: " + max);
-//			}
-//		}
-		
-//		System.out.println("TRAINING PROBABILITY  - POSITIVE:");
-		posBayesGraph.trainOn(posExamples);
-		// Min/max stable
-//		for (FeatureSet feature : features) {
-//			List<String> statNames = feature.getDescriptions();
-//			Map<String, Statistic> statMap = feature.getStatisticMap();
-//			for (String statName : statNames) {
-//				Statistic stat = statMap.get(statName);
-//				Double min = stat.getRange().getMin();
-//				Double max = stat.getRange().getMax();
-//				System.out.println(statName + "\n\tMin: " + min + "\n\tMax: " + max);
-//			}
-//		}
-		
-//		System.out.println("TRAINING PROBABILITY - NEGATIVE:");		
+		posBayesGraph.trainOn(posExamples);	
 		negBayesGraph.trainOn(negExamples);
-		// Min/max stable
-//		for (FeatureSet feature : features) {
-//			List<String> statNames = feature.getDescriptions();
-//			Map<String, Statistic> statMap = feature.getStatisticMap();
-//			for (String statName : statNames) {
-//				Statistic stat = statMap.get(statName);
-//				Double min = stat.getRange().getMin();
-//				Double max = stat.getRange().getMax();
-//				System.out.println(statName + "\n\tMin: " + min + "\n\tMax: " + max);
-//			}
-//		}
+
 		System.out.println("Model has finished training on " + negativeExamples.size() +  " negative Examples.");
 	}
 	

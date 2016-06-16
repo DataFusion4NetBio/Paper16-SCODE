@@ -488,6 +488,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 										numSeeds.setText(Integer.toString(numNodes / 8));
 									}
 								}
+								setClusterPrior();
 					    	}
 					    }
 					  }
@@ -1151,12 +1152,13 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	}
 	
 	private Double minScoreThreshold() {
-		if (proteinGraph.getSelectedItem().toString().equals(" - Select Network - ")) {
+		String proteinGraphName = proteinGraph.getSelectedItem().toString();
+		if (proteinGraphName.equals(" - Select Network - ")) {
 			JOptionPane.showMessageDialog(this, "Please select a protein graph under 'Search'");
 		} else {
 			CyNetwork nw = null;
 			for (CyNetwork network: CyActivator.networkManager.getNetworkSet()) {
-				if (network.getRow(network).get(CyNetwork.NAME, String.class).equals(proteinGraph.getSelectedItem().toString())) {
+				if (network.getRow(network).get(CyNetwork.NAME, String.class).equals(proteinGraphName)) {
 					nw = network; 
 					break;
 				}
@@ -1257,6 +1259,26 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		inputTask.numResults = Integer.parseInt((numResults.getText()));
 		
 		return inputTask;
+	}
+	
+	private int getProteinGraphSize(String proteinGraphName) {
+		CyNetwork nw = null;
+		for (CyNetwork network: CyActivator.networkManager.getNetworkSet()) {
+			if (network.getRow(network).get(CyNetwork.NAME, String.class).equals(proteinGraphName)) {
+				nw = network; 
+				break;
+			}
+		}	
+		return nw.getNodeCount();
+	}
+	
+	private void setClusterPrior() {
+		int graphSize = getProteinGraphSize(proteinGraph.getSelectedItem().toString());
+		if (graphSize <= 1000) {
+			clusterPrior.setText("0.5");
+		} else {
+			clusterPrior.setText("0.0001");
+		}
 	}
 	
 	private Integer validateInput() {

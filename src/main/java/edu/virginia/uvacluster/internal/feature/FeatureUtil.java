@@ -48,8 +48,8 @@ public class FeatureUtil {
 			m.matches();
 			numBins = Integer.parseInt(m.group(2));
 			
-			// Check if Mean : weight -- to use alternative mean calculation
-			// over all possible edges
+			/* Check if Mean : weight -- to use alternative mean calculation
+			 over all possible edges */
 			if (weightFeaturePattern.matcher(featureName).matches() && statName.equals("Mean"))
 				statName = "mean possible";
 			
