@@ -332,7 +332,6 @@ public class Graph {
 //			System.out.println("In trainOn: the size of the graph is: " + this.getRoot().getChildren().size());
 			nextLevel.addAll(root.getChildren());
 
-			
 			for (Child child : getRootFeatures()) {
 				child.addTo(featureMap.get(child.getName()).number);
 			}
@@ -351,6 +350,11 @@ public class Graph {
 //				}
 //			} while(nextLevel.size() > 0);
 		}
+		
+//		for (Child child : getRootFeatures()) {
+//			System.out.println(child.getName() + " #" + child.getNode().getBin() + " : " + child.count);
+//		}
+		
 		System.out.println("Done training on clusters");
 	}
 	
@@ -360,8 +364,12 @@ public class Graph {
 		
 		scanGraph(features);
 		for (Child child : getRootFeatures()) {
-			if (features.get(child.getName()).number < 0)
-			score *= child.score(features.get(child.getName()).number);
+			if (features.get(child.getName()).number < 0) {
+				// Value for the feature is outside the bins
+				score *= child.scoreValOutsideRange();
+			} else {
+				score *= child.score(features.get(child.getName()).number);
+			}
 		}
 //		System.out.println("\t\t" + cluster.getSUID() + ": " + score);
 //		for (Child child: root.getChildren()) {
@@ -490,8 +498,8 @@ public class Graph {
 		public void addTo(int bin) {
 //			if (node.parentsActive()) {
 				if (node.getBin() == bin) {
-//					System.out.println("\t\tJust added to " + this.getName() + " - bin # " + bin);
 					count++;
+//					System.out.println(this.getName() + " # " + bin + " : " + count);
 				} 
 				totalSamples++;
 				probability = ((double)count + 1.0) / ((double)totalSamples + (double)node.getTotalBins());
@@ -508,6 +516,13 @@ public class Graph {
 			}
 			return score;
 		}
+		
+		public double scoreValOutsideRange() {
+			totalSamples++;
+			return 1.0 / ((double)totalSamples + (double)node.getTotalBins());
+		}
+		
+		
 		public void activate(int bin) {
 			if (node.parentsActive()) {
 				if (node.getBin() == bin) {

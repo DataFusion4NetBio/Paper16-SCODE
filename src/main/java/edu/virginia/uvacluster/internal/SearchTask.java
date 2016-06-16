@@ -81,27 +81,25 @@ public class SearchTask extends AbstractNetworkTask{
 			//Add results to session for display and presentation
 			taskMonitor.setProgress(0.9);
 			taskMonitor.setStatusMessage("Returning Results...");
-			System.out.println("Adding " + results.size() + " Result Networks via manager...");
+//			System.out.println("Adding " + results.size() + " Result Networks via manager...");
 			resultComplexes = new ArrayList<Cluster>();
-			for (Cluster result: results) {
-				
-				resultComplexes.add(result);
-				
-				// Sort the results by their score
-				Collections.sort(resultComplexes, new Comparator<Cluster>() {
-				    @Override
-				    public int compare(Cluster c1, Cluster c2) {
-				        try {
-							return ~Double.compare(model.score(c1), model.score(c2));
-						} catch (Exception e) {
-							return 0;
-						}
-				    }
-				});
-				
+			for (Cluster result: results) {	
+					resultComplexes.add(result);	
 			}
 			
-			// Get the top 10 results sorted by score
+			// Sort the results by their score
+			Collections.sort(resultComplexes, new Comparator<Cluster>() {
+			    @Override
+			    public int compare(Cluster c1, Cluster c2) {
+			        try {
+						return ~Double.compare(model.score(c1), model.score(c2));
+					} catch (Exception e) {
+						return 0;
+					}
+			    }
+			});
+			
+			// Get the top N results sorted by score
 			ArrayList<Cluster> networkResults = new ArrayList<Cluster>(userInput.numResults);
 			if (resultComplexes.size() < userInput.numResults) {
 				networkResults.addAll(resultComplexes);

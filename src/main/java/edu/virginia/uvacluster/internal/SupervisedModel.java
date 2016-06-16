@@ -162,11 +162,11 @@ public class SupervisedModel implements Model{
 		}
 		
 		exponent = getSizeDistributionExponent(positiveExampleSizes);
-		System.out.println("Exp: " + exponent);
+//		System.out.println("Exp: " + exponent);
 		
 		for(i = 0; i < sizeDistributionValues.length; i++) {
 			sizeDistributionValues[i] = (1/(Math.pow((i + minSize), exponent)));
-			System.out.println("sizeDistributionValues[" + i + "] : " + sizeDistributionValues[i]);
+//			System.out.println("sizeDistributionValues[" + i + "] : " + sizeDistributionValues[i]);
 			sizeDistributionTotal = sizeDistributionTotal + sizeDistributionValues[i];
 		}
 		
@@ -177,16 +177,20 @@ public class SupervisedModel implements Model{
 		
 		System.out.println("Generating negative examples");
 		for(i = 0; i < sizeDistributionRatios.length; i++) {
+			int failedIterations = 0;
 //			System.out.println("sizeDistributionRatios[" + i + "] : " + sizeDistributionRatios[i]);
 			for (int x = 0; x < Math.round(sizeDistributionRatios[i] * numExamples); x++) {
-				System.out.println("x: " + x);
+//				System.out.println("x: " + x);
 				example = genNegativeExample(i + minSize, positiveExamples);
 				if ((example != null) && (example.getNodeCount() >= (i + minSize))) {
 					negativeExamples.add(example);
 				}
 				else {
 					rootNetwork.removeSubNetwork(example);
-					x--;
+					if (! (failedIterations > positiveExamples.size()) ) {
+						x--;
+					}
+					failedIterations++;
 				}
 			}
 		}
@@ -283,42 +287,63 @@ public class SupervisedModel implements Model{
 		System.out.println("Entered TRAIN");
 		List<Cluster> posExamples = new ArrayList<Cluster>(), negExamples = new ArrayList<Cluster>();
 		for(CySubNetwork pos: positiveExamples) {posExamples.add(new Cluster(features, pos)); }
+		for(CySubNetwork neg: negativeExamples) {negExamples.add(new Cluster(features, neg));}
+
 		System.out.println("Lists of pos and neg training examples created");
 		
+//		System.out.println("TRAINING BINS ON POSITIVE COMPLEXES:");
 		posBayesGraph.trainBins(posExamples);
-		// Min/Max update
-		System.out.println("TRAINED BINS ON POSITIVE COMPLEXES:");
-		for (FeatureSet feature : features) {
-			List<String> statNames = feature.getDescriptions();
-			Map<String, Statistic> statMap = feature.getStatisticMap();
-			for (String statName : statNames) {
-				Statistic stat = statMap.get(statName);
-				Double min = stat.getRange().getMin();
-				Double max = stat.getRange().getMax();
-				System.out.println(statName + "\n\tMin: " + min + "\n\tMax: " + max);
-			}
-		}
+//		for (FeatureSet feature : features) {
+//			List<String> statNames = feature.getDescriptions();
+//			Map<String, Statistic> statMap = feature.getStatisticMap();
+//			for (String statName : statNames) {
+//				Statistic stat = statMap.get(statName);
+//				Double min = stat.getRange().getMin();
+//				Double max = stat.getRange().getMax();
+//				System.out.println(statName + "\n\tMin: " + min + "\n\tMax: " + max);
+//			}
+//		}
 	
+//		System.out.println("TRAINING BINS ON NEGATIVE COMPLEXES:");
 		negBayesGraph.trainBins(negExamples);
-		System.out.println("TRAINED BINS ON NEGATIVE COMPLEXES:");
-		for (FeatureSet feature : features) {
-			List<String> statNames = feature.getDescriptions();
-			Map<String, Statistic> statMap = feature.getStatisticMap();
-			for (String statName : statNames) {
-				Statistic stat = statMap.get(statName);
-				Double min = stat.getRange().getMin();
-				Double max = stat.getRange().getMax();
-				System.out.println(statName + "\n\tMin: " + min + "\n\tMax: " + max);
-			}
-		}
-		// Min/max update
+//		for (FeatureSet feature : features) {
+//			List<String> statNames = feature.getDescriptions();
+//			Map<String, Statistic> statMap = feature.getStatisticMap();
+//			for (String statName : statNames) {
+//				Statistic stat = statMap.get(statName);
+//				Double min = stat.getRange().getMin();
+//				Double max = stat.getRange().getMax();
+//				System.out.println(statName + "\n\tMin: " + min + "\n\tMax: " + max);
+//			}
+//		}
+		
+//		System.out.println("TRAINING PROBABILITY  - POSITIVE:");
 		posBayesGraph.trainOn(posExamples);
 		// Min/max stable
-		System.out.println("Model has finished training on " + positiveExamples.size() +  " positive Examples.");
-		for(CySubNetwork neg: negativeExamples) {negExamples.add(new Cluster(features, neg));}
+//		for (FeatureSet feature : features) {
+//			List<String> statNames = feature.getDescriptions();
+//			Map<String, Statistic> statMap = feature.getStatisticMap();
+//			for (String statName : statNames) {
+//				Statistic stat = statMap.get(statName);
+//				Double min = stat.getRange().getMin();
+//				Double max = stat.getRange().getMax();
+//				System.out.println(statName + "\n\tMin: " + min + "\n\tMax: " + max);
+//			}
+//		}
 		
+//		System.out.println("TRAINING PROBABILITY - NEGATIVE:");		
 		negBayesGraph.trainOn(negExamples);
 		// Min/max stable
+//		for (FeatureSet feature : features) {
+//			List<String> statNames = feature.getDescriptions();
+//			Map<String, Statistic> statMap = feature.getStatisticMap();
+//			for (String statName : statNames) {
+//				Statistic stat = statMap.get(statName);
+//				Double min = stat.getRange().getMin();
+//				Double max = stat.getRange().getMax();
+//				System.out.println(statName + "\n\tMin: " + min + "\n\tMax: " + max);
+//			}
+//		}
 		System.out.println("Model has finished training on " + negativeExamples.size() +  " negative Examples.");
 	}
 	
@@ -363,8 +388,8 @@ public class SupervisedModel implements Model{
 						clusterNetwork.addNode(rootNetwork.getNode(proteinId));
 					else if (! userInput.ignoreMissing)
 						throw new Exception("Protein not found in network: " + proteins[i]);
-					else
-						System.out.println("Protein not found in network" + proteins[i]);
+//					else
+//						System.out.println("Protein not found in network" + proteins[i]);
 				}
 				
 				//test for edges and add to subnetwork
@@ -418,7 +443,7 @@ public class SupervisedModel implements Model{
 			for (int i = 0; i < n; i++) {
 				exponent = exponent + Math.log(positiveExampleSizes[i]/min);
 			}
-			System.out.println("exponent: " + exponent);
+//			System.out.println("exponent: " + exponent);
 			exponent = 1 + (n / exponent);
 		} else {
 			// Avoid dividing by zero

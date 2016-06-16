@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -380,15 +381,20 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 				layout.setHorizontalGroup(
 						layout.createSequentialGroup()
 							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+									.addComponent(clusterPriorLabel)
 									.addComponent(negativeExamplesLabel)
 									.addComponent(ignoreMissingLabel))
 							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+									.addComponent(clusterPrior)
 									.addComponent(negativeExamples)
 									.addComponent(ignoreMissing))
 				);
 				
 				layout.setVerticalGroup(
 						layout.createSequentialGroup()
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(clusterPriorLabel)
+								.addComponent(clusterPrior))
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(negativeExamplesLabel)
 								.addComponent(negativeExamples))
@@ -414,18 +420,13 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 				// Minimum acceptable score
 				minScoreThreshold = new JTextField("0");
 				minScoreThresholdLabel = new JLabel("Minimum Complex Score");
-				
-				clusterPrior = new JTextField("1E-4");
-				clusterPriorLabel = new JLabel("Cluster Probability Prior");
 						
 				layout.setHorizontalGroup(
 						layout.createSequentialGroup()
 							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-									.addComponent(minScoreThresholdLabel)
-									.addComponent(clusterPriorLabel))
+									.addComponent(minScoreThresholdLabel))
 							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-									.addComponent(minScoreThreshold)
-									.addComponent(clusterPrior))
+									.addComponent(minScoreThreshold))
 				);
 				
 				layout.setVerticalGroup(
@@ -433,9 +434,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(minScoreThresholdLabel)
 								.addComponent(minScoreThreshold))
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(clusterPriorLabel)
-								.addComponent(clusterPrior))
 				);
 				
 			}
@@ -706,15 +704,22 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			gbc.gridy = 0;			
 			scorePanel.add(weightScoreOption, gbc);
 			gbc.gridy = 1;
-			scorePanel.add(trainedModelOption, gbc);
-			gbc.gridy = 2;
 			scorePanel.add(learningScoreOption, gbc);
-			gbc.gridy = 3;
-			scorePanel.add(trainedModel, gbc);
-			gbc.gridy = 4;
+			gbc.gridy = 2;
         	scorePanel.add(outerTrainPanel, gbc);
-        	gbc.gridy = 5;
-        	scorePanel.add(advancedScorePanel, gbc);
+			gbc.gridy = 3;
+			scorePanel.add(trainedModelOption, gbc);
+			gbc.gridy = 4;
+			scorePanel.add(trainedModel, gbc);
+			
+			JPanel minScorePanel = new JPanel(new GridLayout(1, 0));
+			minScorePanel.add(minScoreThresholdLabel, gbc);
+			minScorePanel.add(minScoreThreshold, gbc);
+			minScorePanel.setAlignmentX(CENTER_ALIGNMENT);
+			
+			gbc.gridy = 5;
+			scorePanel.add(minScorePanel, gbc);
+//        	scorePanel.add(advancedScorePanel, gbc);
 			outerTrainPanel.setVisible(false);
 			trainedModel.setVisible(false);
 			scoringButtons.add(weightScoreOption);
@@ -759,6 +764,10 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 //	            }
 //	        }); 
 			
+			// Prior probability for cluster
+			clusterPrior = new JTextField("1E-4");
+			clusterPriorLabel = new JLabel("Cluster Probability Prior");
+			
 			// Train the Default (Built-in) Model?
 			trainDefaultModel = new JRadioButton("Train the built-in template");
 			trainDefaultModel.addActionListener(new ActionListener() {
@@ -769,7 +778,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	                	modelPanel.setVisible(false);
 	                	trainingFilePanel.setVisible(true);
 	                	
-	                	clusterPrior.setEnabled(true);
 	                	negativeExamples.setEnabled(true);
 	                	ignoreMissing.setEnabled(true);
 	                }
@@ -786,7 +794,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	                	modelPanel.setVisible(true);
 	                	trainingFilePanel.setVisible(true);
 	                	
-	                	clusterPrior.setEnabled(true);
 	                	negativeExamples.setEnabled(true);
 	                	ignoreMissing.setEnabled(true);
 	                }

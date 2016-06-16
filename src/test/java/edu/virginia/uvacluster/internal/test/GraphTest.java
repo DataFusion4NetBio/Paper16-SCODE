@@ -30,25 +30,25 @@ public class GraphTest extends TestNetwork {
 	CyNode a,b,c,d,e;
 	CyEdge ab,ac,bc,cd,ce,de,ad, bd;
 	
-//	@Test
-//	public void oneToManyModelShouldScoreCorrectly() {
-//		double result;
-//		Graph graph = new Graph("Test", 0.0001);
-//		List<FeatureSet> features = FeatureUtil.parse(graph.loadModelFrom(getOneToManyModel()));
-//		for(CySubNetwork e: examples) {trainingPoints.add(new Cluster(features, e));}
-//		graph.trainBins(trainingPoints);
-//		graph.trainOn(trainingPoints);
-//		result = graph.score(new Cluster(features, examples.get(0)));
-//		assertEquals("Model should score each example correctly",(9.0/49.0),result,0.001);
-//		result = graph.score(new Cluster(features, examples.get(1)));
-//		assertEquals("Model should score each example correctly",(9.0/49.0),result,0.001);
-//		result = graph.score(new Cluster(features, examples.get(2)));
-//		assertEquals("Model should score each example correctly",(4.0/49.0),result,0.001);
-//		result = graph.score(new Cluster(features, examples.get(3)));
-//		assertEquals("Model should score each example correctly",(4.0/49.0),result,0.001);
-//		result = graph.score(new Cluster(features, validationExample));
-//		assertEquals("Model should score each example correctly",(6.0/49.0),result,0.001);
-//	}
+	@Test
+	public void oneToManyModelShouldScoreCorrectly() {
+		double result;
+		Graph graph = new Graph("Test", 0.0001);
+		List<FeatureSet> features = FeatureUtil.parse(graph.loadModelFrom(getOneToManyModel()));
+		for(CySubNetwork e: examples) {trainingPoints.add(new Cluster(features, e));}
+		graph.trainBins(trainingPoints);
+		graph.trainOn(trainingPoints);
+		result = graph.score(new Cluster(features, examples.get(0)));
+		assertEquals("Model should score each example correctly",(9.0/49.0),result,0.001);
+		result = graph.score(new Cluster(features, examples.get(1)));
+		assertEquals("Model should score each example correctly",(9.0/49.0),result,0.001);
+		result = graph.score(new Cluster(features, examples.get(2)));
+		assertEquals("Model should score each example correctly",(4.0/49.0),result,0.001);
+		result = graph.score(new Cluster(features, examples.get(3)));
+		assertEquals("Model should score each example correctly",(4.0/49.0),result,0.001);
+		result = graph.score(new Cluster(features, validationExample));
+		assertEquals("Model should score each example correctly",(6.0/49.0),result,0.001);
+	}
 	
 	
 	@Test

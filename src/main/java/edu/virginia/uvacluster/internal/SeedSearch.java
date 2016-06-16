@@ -38,7 +38,20 @@ public class SeedSearch implements Runnable {
 					if ((! (cluster.searchComplete || x.searchComplete)) &&
 						(cluster.getSUID() != x.getSUID()) && 
 						(getOverlapRatio(cluster,x) > input.overlapLimit)) {
-						cluster.searchComplete = true;
+						double score1 = 0.0, score2 = 0.0;
+						try {
+							score1 = ClusterScore.score(cluster, model);
+							score2 = ClusterScore.score(x, model);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						// Deactivate the complex with the lower score
+						if (score1 > score2) {
+							x.searchComplete = true;
+						} else {
+							cluster.searchComplete = true;
+						}
 					}
 				}
 			}
