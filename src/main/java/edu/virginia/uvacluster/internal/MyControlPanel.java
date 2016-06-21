@@ -248,7 +248,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		
 		// Button to save the results to file
 //		resultFileLabel = new JLabel("Save Results to File");
-		JButton resultFileButton = new JButton("Save Results To File");
+		JButton resultFileButton = new JButton("Export All Results To File");
         resultFileButton.addActionListener(new ActionListener() {	 
             public void actionPerformed(ActionEvent e)
             {
@@ -585,7 +585,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	        
 	        // Number of results to save to file
 	        numResults = new JTextField("10");
-	        numResultsLabel = new JLabel("Number of results to display");
+	        numResultsLabel = new JLabel("Number of Results to Display");
 			
 
 			chooser.addActionListener(
@@ -1033,8 +1033,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			String fileContents = "";
 			
 			int counter = 1;
-			int resultsBound = Math.min(Integer.valueOf(numResults.getText()), Integer.valueOf(searchResults.size()));
-			List<Cluster> limitedResults = searchResults.subList(0, resultsBound);
+//			int resultsBound = Math.min(Integer.valueOf(numResults.getText()), Integer.valueOf(searchResults.size()));
+			List<Cluster> limitedResults = searchResults;
+					//.subList(0, resultsBound);
 			for (Cluster network : limitedResults) {
 				CySubNetwork result = network.getSubNetwork();
 				List<CyNode> nodes = result.getNodeList();
@@ -1058,6 +1059,24 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		}
 	}
 	
+	private List< Set<String> > getTrainingComplexes() throws IOException {
+		ArrayList< Set<String> > trainingComplexes = new ArrayList< Set<String> >();
+		FileReader evalfileReader = new FileReader(trainingFile);
+		BufferedReader evalbufferedReader = new BufferedReader(evalfileReader);
+		String line = null ;
+		while((line = evalbufferedReader.readLine()) != null) {
+				String[] l = line.split("\t");
+				if (l.length == 3) {
+					System.out.println("Line: " + line);
+					String complexes_string = l[2];
+					HashSet complex = new HashSet(Arrays.asList(complexes_string.split(" ")));
+					trainingComplexes.add(complex);
+				}
+		}
+		evalbufferedReader.close();
+		return trainingComplexes;
+	}
+	
 	private void evaluateButtonPressed(File evaluateFile) throws IOException {
 		
 		if (evaluateFile == null) {
@@ -1069,18 +1088,19 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			
 			searchResults = clusterFactory.getSearchTask().getResults();
 			int resultsBound = Math.min(Integer.valueOf(numResults.getText()), Integer.valueOf(searchResults.size()));
-			List<Cluster> limitedResults =  searchResults.subList(0, resultsBound);
+			List<Cluster> limitedResults =  searchResults;
+					//.subList(0, resultsBound);
 			for (Cluster network : limitedResults) {
 				CySubNetwork result = network.getSubNetwork();
-				System.out.print("Printing a complex:");
+//				System.out.print("Printing a complex:");
 				List<CyNode> nodes = result.getNodeList();
 				Set<String> nodeNames = new HashSet<String>();
 				for (CyNode n : nodes) {
 					CyNetwork nodeNetwork = getNetworkPointer(); 
 					nodeNames.add(nodeNetwork.getDefaultNodeTable().getRow(n.getSUID()).get("shared name", String.class));
-					System.out.print(" " + nodeNetwork.getDefaultNodeTable().getRow(n.getSUID()).get("shared name", String.class));
+//					System.out.print(" " + nodeNetwork.getDefaultNodeTable().getRow(n.getSUID()).get("shared name", String.class));
 				}
-				System.out.println("");
+//				System.out.println("");
 				resultComplexes.add(nodeNames);
 			}
 	
@@ -1100,6 +1120,19 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					}
 			}
 			evalbufferedReader.close();
+			
+			// Remove training complexes from the list of evaluation complexes
+			List< Set<String> > trainingComplexes = getTrainingComplexes();
+			ArrayList< Set<String> > commonComplexes = new ArrayList< Set<String> >(evalComplexes);
+			for (Set<String> s : evalComplexes) {
+				for (Set<String> s2 : trainingComplexes) {
+					if (s.equals(s2)) {
+						commonComplexes.remove(s);
+						break;
+					}
+				}
+			}
+			evalComplexes = commonComplexes;
 			
 			System.out.println("");
 			System.out.println("");
@@ -1145,10 +1178,32 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			
 			double recall = (double) countKnown / (double) evalComplexes.size() ;
 			double precision = (double) countPredicted / (double) resultComplexes.size() ;
+			double overlapScore = overlapScore(resultComplexes, evalComplexes);
 			
 			JOptionPane.showMessageDialog(this, "Recall: " + recall + "\nPrecision: " + precision
-					, "Evaluation Scoring", JOptionPane.INFORMATION_MESSAGE);
+					+ "\nOverlap Score: " + overlapScore, "Evaluation Scoring", JOptionPane.INFORMATION_MESSAGE);
 		}
+	}
+	
+	private Double overlapScore(List< Set<String> > results, List< Set<String> > eval) {
+		double overlapLimit = 0.5;
+		double count = 0.0;
+		for (Set<String> predicted : results) {
+			for (Set <String> known : eval) {
+				Set<String> intersection = new HashSet<String>(predicted);
+				intersection.retainAll(known);
+				
+				Set<String> union = new HashSet<String>(predicted);
+				union.addAll(known);
+				
+				double overlap = (double) intersection.size() / union.size();
+				if (overlap >= 0.5) {
+					count++;
+				}
+			}
+		}
+		System.out.println("count: " + count + " / results size: " + results.size());
+		return (Double) (count / results.size());
 	}
 	
 	private Double minScoreThreshold() {
@@ -1276,7 +1331,14 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		int graphSize = getProteinGraphSize(proteinGraph.getSelectedItem().toString());
 		if (graphSize <= 1000) {
 			clusterPrior.setText("0.5");
-		} else {
+		} 
+		else if (graphSize <= 5000) {
+			clusterPrior.setText("0.05");
+		}
+		else if (graphSize <= 10000) {
+			clusterPrior.setText("0.005");
+		}
+		else {
 			clusterPrior.setText("0.0001");
 		}
 	}
