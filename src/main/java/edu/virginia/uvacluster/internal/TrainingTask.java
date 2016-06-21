@@ -31,7 +31,7 @@ public class TrainingTask extends AbstractNetworkTask{
 		System.out.println("Training task...");
 		CyNetwork outputNet = null, trainedNet = null, modelNetwork = null;
 		
-		taskMonitor.setTitle("Training Task");
+		taskMonitor.setTitle("SCODE Progress");
 		System.out.println("Training task is running... ");
 		try {
 			

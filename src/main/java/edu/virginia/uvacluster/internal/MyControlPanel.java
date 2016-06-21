@@ -824,7 +824,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			
 			
 			model = new JComboBox(getNetworkNames().toArray());
-			JLabel modelLabel = new JLabel("Select Model");
+			JLabel modelLabel = new JLabel("Select Template");
 			modelPanel.add(modelLabel);
 			modelPanel.add(model);
 			
