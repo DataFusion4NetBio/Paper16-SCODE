@@ -2,7 +2,7 @@
 
 ###SCODE: A Cytoscape App for Supervised Complex Detection in PPI networks 
   Available for free download online: http://apps.cytoscape.org/apps/scode
-
+  User Manual : https://github.com/DataFusion4NetBio/Paper16-SCODE/blob/master/Demo/SCODEUserManual.pdf
 
 ****
 This [Cytoscape](http://cytoscape.org/) [app](http://apps.cytoscape.org/) allows users to search for complexes in weighted graphs using supervised learning on a Bayesian network model. It is based on the algorithm developed by Qi et al in [this paper](http://www.cs.cmu.edu/~qyj/SuperComplex/)
