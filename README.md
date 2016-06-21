@@ -1,7 +1,7 @@
 ##Supervised Complex Detection
 
 ###SCODE: A Cytoscape App for Supervised Complex Detection in PPI networks 
-  Available for free download online: http://apps.cytoscape.org/apps/scode
+  Available for free download online: http://apps.cytoscape.org/apps/scode  
   User Manual : https://github.com/DataFusion4NetBio/Paper16-SCODE/blob/master/Demo/SCODEUserManual.pdf
 
 ****
