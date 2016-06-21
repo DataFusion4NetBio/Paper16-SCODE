@@ -35,6 +35,8 @@ To use this app:
   5. Click Analyze.
   6. Results are stored as subnetworks of the target network in your session file, complete with a likelihood score. If you select the learning scoring option, the app will also generate a new 'Model' network that represents a trained model, which you can re-use with future searches.
   7. Optional: Evaluate your results using a testing file of all known protein complexes in the network
+
+
 ***
 
 #####Searching a PPI Graph
@@ -45,8 +47,6 @@ Currently, SCODE supports an [iterative simulated annealing search](http://en.wi
 * Greedy-ISA:  This option, the slowest, tests all the neighboring nodes for expansion and selects the best one.  This will result in more, larger, higher-scoring candidate complexes.
 
 SCODE allows you to specify several additional search parameters to define the scope of the search (temperature, scaling ratio, etc). For an explanation of each of these parameters, see the more detailed [User Manual](Demo/SCODEUserManual.pdf)
-
-***
 
 #####Scoring Candidate Complexes
 There are three options for scoring candidate complexes: 
