@@ -1181,7 +1181,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			double overlapScore = overlapScore(resultComplexes, evalComplexes);
 			
 			JOptionPane.showMessageDialog(this, "Recall: " + recall + "\nPrecision: " + precision
-					+ "\nOverlap Score: " + overlapScore, "Evaluation Scoring", JOptionPane.INFORMATION_MESSAGE);
+					, "Evaluation Scoring", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 	
