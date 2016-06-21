@@ -1,4 +1,4 @@
-#node1	pp	node2	combined_score
+node1	pp	node2	weight
 CTF19	pp	CTF13	0.999
 DIP2	pp	UTP22	0.999
 SEC10	pp	SEC5	0.999
