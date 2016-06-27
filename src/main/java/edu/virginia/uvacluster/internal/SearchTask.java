@@ -120,11 +120,6 @@ public class SearchTask extends AbstractNetworkTask{
 				i++;
 			}
 			
-			// Output ALL results to file
-//			if (userInput.resultFile != null)
-//			outputResultsToFile(results, userInput.resultFile);
-			
-			
 			System.out.println("Search Complete.");
 			
 			// Monitor execution time of training task
@@ -136,40 +131,15 @@ public class SearchTask extends AbstractNetworkTask{
 			throw new Exception("Searching didn't go so well... " + e.getMessage());
 		}
 	}
+
 	
-	
-	private void outputResultsToFile(List<Cluster> results, File file) throws IOException {
-		if (! file.exists()) 
-			file.createNewFile();
-		
-		FileWriter writer = new FileWriter(file);
-		String fileContents = "";
-		List<CyNode> nodes;
-		int i  = 1;
-		
-		for (Cluster subNetwork: results) {
-			CySubNetwork result = subNetwork.getSubNetwork();
-			nodes = result.getNodeList();
-			
-			fileContents = fileContents + i +"\t" + result.getRow(result).get(CyNetwork.NAME, String.class) + "\t";
-			for (CyNode node: nodes) {
-				fileContents = fileContents + rootNetwork.getDefaultNodeTable().getRow(node.getSUID()).get("shared name", String.class) + " ";
-			}
-			fileContents = fileContents + "\n";
-			i++;
-		}
-		
-		writer.write(fileContents);
-		writer.close();
-	}
-	
-	//Use this for alternate seeding
-	private List<CyNode> getSelectedNodes() {
-//		return CyTableUtil.getNodesInState(rootNetwork,"selected",true); // -- Gets nodes selected by mouse-click
-		
+
+	private List<CyNode> getSelectedNodes() {	
+		// Used for alternate seeding
 		File seedFile = userInput.selectedSeedFile;
-		System.out.println("The selected seed file is: " + seedFile.getAbsolutePath());
 		ArrayList<String> seedNames = new ArrayList<String>();
+		
+		// Read the file containing seed proteins
 		try (BufferedReader br = new BufferedReader(new FileReader(seedFile))) {
 		    String line;
 		    while ((line = br.readLine()) != null) {
@@ -180,14 +150,14 @@ public class SearchTask extends AbstractNetworkTask{
 			e.printStackTrace();
 		} 
 		
+		// Match the seed strings with nodes in the network
+		// Any seed not found in the network won't be used as a seed
 		ArrayList<CyNode> nodeList = new ArrayList<CyNode>();
 		for (CyNode node: network.getNodeList()) {
 			String cyNodeName = network.getRow(node).get("name", String.class);
 			if (seedNames.contains(cyNodeName)) {
-				System.out.println("Network contains protein: " + cyNodeName);
 				nodeList.add(node);
 			}
-//			System.out.println("Network does not contain protein: " + cyNodeName);
 		}
 		return nodeList;
 	}

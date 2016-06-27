@@ -2,7 +2,6 @@ package edu.virginia.uvacluster.internal;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -64,6 +63,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 
 	private static final long serialVersionUID = 8292806967891823933L;
 	
+	// Panels
 	private JPanel searchPanel;
 	private JPanel trainPanel;
 	private JPanel evaluatePanel;
@@ -72,25 +72,26 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JPanel advancedScorePanel;
 	private JPanel outerSearchPanel;
 	private JPanel outerTrainPanel;
+	private JPanel useSelectedForSeedsPanel;
+	private JPanel scorePanel;
+	private JPanel trainingOptionPanel;
 	
-	private JButton analyzeButton;
+	// Search parameters
 	private JComboBox chooser;
 	private JComboBox proteinGraph;
-	private JComboBox inputGraphChooser;
 	private JTextField checkNumNeighbors;
 	private JCheckBox useSelectedForSeeds;
 	private File useSelectedForSeedsFile;
 	private JButton useSelectedForSeedsButton;
-	private JPanel useSelectedForSeedsPanel;
 	private JTextField numSeeds;
 	private JTextField searchLimit;
 	private JTextField initTemp;
 	private JTextField tempScalingFactor;
 	private JTextField overlapLimit;
-	private JTextField minScoreThreshold;
 	private JTextField minSize;
 	private JTextField numResults;
 	
+	// Labels for search parameters
 	private JLabel chooserLabel;
 	private JLabel proteinGraphLabel;
 	private JLabel checkNumNeighborsLabel;
@@ -104,100 +105,64 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private JLabel minSizeLabel;
 	private JLabel numResultsLabel;
 	
-	private JCheckBox trainNewModel;
-	private JComboBox existingModel;
-	private JComboBox bayesModel;
-	private JPanel customModelPanel;
-	private JComboBox weightName;
+	// Scoring Parameters
+	private JRadioButton weightScoreOption;
+	private JRadioButton learningScoreOption;
+	private JRadioButton trainedModelOption;
+	private JTextField minScoreThreshold;
+	Double minScore = null;
+	
+	// Training Parameters
 	private JTextField clusterPrior;
 	private JTextField negativeExamples;
 	private JCheckBox ignoreMissing;
-	private File trainingFile;
-	private JButton trainingFileButton;
-	private JLabel trainingFileLabel;
-	
-	/* NEW */
-	private JRadioButton useTrainedModel;
 	private JRadioButton trainDefaultModel;
 	private JRadioButton trainCustomModel;
 	private JComboBox model;
 	private JComboBox trainedModel;
-	private JPanel trainingOptionPanel;
-	private File resultFile;
+	private File trainingFile;
+	private JButton trainingFileButton;
 	
-	private JLabel useTrainedModelLabel;
-	private JLabel trainDefaultModelLabel;
-	private JLabel trainCustomModelLabel;
-	private JLabel resultFileLabel;
-	
-	/* ----- */
-	
-	/* SCORING */
-	
-	Double minScore = null;
-	private JPanel scorePanel;
-	private JRadioButton weightScoreOption;
-	private JRadioButton learningScoreOption;
-	private JRadioButton trainedModelOption;
-	
-	/* ------- */
-	
-	private JLabel trainNewModelLabel;
-	private JLabel existingModelLabel;
-	private JLabel customModelLabel;
-	private JLabel bayesModelLabel;
-	private JLabel weightNameLabel;
+	// Labels for training parameters
+	private JLabel trainingFileLabel;
 	private JLabel clusterPriorLabel;
 	private JLabel negativeExamplesLabel;
 	private JLabel ignoreMissingLabel;
 	
-	SupervisedComplexTaskFactory clusterFactory;
-	private ArrayList<Cluster> searchResults;
+	// Evaluation parameters
 	private JTextField p;
 	private File evaluationFile;
 	private JButton evaluationFileButton;
 	private JButton evaluateButton;
+	
+	// Labels for evaluation parameters
 	private JLabel pLabel;
 	private JLabel evaluationFileLabel;
+
+	// Generating and storing results
+	private JButton analyzeButton;
+	private File resultFile;
+	private ArrayList<Cluster> searchResults;
+
 	
-	private final CySwingApplication swingApplication;
+	SupervisedComplexTaskFactory clusterFactory;
 	private final CyServiceRegistrar registrar;
 	private final CyApplicationManager appManager;
-	private final Logger logger;
+
 	public MyControlPanel(final CySwingApplication swingApplication, final CyServiceRegistrar registrar, final CyApplicationManager appManager) {
 
-		logger = LoggerFactory.getLogger(getClass());
-		
-		this.swingApplication = swingApplication;
 		this.registrar = registrar;
 		this.appManager = appManager;
 		
+		// Action listener to call function when 'Analyze Button' clicked
 		analyzeButton = new JButton("Analyze Network");
 		analyzeButton.addActionListener(new ActionListener() { 
 			  public void actionPerformed(ActionEvent e) { 
 			    analyzeButtonPressed();
-			    
-//				// Reset the combo boxes so that new networks are displayed
-//				String graph = proteinGraph.getSelectedItem().toString();
-//				String trained = trainedModel.getSelectedItem().toString();
-//				String customModel = model.getSelectedItem().toString();
-//				
-//				proteinGraph.removeAllItems();
-//				trainedModel.removeAllItems();
-//				model.removeAllItems();
-//
-//				for(String s : getNetworkNames()) {
-//					proteinGraph.addItem(s.toString());
-//					trainedModel.addItem(s.toString());
-//					model.addItem(s.toString());
-//					}
-//				
-//				proteinGraph.setSelectedItem(graph);
-//				trainedModel.setSelectedItem(trained);
-//				model.setSelectedItem(customModel);
 			  } 
 			} );
 		
+		// Action listener to call function when 'Evaluate' clicked
 		evaluateButton = new JButton("Evaluate Results");
 		evaluateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -210,7 +175,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			}
 		});
 		
-			
+		// Outermost panel and layout for the Control Panel
+		// Contains Search, Scoring/Training, and Evaluation panels
 		final GroupLayout layout = new GroupLayout(this);
 		final JPanel outerPanel = new JPanel();
 
@@ -240,14 +206,12 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		score.setTitleColor(Color.blue);
 		scorePanel.setBorder(score);
 
-		
 		// Set up evaluation panel
 		evaluatePanel = createEvaluatePanel();
 		evaluatePanel.setBorder(null);
 		
 		
 		// Button to save the results to file
-//		resultFileLabel = new JLabel("Save Results to File");
 		JButton resultFileButton = new JButton("Export All Results To File");
         resultFileButton.addActionListener(new ActionListener() {	 
             public void actionPerformed(ActionEvent e)
@@ -288,8 +252,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 		outerPanel.add(evaluateButton, gbc);
 		
 		
-		// Add the outer panel to a JScrollPanel to make it 
-		// vertically scrollable
+		// Add the outer panel to a JScrollPanel to make it vertically scrollable
 		final JScrollPane scrollablePanel = new JScrollPane(outerPanel);
 		scrollablePanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollablePanel.setBorder(null);
@@ -449,9 +412,9 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			layout.setAutoCreateContainerGaps(true);
 			layout.setAutoCreateGaps(true);
 			
+			// Select search variant
 			String[] variants = { "ISA", "Greedy ISA", "Sorted-Neighbor ISA" };
-			chooser = new JComboBox(variants);
-
+			chooser = new JComboBox(variants);			
 			chooser.addActionListener(
 			  new ActionListener() {
 			    public void actionPerformed(ActionEvent e) {
@@ -465,8 +428,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			      }
 			    }
 			  }
-			);
-				
+			);	
 			chooserLabel = new JLabel("Search Variant");
 			
 			
@@ -493,10 +455,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					    }
 					  }
 					);
-			
-			// Name of column containing weights
-			weightName = new JComboBox(getEdgeColumnNames().toArray());
-			weightNameLabel = new JLabel("Weight column in graph");
+		
 			
 			// Number of neighbors to consider
 			checkNumNeighbors = new JTextField("5");
@@ -588,20 +547,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	        numResultsLabel = new JLabel("Number of Results to Display");
 			
 
-			chooser.addActionListener(
-			  new ActionListener() {
-			    public void actionPerformed(ActionEvent e) {
-			      String searchVariant = (String) chooser.getSelectedItem();
-			      if (searchVariant == "Sorted-Neighbor ISA") {
-			    	  checkNumNeighbors.setVisible(true);
-			    	  checkNumNeighborsLabel.setVisible(true);
-			      } else {
-			    	  checkNumNeighbors.setVisible(false);
-			    	  checkNumNeighborsLabel.setVisible(false);
-			      }
-			    }
-			  }
-			);
 	        
 	        // Add search components to layout
 			layout.setHorizontalGroup(
@@ -610,14 +555,11 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 								.addComponent(proteinGraphLabel)
 								.addComponent(chooserLabel)
 								.addComponent(checkNumNeighborsLabel))
-						
-//								.addComponent(resultFileLabel))
-						
+				
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(proteinGraph)
 								.addComponent(chooser)
 								.addComponent(checkNumNeighbors))
-//								.addComponent(resultFileButton))
 			);
 			
 			layout.setVerticalGroup(
@@ -631,9 +573,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(checkNumNeighborsLabel)
 							.addComponent(checkNumNeighbors))
-//					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//							.addComponent(resultFileLabel)
-//							.addComponent(resultFileButton))
 			);
 		}
 		return searchPanel;
@@ -646,6 +585,8 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			
 			final ButtonGroup scoringButtons = new ButtonGroup();
 
+			// Three scoring options: weight score, learning with untrained Bayesian template, learning with trained Bayesian model
+			
 			weightScoreOption = new JRadioButton("Score with edge information (no learning)");
 			weightScoreOption.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e)
@@ -713,6 +654,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			gbc.gridy = 4;
 			scorePanel.add(trainedModel, gbc);
 			
+			// container for min Score textbox and label
 			JPanel minScorePanel = new JPanel(new GridLayout(1, 0));
 			minScorePanel.add(minScoreThresholdLabel, gbc);
 			minScorePanel.add(minScoreThreshold, gbc);
@@ -720,7 +662,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			
 			gbc.gridy = 5;
 			scorePanel.add(minScorePanel, gbc);
-//        	scorePanel.add(advancedScorePanel, gbc);
 			outerTrainPanel.setVisible(false);
 			trainedModel.setVisible(false);
 			scoringButtons.add(weightScoreOption);
@@ -746,24 +687,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			modelPanel.setVisible(false);
 			trainingFilePanel.setVisible(false);
 			
-			
-//			// Use Trained Model?
-//			useTrainedModel = new JRadioButton("Provide a trained model");
-//			useTrainedModel.addActionListener(new ActionListener() {
-//	        	 
-//	            public void actionPerformed(ActionEvent e)
-//	            {
-//	                if (useTrainedModel.isSelected()) {
-//	                	modelPanel.setVisible(true);
-//	                	trainingFilePanel.setVisible(false);
-//	                	
-//	                	clusterPrior.setEnabled(false);
-//	                	negativeExamples.setEnabled(false);
-//	                	ignoreMissing.setEnabled(false);
-//	                	
-//	                }
-//	            }
-//	        }); 
 			
 			// Prior probability for cluster
 			clusterPrior = new JTextField("1E-4");
@@ -806,7 +729,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			// or provide an already-trained model. Radio buttons controlling these
 			// options are in one ButtonGroup (only one can be selected at a time
 			ButtonGroup trainingButtons = new ButtonGroup();
-//			trainingButtons.add(useTrainedModel);
 			trainingButtons.add(trainDefaultModel);
 			trainingButtons.add(trainCustomModel);
 			
@@ -815,25 +737,23 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			trainingOptionPanel = new JPanel();
 			trainingOptionPanel.setLayout(new BoxLayout(trainingOptionPanel, BoxLayout.Y_AXIS));
 			trainingOptionPanel.add(trainDefaultModel);
-//			trainingOptionPanel.add(useTrainedModel);
 			trainingOptionPanel.add(trainCustomModel);
 			TitledBorder border = new TitledBorder("Select a Training Option:");
 		    border.setTitleJustification(TitledBorder.CENTER);
 		    border.setTitlePosition(TitledBorder.TOP);
 			trainingOptionPanel.setBorder(border);
 			
-			
+			// Template name for training Bayesian template
 			model = new JComboBox(getNetworkNames().toArray());
 			JLabel modelLabel = new JLabel("Select Template");
 			modelPanel.add(modelLabel);
 			modelPanel.add(model);
 			
-			
-
-			
+			// Number of negative training examples to create
 			negativeExamples = new JTextField("2000");
 			negativeExamplesLabel = new JLabel("Generate # of Negative Examples");
 			
+			// Load training file
 			trainingFileButton = new JButton("Training File (.tab, .tsv)");
 			trainingFileLabel = new JLabel("Positive Training Data");
 	        trainingFileButton.addActionListener(new ActionListener() {	 
@@ -862,6 +782,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	        trainingFilePanel.add(trainingFileLabel);
 	        trainingFilePanel.add(trainingFileButton);
 			
+	        // Ignore proteins from the training file that are not in the PPI graph
 			ignoreMissing = new JCheckBox();
 			ignoreMissing.setSelected(true);
 			ignoreMissingLabel = new JLabel("Ignore Missing Nodes");
@@ -889,17 +810,17 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			evaluatePanel.setLayout(layout);
 			layout.setAutoCreateContainerGaps(true);
 			layout.setAutoCreateGaps(true);
-			
 			TitledBorder eval = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.blue), "Evaluate Results");
 			evaluatePanel.setBorder(eval);
 			
+			// threshold for overlap
 			p = new JTextField("0.5");
 			pLabel = new JLabel("p");
 			
+			// Testing file
 			evaluationFileLabel = new JLabel("File of Testing Complexes");
 			evaluationFileButton = new JButton("Select Evaluation File");
 	        evaluationFileButton.addActionListener(new ActionListener() {
-	        	 
 	            public void actionPerformed(ActionEvent e)
 	            {
 	                JFileChooser evaluationChooser = new JFileChooser();
@@ -980,7 +901,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	private void analyzeButtonPressed() {
 		
 		Integer inputValidation = validateInput();
-		if (inputValidation == 1) {	
+		if (inputValidation == 1) {	// Use fulfills basic input requirements
 			InputTask inputTask = createInputTask();
 			clusterFactory = new SupervisedComplexTaskFactory(inputTask, appManager);		
 			DialogTaskManager dialogTaskManager = registrar.getService(DialogTaskManager.class);
@@ -1011,6 +932,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 	}
 	
 	private void printResults() {
+		// Helper function - print search results
 		searchResults = clusterFactory.getSearchTask().getResults();
 		for (Cluster network : searchResults) {
 			CySubNetwork result = network.getSubNetwork();
@@ -1033,7 +955,6 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			String fileContents = "";
 			
 			int counter = 1;
-//			int resultsBound = Math.min(Integer.valueOf(numResults.getText()), Integer.valueOf(searchResults.size()));
 			List<Cluster> limitedResults = searchResults;
 					//.subList(0, resultsBound);
 			for (Cluster network : limitedResults) {
@@ -1086,27 +1007,26 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			ArrayList< Set<String> > resultComplexes = new ArrayList< Set<String> >();
 			ArrayList< Set<String> > evalComplexes = new ArrayList< Set<String> >();	
 			
+			// Get names of proteins from the searched complexes
 			searchResults = clusterFactory.getSearchTask().getResults();
 			int resultsBound = Math.min(Integer.valueOf(numResults.getText()), Integer.valueOf(searchResults.size()));
 			List<Cluster> limitedResults =  searchResults;
 					//.subList(0, resultsBound);
 			for (Cluster network : limitedResults) {
 				CySubNetwork result = network.getSubNetwork();
-//				System.out.print("Printing a complex:");
 				List<CyNode> nodes = result.getNodeList();
 				Set<String> nodeNames = new HashSet<String>();
 				for (CyNode n : nodes) {
 					CyNetwork nodeNetwork = getNetworkPointer(); 
 					nodeNames.add(nodeNetwork.getDefaultNodeTable().getRow(n.getSUID()).get("shared name", String.class));
-//					System.out.print(" " + nodeNetwork.getDefaultNodeTable().getRow(n.getSUID()).get("shared name", String.class));
 				}
-//				System.out.println("");
 				resultComplexes.add(nodeNames);
 			}
 	
 			System.out.println("");
 			System.out.println("");
 	
+			// Read the evaluation file to get the names of the proteins from testing complexes
 			FileReader evalfileReader = new FileReader(evaluateFile);
 			BufferedReader evalbufferedReader = new BufferedReader(evalfileReader);
 			String line = null ;
@@ -1140,6 +1060,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 			int countPredicted = 0;
 			int countKnown = 0;
 			
+			// Iterate through predicted complexes, count number that match a known complex
 			for (Set<String> predicted : resultComplexes) {
 				for (Set<String> known : evalComplexes) {
 					
@@ -1158,6 +1079,7 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 				}
 			}
 			
+			// Iterate through known complexes, count number that match a predicted complex
 			for (Set<String> known : evalComplexes) {
 				for (Set<String> predicted : resultComplexes) {
 					
@@ -1176,34 +1098,13 @@ public class MyControlPanel extends JPanel implements CytoPanelComponent {
 				}
 			}
 			
+			// Calculate scores and present via message dialog
 			double recall = (double) countKnown / (double) evalComplexes.size() ;
 			double precision = (double) countPredicted / (double) resultComplexes.size() ;
-			double overlapScore = overlapScore(resultComplexes, evalComplexes);
 			
 			JOptionPane.showMessageDialog(this, "Recall: " + recall + "\nPrecision: " + precision
 					, "Evaluation Scoring", JOptionPane.INFORMATION_MESSAGE);
 		}
-	}
-	
-	private Double overlapScore(List< Set<String> > results, List< Set<String> > eval) {
-		double overlapLimit = 0.5;
-		double count = 0.0;
-		for (Set<String> predicted : results) {
-			for (Set <String> known : eval) {
-				Set<String> intersection = new HashSet<String>(predicted);
-				intersection.retainAll(known);
-				
-				Set<String> union = new HashSet<String>(predicted);
-				union.addAll(known);
-				
-				double overlap = (double) intersection.size() / union.size();
-				if (overlap >= 0.5) {
-					count++;
-				}
-			}
-		}
-		System.out.println("count: " + count + " / results size: " + results.size());
-		return (Double) (count / results.size());
 	}
 	
 	private Double minScoreThreshold() {

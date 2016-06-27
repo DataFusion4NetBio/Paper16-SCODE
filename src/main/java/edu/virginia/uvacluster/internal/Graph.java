@@ -47,7 +47,6 @@ public class Graph {
 	
 	//returns a set of node names in the form "Statistic: Feature (TotalBins)"
 	public Set<String> loadModelFrom(CyNetwork network) {
-		System.out.println("----------------LOAD MODEL FROM CYTOSCAPE NETWORK ----------------");
 		Set<String> features = new HashSet<String>();
 		Map<CyNode, List<Node>> nodeMap = new HashMap<CyNode, List<Node>>();
 		List<CyNode> originLevel = new ArrayList<CyNode>(), 
@@ -74,11 +73,9 @@ public class Graph {
 			for (CyNode origin: originLevel) {
 				nodesVisited.add(origin);
 				destinationLevel.removeAll(network.getNeighborList(origin, Type.OUTGOING)); //to prevent duplicates
-//				System.out.println("Size of destination level: " + destinationLevel.size());
 				destinationLevel.addAll(network.getNeighborList(origin, Type.OUTGOING));
                 for (CyNode destination: destinationLevel) {
                 	
-//                	System.out.println("Origin: " + origin.getSUID() + ", Destination: " + destination.getSUID());
 					parentNumNodes.clear();
 					parentNumNodesVisited.clear();
 					for (CyNode parent: network.getNeighborList(destination, Type.INCOMING)) {
@@ -100,46 +97,24 @@ public class Graph {
 						featureDesc = spacesPattern.matcher(featureDesc).replaceAll(" ").trim();
 						features.add(nodeName);
 						newNodes = toNodeBins;
-//						for (Integer numNodes: parentNumNodes) {newNodes *= numNodes;}
 						nodesPerBin = newNodes/toNodeBins; 
 						for (int i = 0; i < newNodes; i++) {
-//							System.out.println("newNodes: " + newNodes);
 							//Order of bins in list is important, note integer division
-//							System.out.println("Graph size before: " + this.getRoot().getChildren().size() + " -- node being added: " + featureDesc + " (" + (i/nodesPerBin) + "/" + toNodeBins + ")");
-							
 							Node currentNode = new Node(featureDesc, new Bin((i/nodesPerBin)+1,toNodeBins));
-//							printNode(currentNode);
 							nodeMap.get(destination).add(new Node(featureDesc, new Bin((i/nodesPerBin)+1,toNodeBins)));
-//							System.out.println("Graph size after: " + this.getRoot().getChildren().size());
 						}
 					}
 					
 					//create edges for internal origin nodes
 					fromNodes = nodeMap.get(origin);
 					toNodes = nodeMap.get(destination);
-					for (Integer parentNodesVisited: parentNumNodesVisited) {reps *= parentNodesVisited;}
-//					System.out.println("Reps - 1: " + reps);
-					reps /= fromNodes.size();
-//					System.out.println("Reps - 2: " + reps);
 					
 					for (Node fromNode : fromNodes) {
 						for (Node toNode : toNodes) {
 							fromNode.addChild(toNode);
 						}
 					}
-//					for (int toNode = 0, fromNode = 0, i = 0; toNode < toNodes.size(); toNode++) {
-//						System.out.println("Reps - 3: " + reps);
-//						System.out.println("FROM");
-//						printNode(fromNodes.get(fromNode));
-//						System.out.println("TO");
-//						printNode(toNodes.get(toNode));
-//							if (i == reps) {
-//								fromNode = (fromNode + 1)%fromNodes.size();
-//								i = 0;
-//							}
-//							fromNodes.get(fromNode).addChild(toNodes.get(toNode));
-//							i++;
-//					}
+
                 }
 			}
 		} while (destinationLevel.size() > 0);
@@ -304,59 +279,25 @@ public class Graph {
 	
 	public void trainBins(List<Cluster> clusters) {
 		// trainBinning() gets the range of each feature
-//		System.out.println("Before trainBinning: the size of the graph is: " + this.getRoot().getChildren().size());
 		for (Cluster cluster: clusters) {
 			cluster.trainBinning();
-//			System.out.println("After trainBinning: the size of the graph is: " + this.getRoot().getChildren().size());
 		}
-		System.out.println("Cluster train binning complete");
 	}
 	
 	public void trainOn(List<Cluster> clusters) {
-		System.out.println("Start training on clusters");
-//		System.out.println("----PRINTING FEATURE NETWORK------");
-//		printNetwork();
 		Map<String, Bin> featureMap;
 		List<Child> currentLevel = new ArrayList<Child>();
 		List<Child> nextLevel = new ArrayList<Child>();
 		
 		for (Cluster cluster: clusters) {
 			featureMap = cluster.getBinMap();
-//			for (String feature: featureMap.keySet()) {
-//				System.out.println("For cluster " + cluster.getSUID() + ":");
-//				System.out.println("\tFeature= " + feature + "\tBin=" + featureMap.get(feature).number);
-//			}
-//			System.out.println("Cluster: " + cluster.getSUID());
-//			featureMap = cluster.getNewBinMap();
-//			System.out.println("In trainOn: the size of the featureMap for cluster " + cluster.getSUID() + " is: " + featureMap.size());
-//			System.out.println("In trainOn: the size of the graph is: " + this.getRoot().getChildren().size());
 			nextLevel.addAll(root.getChildren());
 
 			for (Child child : getRootFeatures()) {
 				System.out.println(child.getName());
 				child.addTo(featureMap.get(child.getName()).number);
 			}
-			
-			
-//			scanGraph(featureMap);
-//			do {
-//				currentLevel.clear();
-//				currentLevel.addAll(nextLevel);
-//				nextLevel.clear();
-//				for (Child child: currentLevel) {
-////					System.out.println("in child: currentLevel -- CHILD = " + child.getName());
-//					nextLevel.removeAll(child.getChildren());
-//					nextLevel.addAll(child.getChildren());
-//					child.addTo(featureMap.get(child.getName()).number);
-//				}
-//			} while(nextLevel.size() > 0);
 		}
-		
-//		for (Child child : getRootFeatures()) {
-//			System.out.println(child.getName() + " #" + child.getNode().getBin() + " : " + child.count);
-//		}
-		
-		System.out.println("Done training on clusters");
 	}
 	
 	public double score(Cluster cluster) {
@@ -372,11 +313,6 @@ public class Graph {
 				score *= child.score(features.get(child.getName()).number);
 			}
 		}
-//		System.out.println("\t\t" + cluster.getSUID() + ": " + score);
-//		for (Child child: root.getChildren()) {
-//			score *= child.score(features.get(child.getName()).number);
-//			score *= childScore(child, cluster);
-//		}
 		return score;
 	}
 	
@@ -396,17 +332,10 @@ public class Graph {
 	
 	public void printNode(Node n) {
 		System.out.println("Children of the node: " + n.getDisplayName());
-//		for (Child c : n.children) {
-//			printChild(c);
-//		}
 	}
 	
 	public void printChild(Child c) {
 		System.out.println("\t\t" + c.getName());	
-//		for (Child c2 : c.getChildren()) {
-//			System.out.print("Children of the child node: " + c.getName());
-//			printChild(c2);
-//		}
 	}
 	
 	private void resetGraph() {root.reset();}
@@ -415,10 +344,7 @@ public class Graph {
 		List<Child> currentLevel = new ArrayList<Child>();
 		List<Child> nextLevel = new ArrayList<Child>();
 		nextLevel.addAll(root.getChildren());
-//		System.out.println("About to reset graph");
-//		System.out.println("The name of the root node is: " + root.getDisplayName());
 		resetGraph();
-//		System.out.println("In scanGraph: reset graph done");
 		root.activate();
 		do {
 			currentLevel.clear();
@@ -464,9 +390,7 @@ public class Graph {
 		}
 		public void reset() {
 			active = false;
-//			System.out.println("The node " + getDisplayName() + " has size " + children.size());
 			for (Child child: children) {
-//				System.out.println("The child about to be reset is: " + child.getName());
 				child.reset();
 			}
 		}
@@ -500,7 +424,6 @@ public class Graph {
 //			if (node.parentsActive()) {
 				if (node.getBin() == bin) {
 					count++;
-//					System.out.println(this.getName() + " # " + bin + " : " + count);
 				} 
 				totalSamples++;
 				probability = ((double)count + 1.0) / ((double)totalSamples + (double)node.getTotalBins());
@@ -511,7 +434,6 @@ public class Graph {
 			double score = 1;
 			if (node.parentsActive()) {
 				if(node.getBin() == bin) {
-//					System.out.println("\t\tChild.score-Scoring on " + this.getName() + " - bin #" + node.getBin() + ": score = score*" + probability);
 					score = probability;
 				}
 			}

@@ -17,7 +17,6 @@ public class TrainingTask extends AbstractNetworkTask{
 	public Model clusterModel = null;
 	private CyRootNetwork rootNetwork;
 	private InputTask userInput;
-	public long elapsedTime = 0;
 	
 	public TrainingTask(CyNetwork network, InputTask userInput){
 			super(network);
@@ -28,40 +27,33 @@ public class TrainingTask extends AbstractNetworkTask{
 	
 	@Override
 	public void run(final TaskMonitor taskMonitor) throws Exception{
-		System.out.println("Training task...");
 		CyNetwork outputNet = null, trainedNet = null, modelNetwork = null;
-		
 		taskMonitor.setTitle("SCODE Progress");
-		System.out.println("Training task is running... ");
 		try {
 			
-			// Monitor execution time of training task
-			long startTime = System.currentTimeMillis();
-			
 			if (userInput.trainNewModel){
+				// Train a template
 				if (userInput.customModel) {
-					System.out.println("Loading custom model...");
+					// Load custom template
 					modelNetwork = getNetwork(userInput.bayesModel.getSelectedValue());
 				} else {
-					System.out.println("Loading default network...");
+					// Load built-in template
 					modelNetwork = ClusterUtil.getDefaultModel(userInput.weightName.getSelectedValue(), SavePolicy.DO_NOT_SAVE);
 				}
-				System.out.println("Training new Model...");
-				//create empty network for saving state of model
+				// Create empty network for saving state of model
 				outputNet = CyActivator.networkFactory.createNetwork();
 				outputNet.getRow(outputNet).set(CyNetwork.NAME, CyActivator.networkNaming.getSuggestedNetworkTitle("Supervised Complex Model"));
 				
+				// Set task monitor progress
 				taskMonitor.setProgress(0.1);
 				taskMonitor.setStatusMessage("Training...");
 				clusterModel = new SupervisedModel(rootNetwork, modelNetwork,outputNet, userInput);
 				CyActivator.networkManager.addNetwork(outputNet); 
 				taskMonitor.setStatusMessage("Training is done.");
 				taskMonitor.setProgress(1.0);
-				
-				System.out.println("Training complete.");
 			}
 			else {
-				System.out.println("Using existing model...");
+				// Use an existing model
 				taskMonitor.setProgress(0.1);
 				taskMonitor.setStatusMessage("Loading model...");
 				trainedNet = getNetwork(userInput.existingModel.getSelectedValue());
@@ -69,13 +61,8 @@ public class TrainingTask extends AbstractNetworkTask{
 				
 				taskMonitor.setStatusMessage("Model loaded.");
 				taskMonitor.setProgress(1.0);
-				System.out.println("Model loaded.");
 			}
 		
-		// Monitor execution time of training task
-		long stopTime = System.currentTimeMillis();
-		elapsedTime = stopTime - startTime;
-		elapsedTime = elapsedTime % 1000;
 		} catch ( Exception e){
 			e.printStackTrace();
 			throw new Exception("Training didn't work out so well..." + e.getMessage());

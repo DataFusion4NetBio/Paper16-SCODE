@@ -30,8 +30,6 @@ public class SupervisedComplexTaskFactory implements TaskFactory{
 		
 	    
 		TaskIterator programTasks = new TaskIterator();
-		
-//		CyNetwork network = appManager.getCurrentNetwork();
 		String networkName = inputTask.graphName;
 		CyNetwork network = null;
 		
@@ -65,20 +63,4 @@ public class SupervisedComplexTaskFactory implements TaskFactory{
 		return true;
 	}
 
-//	@Override
-//	public boolean isReady() {	
-////		CyNetwork network = appManager.getCurrentNetwork();
-////		System.out.println("The network is " + network.getSUID());
-////		JDialog dialog = new JDialog();
-////	    dialog.add(new JLabel("The network id is " + network.getSUID()));
-////	    dialog.pack();
-////	    dialog.setVisible(true);
-//		//logger.debug("The network is " + network.getSUID());
-////		if (network != null) {
-////			return true;
-////		}
-//		return true;
-//	}
-	
-	
 }

@@ -24,7 +24,7 @@ import edu.virginia.uvacluster.internal.feature.FeatureUtil;
 import edu.virginia.uvacluster.internal.statistic.Statistic;
 
 public class SupervisedModel implements Model{
-	//data members
+
 	private CyRootNetwork rootNetwork;
 	private Graph negBayesGraph, posBayesGraph; //used for internal representation of bayes net
 	private List<Graph> bayesGraphs;
@@ -50,31 +50,23 @@ public class SupervisedModel implements Model{
 		rootNetwork = trainingNetwork;
 		this.complexPrior = userInput.clusterPrior;
 		this.userInput = userInput;
+		
+		// Create the positive and negative bayes graphs
 		setup();
+		
+		// Get the set of features from the template/model
 		for (Graph g: bayesGraphs) {
-//			System.out.println("Before loading model: graph size is " + g.getRoot().getChildren().size());
-//			System.out.println("The Cytoscape model network has size " + modelNetwork.getNodeCount());
 			featureDescs = g.loadModelFrom(modelNetwork);
-//			System.out.println("After loading model: graph size is " + g.getRoot().getChildren().size());
 			}
 		features = FeatureUtil.parse(featureDescs);
-//		System.out.println("Features: ");
-//		for(String feat : featureDescs) {
-//			System.out.println("\t\t" + feat);
-//		}
-//		System.out.println("Cluster model init is finished.");
-		positiveExamples = loadTrainingComplexes(userInput.trainingFile);
-//		System.out.println("Trained on positive complexes: " + positiveExamples.size());
-//		System.out.println("Positive examples are loaded.");
-		negativeExamples = generateNegativeExamples(userInput.negativeExamples, positiveExamples);
-//		System.out.println("Trained on negative complexes: " + negativeExamples.size());
-//		System.out.println("Negative examples are generated.");
-//		System.out.println("Dup");
 
+		//  Get positive training examples and generate negative training examples
+		positiveExamples = loadTrainingComplexes(userInput.trainingFile);
+		negativeExamples = generateNegativeExamples(userInput.negativeExamples, positiveExamples);
+
+		// Train
 		train(positiveExamples, negativeExamples);
-		System.out.println("Model trained...");
 		saveGraphicalBayesianNetwork(outputBayesNet, features);
-		System.out.println("Model saved to network...");
 	}
 	
 	/**
@@ -101,8 +93,6 @@ public class SupervisedModel implements Model{
 	 */
 	public void saveGraphicalBayesianNetwork(CyNetwork emptyNetwork, List<FeatureSet> features) {
 		for(Graph g: bayesGraphs) {
-			System.out.println("--------SAVING TRAINED MODEL-----------");
-//			System.out.println("The size of the trained model is: " + g.getRoot().getChildren().size());
 			g.saveTrainedModelTo(emptyNetwork,features);
 		}
 	}
@@ -111,22 +101,22 @@ public class SupervisedModel implements Model{
 	 * This function returns the probability of the complex occuring according to the model.
 	 * 
 	 * @param complex the complex in question
-	 * @return
 	 */
 	public double score(Cluster complex) throws Exception{
 		if (userInput.supervisedLearning) {
 			double nonComplexPrior = 1 - complexPrior;
 			double scorePos = posBayesGraph.score(complex);
 			double scoreNeg = negBayesGraph.score(complex);
-//			System.out.print("\nRoot Cluster: " + scorePos + "\n\t\tRoot Non-Cluster: " 
-//			+ scoreNeg + "\n\t\tScore: " + Math.log((complexPrior * scorePos) / (nonComplexPrior*scoreNeg)) );
-
 			return Math.log((complexPrior * scorePos) / (nonComplexPrior*scoreNeg));
 		} else {
 			return ClusterScore.score(complex, null);
 		}
 	}
 	
+	
+	/**
+	 * Scores a candidate complex
+	 */
 	public double score(CySubNetwork complex) throws Exception {
 		if (userInput.supervisedLearning) {
 			Cluster cluster = new Cluster(features, complex);
@@ -162,11 +152,9 @@ public class SupervisedModel implements Model{
 		}
 		
 		exponent = getSizeDistributionExponent(positiveExampleSizes);
-//		System.out.println("Exp: " + exponent);
 		
 		for(i = 0; i < sizeDistributionValues.length; i++) {
 			sizeDistributionValues[i] = (1/(Math.pow((i + minSize), exponent)));
-//			System.out.println("sizeDistributionValues[" + i + "] : " + sizeDistributionValues[i]);
 			sizeDistributionTotal = sizeDistributionTotal + sizeDistributionValues[i];
 		}
 		
@@ -178,9 +166,7 @@ public class SupervisedModel implements Model{
 		System.out.println("Generating negative examples");
 		for(i = 0; i < sizeDistributionRatios.length; i++) {
 			int failedIterations = 0;
-//			System.out.println("sizeDistributionRatios[" + i + "] : " + sizeDistributionRatios[i]);
 			for (int x = 0; x < Math.round(sizeDistributionRatios[i] * numExamples); x++) {
-//				System.out.println("x: " + x);
 				example = genNegativeExample(i + minSize, positiveExamples);
 				if ((example != null) && (example.getNodeCount() >= (i + minSize))) {
 					negativeExamples.add(example);
@@ -226,7 +212,6 @@ public class SupervisedModel implements Model{
 				}
 				x++;
 			} while ((neighborCount == 0) && (x < (nodeCount * nodeCount))); 
-			//System.out.println("i: " + i + "  randIndex: " + randIndex + "  nodeCount: " + nodeCount);
 			
 			if (complex.getNodeCount() == 0)
 				valid = false;
@@ -245,7 +230,6 @@ public class SupervisedModel implements Model{
 							candidateEdges = rootNetwork.getConnectingEdgeList(node, complexNode, Type.ANY);
 							if (! candidateEdges.isEmpty()) { //if there are edges, add the first one in list of candidates
 								complex.addEdge(candidateEdges.get(0)); 
-								//System.out.println("Edge added to random example.");
 							}
 						}
 						
@@ -339,8 +323,7 @@ public class SupervisedModel implements Model{
 						clusterNetwork.addNode(rootNetwork.getNode(proteinId));
 					else if (! userInput.ignoreMissing)
 						throw new Exception("Protein not found in network: " + proteins[i]);
-//					else
-//						System.out.println("Protein not found in network" + proteins[i]);
+
 				}
 				
 				//test for edges and add to subnetwork
@@ -394,7 +377,6 @@ public class SupervisedModel implements Model{
 			for (int i = 0; i < n; i++) {
 				exponent = exponent + Math.log(positiveExampleSizes[i]/min);
 			}
-//			System.out.println("exponent: " + exponent);
 			exponent = 1 + (n / exponent);
 		} else {
 			// Avoid dividing by zero
