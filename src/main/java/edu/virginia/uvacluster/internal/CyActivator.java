@@ -35,35 +35,9 @@ public class CyActivator extends AbstractCyActivator {
 		networkViewManager = getService(context, CyNetworkViewManager.class);
 		serviceRegistrar = getService(context, CyServiceRegistrar.class);
 		
-		
-		/* ******SupervisedComplexTaskFactory clusterFactory= new SupervisedComplexTaskFactory();
-		
-		//TODO re-enable
-		//GenModelTaskFactory modelFactory = new GenModelTaskFactory();
-		
-		//Set service properties
-		Properties clusterFactoryProperties = new Properties();
-		clusterFactoryProperties.setProperty("preferredMenu", "Apps.SCODE");
-		clusterFactoryProperties.setProperty("title","Analyze Network");      ************/
-		
-		/* TODO This option is disabled because a network only appears once the session file is reloaded.  
-		Properties genNetworkProperties = new Properties();
-		genNetworkProperties.setProperty("preferredMenu", "Apps.Supervised Complex");
-		genNetworkProperties.setProperty("title", "Generate Default Model");
-		*/
-		
 		//Set up tabbed panel in Control Panel
 		CySwingApplication cytoscapeDesktopService = getService(context,CySwingApplication.class);
 		
-		/*
-		MyControlPanel myControlPanel = new MyControlPanel();
-		ControlPanelAction controlPanelAction = new ControlPanelAction(cytoscapeDesktopService,myControlPanel);
-		
-		registerService(context,myControlPanel,CytoPanelComponent.class, new Properties());
-		registerService(context,controlPanelAction,CyAction.class, new Properties());
-		*/
-		//register services
-		//registerService(context, clusterFactory, NetworkTaskFactory.class, clusterFactoryProperties);
 		
 		CyApplicationManager appManager = getService(context, CyApplicationManager.class);
 		
@@ -82,8 +56,6 @@ public class CyActivator extends AbstractCyActivator {
 		closeTaskFactoryProps.setProperty("menuGravity","2.0");
 		
 		registerService(context, closeTaskFactory, TaskFactory.class, closeTaskFactoryProps);
-		
-		//TODO re-enable when cytoscape bug is fixed
-		//registerService(context, modelFactory, NetworkTaskFactory.class,genNetworkProperties);
+
 	}
 }

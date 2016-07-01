@@ -19,6 +19,7 @@ public class ClusterUtil {
 		                         "Variance : Degree (4)",
 		                         "Median : Degree (4)",
 		                         "Max : Degree (4)",
+		                         "Count : Node (5)",
 		                         String.format("Mean : weight{%s} (4)",weightFeatureName),
 		                         String.format("Variance : weight{%s} (4)",weightFeatureName),
 		                         String.format("Density at cutoff %s (6)",weightCutoffs[0]),
